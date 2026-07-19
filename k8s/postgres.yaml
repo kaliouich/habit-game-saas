@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: habit-postgres-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: habit-postgres
+  namespace: default
+  labels:
+    app: habit-postgres
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate # un seul writer sur le PVC
+  selector:
+    matchLabels:
+      app: habit-postgres
+  template:
+    metadata:
+      labels:
+        app: habit-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: habit
+            - name: POSTGRES_DB
+              value: habitgame
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: habit-game-secrets
+                  key: POSTGRES_PASSWORD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "habit", "-d", "habitgame"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: habit-postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: habit-postgres
+  namespace: default
+spec:
+  selector:
+    app: habit-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432

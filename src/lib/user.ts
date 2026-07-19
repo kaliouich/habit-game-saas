@@ -1,17 +1,18 @@
 import { cache } from "react";
-import { prisma } from "./prisma";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
-/**
- * TODO(Sprint 3) : remplacer par la session Auth.js (`await auth()`).
- * En attendant, toute l'app fonctionne sur le user de démo — le scoping par
- * `userId` est déjà en place partout, seule cette fonction changera.
- */
+/** Session courante — throw géré par le proxy (/app est protégé), donc toujours présente ici. */
 export const getCurrentUser = cache(async () => {
-  const user = await prisma.user.findUnique({
-    where: { email: "demo@habitgame.local" },
-  });
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
   if (!user) {
-    throw new Error("User démo introuvable — lancer `npx prisma db seed`");
+    redirect("/login");
   }
   return user;
 });

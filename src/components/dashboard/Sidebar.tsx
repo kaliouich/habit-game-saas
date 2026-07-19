@@ -5,6 +5,7 @@ import type { MonthStats } from "@/lib/stats";
 import { LineChart } from "@/components/charts/LineChart";
 import { AddHabitForm } from "./AddHabitForm";
 import { HabitMenu } from "./HabitMenu";
+import { SignOutButton } from "./SignOutButton";
 
 interface SidebarHabit {
   id: string;
@@ -19,10 +20,12 @@ interface SidebarProps {
   stats: MonthStats;
   canAdd: boolean;
   limit: number;
+  userEmail: string;
+  plan: "FREE" | "PRO";
 }
 
 /** V1 + V2 : colonne noire — titre, mois, My Habits, mood chart, logo. */
-export function Sidebar({ month, habits, stats, canAdd, limit }: SidebarProps) {
+export function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan }: SidebarProps) {
   const moodValues = stats.days.map((d) => stats.moodByDate.get(d.date) ?? null);
 
   return (
@@ -73,6 +76,15 @@ export function Sidebar({ month, habits, stats, canAdd, limit }: SidebarProps) {
             <span key={w}>{w.toUpperCase()}</span>
           ))}
         </p>
+        <div className="sidebar__account">
+          <span className="sidebar__email" title={userEmail}>
+            {userEmail}
+          </span>
+          <Link href="/app/billing" className={plan === "FREE" ? "sidebar__plan sidebar__plan--free" : "sidebar__plan"}>
+            {plan === "FREE" ? "Upgrade" : "Pro"}
+          </Link>
+          <SignOutButton />
+        </div>
       </div>
     </aside>
   );

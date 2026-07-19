@@ -3,6 +3,7 @@ import { getDashboardData } from "@/lib/data";
 import { currentMonth, isValidMonthKey } from "@/lib/dates";
 import { canAddHabit, maxHabits } from "@/lib/quotas";
 import { Dashboard } from "@/components/dashboard/Dashboard";
+import { OnboardingBanner } from "@/components/dashboard/OnboardingBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -24,13 +25,18 @@ export default async function DashboardPage({
   );
 
   return (
-    <Dashboard
-      month={month}
-      stats={stats}
-      habits={habits}
-      today={today}
-      canAdd={canAddHabit(user.plan, activeCount)}
-      limit={maxHabits(user.plan)}
-    />
+    <>
+      {habits.length === 0 && <OnboardingBanner />}
+      <Dashboard
+        month={month}
+        stats={stats}
+        habits={habits}
+        today={today}
+        canAdd={canAddHabit(user.plan, activeCount)}
+        limit={maxHabits(user.plan)}
+        userEmail={user.email}
+        plan={user.plan}
+      />
+    </>
   );
 }

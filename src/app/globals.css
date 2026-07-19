@@ -771,3 +771,314 @@ select {
     grid-template-columns: 1fr;
   }
 }
+
+/* ─── Boutons génériques ─────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 120ms, opacity 120ms;
+  width: 100%;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn--primary {
+  background: var(--panel);
+  color: var(--panel-fg);
+}
+
+.btn--secondary {
+  background: transparent;
+  border: 1.5px solid var(--grid-line);
+  color: var(--fg);
+}
+
+.btn--google {
+  background: var(--cell);
+  border: 1.5px solid var(--grid-line);
+  color: var(--fg);
+}
+
+.btn--link {
+  background: none;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 12px;
+  padding: 4px;
+  text-decoration: underline;
+}
+
+/* ─── Auth pages (/login) ────────────────────────────────────────────────── */
+.authpage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.authcard {
+  width: 100%;
+  max-width: 360px;
+  background: var(--cell);
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: center;
+}
+
+.authcard__title {
+  font-family: var(--font-display), sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.authcard__subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.authcard__hint {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.authcard__divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.authcard__divider::before,
+.authcard__divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--grid-line);
+}
+
+.authcard__email {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.authcard__input {
+  border: 1.5px solid var(--grid-line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* ─── Sidebar : compte utilisateur ───────────────────────────────────────── */
+.sidebar__account {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid rgb(255 255 255 / 0.2);
+  padding-top: 10px;
+  font-size: 11px;
+}
+
+.sidebar__email {
+  color: var(--panel-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar__plan {
+  align-self: flex-start;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.sidebar__plan--free {
+  text-decoration: underline;
+}
+
+.sidebar__signout {
+  align-self: flex-start;
+  color: var(--panel-muted);
+  font-size: 11px;
+}
+
+.sidebar__signout:hover {
+  color: var(--panel-fg);
+}
+
+/* ─── Onboarding (B9) ─────────────────────────────────────────────────────── */
+.onboarding {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--panel);
+  color: var(--panel-fg);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
+  margin: 14px 14px 0;
+}
+
+.onboarding__title {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.onboarding__text {
+  color: var(--panel-muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.onboarding .btn {
+  width: auto;
+  white-space: nowrap;
+  background: var(--accent);
+  color: #111;
+}
+
+/* ─── Pricing page ────────────────────────────────────────────────────────── */
+.pricingpage {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.pricingpage__title {
+  font-family: var(--font-display), sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.pricingpage__subtitle {
+  color: var(--muted);
+  margin-top: 8px;
+  margin-bottom: 40px;
+}
+
+.pricingcards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  text-align: left;
+}
+
+.pricingcard {
+  background: var(--cell);
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pricingcard--highlight {
+  border: 2px solid var(--accent);
+}
+
+.pricingcard__name {
+  font-family: var(--font-display), sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.pricingcard__price {
+  font-family: var(--font-display), sans-serif;
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.pricingcard__price span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.pricingcard__trial {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: -8px;
+}
+
+.pricingcard__features {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  margin: 4px 0 8px;
+}
+
+.pricingcard__features li::before {
+  content: "✓ ";
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ─── Billing page ────────────────────────────────────────────────────────── */
+.billingpage {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.billingpage__back {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.billingpage__title {
+  font-family: var(--font-display), sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 16px 0 20px;
+}
+
+.billingcard {
+  background: var(--cell);
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.billingcard__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--grid-line);
+}

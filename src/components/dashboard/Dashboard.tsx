@@ -20,15 +20,25 @@ interface DashboardProps {
   today: ISODate;
   canAdd: boolean;
   limit: number;
+  userEmail: string;
+  plan: "FREE" | "PRO";
 }
 
 /** Assemblage 3 zones : sidebar noire / centre (daily + grille) / stats à droite. */
-export function Dashboard({ month, stats, habits, today, canAdd, limit }: DashboardProps) {
+export function Dashboard({ month, stats, habits, today, canAdd, limit, userEmail, plan }: DashboardProps) {
   const todayIndex = stats.days.findIndex((d) => d.date === today);
 
   return (
     <div className="dashboard">
-      <Sidebar month={month} habits={habits} stats={stats} canAdd={canAdd} limit={limit} />
+      <Sidebar
+        month={month}
+        habits={habits}
+        stats={stats}
+        canAdd={canAdd}
+        limit={limit}
+        userEmail={userEmail}
+        plan={plan}
+      />
 
       <main className="dashboard__main">
         <div className="panel panel--daily">

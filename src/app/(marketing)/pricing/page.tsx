@@ -1,7 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { APP_NAME, PLAN_LIMITS } from "@/lib/config";
 import { createCheckoutSession } from "@/lib/actions/billing";
+
+export const metadata: Metadata = {
+  title: "Pricing",
+  description: `${APP_NAME} pricing: Free forever, or Pro with a 14-day trial — unlimited habits, history and streaks.`,
+};
 
 export default async function PricingPage() {
   const session = await auth();

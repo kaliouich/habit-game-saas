@@ -1,5 +1,8 @@
+import type { Metadata } from "next";
 import { APP_NAME } from "@/lib/config";
 import { signInWithEmail, signInWithGoogle } from "@/lib/actions/auth";
+
+export const metadata: Metadata = { title: "Sign in" };
 
 export default function LoginPage() {
   return (

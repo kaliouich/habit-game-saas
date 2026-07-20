@@ -1082,3 +1082,348 @@ select {
   padding-bottom: 10px;
   border-bottom: 1px solid var(--grid-line);
 }
+
+/* ─── Marketing : header / footer ────────────────────────────────────────── */
+.marketing {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.marketingheader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.marketingheader__logo {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.02em;
+}
+
+.marketingheader__nav {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn--nav {
+  width: auto;
+  padding: 8px 16px;
+}
+
+.marketingfooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  color: var(--muted);
+  font-size: 13px;
+  border-top: 1px solid var(--grid-line);
+  margin-top: 60px;
+}
+
+.marketingfooter__nav {
+  display: flex;
+  gap: 18px;
+}
+
+/* ─── Hero ────────────────────────────────────────────────────────────────── */
+.hero {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 32px 70px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.hero__eyebrow {
+  display: inline-block;
+  background: var(--panel);
+  color: var(--panel-fg);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+}
+
+.hero__title {
+  font-family: var(--font-display), sans-serif;
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.hero__subtitle {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+  margin-top: 16px;
+  max-width: 460px;
+}
+
+.hero__ctas {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.btn--hero {
+  width: auto;
+  padding: 12px 22px;
+}
+
+/* ─── Hero preview (grille décorative) ───────────────────────────────────── */
+.heropreview {
+  background: var(--cell);
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  overflow: hidden;
+  transform: rotate(-1.5deg);
+}
+
+.heropreview__table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 10px;
+}
+
+.heropreview__table th,
+.heropreview__table td {
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.heropreview__table thead th {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.heropreview__table tbody th {
+  text-align: left;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--fg);
+}
+
+.heropreview__cell {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--grid-line);
+  border-radius: 3px;
+}
+
+.heropreview__cell--on {
+  background: var(--panel);
+  border-color: var(--panel);
+}
+
+/* ─── Features ────────────────────────────────────────────────────────────── */
+.features {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+.features__title {
+  font-family: var(--font-display), sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 36px;
+}
+
+.features__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.featurecard {
+  background: var(--cell);
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius-panel);
+  padding: 22px 20px;
+}
+
+.featurecard__emoji {
+  font-size: 26px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.featurecard__title {
+  font-family: var(--font-display), sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.featurecard__text {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* ─── How it works ────────────────────────────────────────────────────────── */
+.howitworks {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 50px 32px;
+  text-align: center;
+}
+
+.howitworks__title {
+  font-family: var(--font-display), sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 36px;
+}
+
+.howitworks__steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 28px;
+  text-align: left;
+}
+
+.howitworks__step h3 {
+  font-family: var(--font-display), sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 10px 0 6px;
+}
+
+.howitworks__step p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.howitworks__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: var(--panel);
+  color: var(--panel-fg);
+  border-radius: 50%;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* ─── CTA band ────────────────────────────────────────────────────────────── */
+.ctaband {
+  background: var(--panel);
+  color: var(--panel-fg);
+  text-align: center;
+  padding: 60px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+.ctaband h2 {
+  font-family: var(--font-display), sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.ctaband .btn--hero {
+  background: var(--accent);
+  color: #111;
+}
+
+/* ─── Legal pages ─────────────────────────────────────────────────────────── */
+.legalpage {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 50px 32px 80px;
+}
+
+.legalpage__title {
+  font-family: var(--font-display), sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.legalpage__updated {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 32px;
+}
+
+.legalpage h2 {
+  font-family: var(--font-display), sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  margin: 28px 0 10px;
+}
+
+.legalpage p,
+.legalpage li {
+  color: var(--fg);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.legalpage ul {
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.legalpage a {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .heropreview {
+    order: -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .marketingheader,
+  .marketingfooter {
+    padding: 16px;
+  }
+
+  .hero__title {
+    font-size: 34px;
+  }
+
+  .hero__ctas {
+    flex-direction: column;
+  }
+
+  .btn--hero {
+    width: 100%;
+  }
+}

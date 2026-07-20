@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      # Valeurs factices : suffisent pour `prisma generate`, le lint, les tests
+      # unitaires (aucun n'a besoin d'une vraie connexion DB) et le build.
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      AUTH_SECRET: ci-only-not-a-real-secret
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx prisma generate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build

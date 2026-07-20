@@ -29,6 +29,14 @@ model User {
   theme            String    @default("light")
   weekStartsOn     Int       @default(1)
   timezone         String    @default("Africa/Tunis")
+  // Parrainage (B-referral) — code généré paresseusement dans lib/user.ts
+  // (l'adapter Auth.js crée les users sans ce champ, donc pas de défaut requis en base)
+  referralCode         String?  @unique
+  referredById         String?
+  referredBy           User?    @relation("Referrals", fields: [referredById], references: [id])
+  referrals            User[]   @relation("Referrals")
+  referralCreditMonths Int      @default(0) // mois gratuits accumulés grâce à ses filleuls, consommés au prochain checkout
+  referralCredited     Boolean  @default(false) // ce user (en tant que filleul) a-t-il déjà déclenché le crédit de son parrain ?
   habits           Habit[]
   moods            MoodLog[]
   accounts         Account[]

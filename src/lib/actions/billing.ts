@@ -26,11 +26,15 @@ export async function createCheckoutSession(formData: FormData): Promise<void> {
     await prisma.user.update({ where: { id: user.id }, data: { stripeCustomerId: customerId } });
   }
 
+  // Programme de parrainage : 1 mois gratuit accumulé par filleul devenu Pro,
+  // consommé (remis à 0) par le webhook au succès de CE checkout.
+  const trialDays = 14 + user.referralCreditMonths * 30;
+
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
     line_items: [{ price: STRIPE_PRICES[price], quantity: 1 }],
-    subscription_data: { trial_period_days: 14 },
+    subscription_data: { trial_period_days: trialDays },
     success_url: `${APP_URL}/app?upgraded=1`,
     cancel_url: `${APP_URL}/pricing`,
   });

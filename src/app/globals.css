@@ -741,6 +741,30 @@ select {
   font-variant-numeric: tabular-nums;
 }
 
+/* ─── Badges (Sprint 5) ───────────────────────────────────────────────────── */
+.badgelist {
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badgelist__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--grid-line);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badgelist__emoji {
+  font-size: 14px;
+}
+
 /* ─── Responsive (B6, v1 : empilement + scroll horizontal maîtrisé) ──────── */
 @media (max-width: 1180px) {
   .dashboard {
@@ -1081,6 +1105,47 @@ select {
   font-size: 14px;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--grid-line);
+}
+
+/* ─── Referral (Sprint 5) ─────────────────────────────────────────────────── */
+.referral {
+  margin-top: 16px;
+}
+
+.referral__title {
+  font-family: var(--font-display), sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.referral__text {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.referral__linkrow {
+  display: flex;
+  gap: 8px;
+}
+
+.referral__input {
+  flex: 1;
+  min-width: 0;
+  border: 1.5px solid var(--grid-line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.referral__credit {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 /* ─── Marketing : header / footer ────────────────────────────────────────── */

@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { bestStreak, computeMonthStats, currentStreak, type HabitWithLogs } from "./stats";
+import {
+  bestStreak,
+  computeBadges,
+  computeMonthStats,
+  computeWeeklyRecap,
+  currentStreak,
+  type HabitWithLogs,
+} from "./stats";
 
 function habit(id: string, dates: string[], overrides: Partial<HabitWithLogs> = {}): HabitWithLogs {
   return {
@@ -107,6 +114,81 @@ describe("streaks (B1)", () => {
     ]);
     expect(bestStreak(logged)).toBe(4);
     expect(bestStreak(new Set())).toBe(0);
+  });
+});
+
+describe("badges (Sprint 5)", () => {
+  it("perfect week détectée quand toute une semaine calendaire est à 100%", () => {
+    const dates = ["06", "07", "08", "09", "10", "11", "12"].map((d) => `2026-07-${d}`);
+    const stats = computeMonthStats({ month: MONTH, habits: [habit("a", dates)], moods: [], today: "2026-07-12" });
+    expect(computeBadges(stats).some((b) => b.id === "perfect_week")).toBe(true);
+  });
+
+  it("pas de perfect week si la semaine est incomplète (jours futurs)", () => {
+    const dates = ["06", "07", "08"].map((d) => `2026-07-${d}`);
+    const stats = computeMonthStats({ month: MONTH, habits: [habit("a", dates)], moods: [], today: "2026-07-08" });
+    expect(computeBadges(stats).some((b) => b.id === "perfect_week")).toBe(false);
+  });
+
+  it("badge perfect days à partir de 3 jours parfaits", () => {
+    const h = habit("a", ["2026-07-01", "2026-07-02", "2026-07-03"]);
+    const stats = computeMonthStats({ month: MONTH, habits: [h], moods: [], today: "2026-07-03" });
+    const badge = computeBadges(stats).find((b) => b.id === "perfect_days");
+    expect(badge?.title).toBe("3 Perfect Days");
+  });
+
+  it("pas de badge perfect days sous le seuil de 3", () => {
+    const h = habit("a", ["2026-07-01", "2026-07-02"]);
+    const stats = computeMonthStats({ month: MONTH, habits: [h], moods: [], today: "2026-07-02" });
+    expect(computeBadges(stats).some((b) => b.id === "perfect_days")).toBe(false);
+  });
+
+  it("mois parfait quand goalTotal === completedTotal", () => {
+    const h = habit("a", ["2026-07-01"], { goal: 1 });
+    const stats = computeMonthStats({ month: MONTH, habits: [h], moods: [], today: "2026-07-01" });
+    expect(computeBadges(stats).some((b) => b.id === "full_month")).toBe(true);
+  });
+
+  it("badge streak au palier 7 jours, pas en dessous", () => {
+    const sevenDays = ["01", "02", "03", "04", "05", "06", "07"].map((d) => `2026-07-${d}`);
+    const stats7 = computeMonthStats({ month: MONTH, habits: [habit("a", sevenDays)], moods: [], today: "2026-07-07" });
+    expect(computeBadges(stats7).some((b) => b.id === "streak_a")).toBe(true);
+
+    const sixDays = sevenDays.slice(0, 6);
+    const stats6 = computeMonthStats({ month: MONTH, habits: [habit("b", sixDays)], moods: [], today: "2026-07-06" });
+    expect(computeBadges(stats6).some((b) => b.id === "streak_b")).toBe(false);
+  });
+});
+
+describe("computeWeeklyRecap (Sprint 5 — récap email)", () => {
+  it("compte les 7 derniers jours glissants, peut chevaucher deux mois", () => {
+    const dates = ["2026-06-29", "2026-06-30", "2026-07-01", "2026-07-02"];
+    const h = habit("a", dates);
+    const recap = computeWeeklyRecap([h], "2026-07-03");
+    // Fenêtre = 06-27..07-03 ; seuls 06-29,06-30,07-01,07-02 sont cochés → 4
+    expect(recap.completed).toBe(4);
+    expect(recap.goal).toBe(7);
+    expect(recap.pct).toBeCloseTo(4 / 7);
+    expect(recap.daysActive).toBe(4);
+  });
+
+  it("bestStreakHabit reflète le streak courant le plus long", () => {
+    const a = habit("a", ["2026-07-01", "2026-07-02", "2026-07-03"]);
+    const b = habit("b", ["2026-07-03"]);
+    const recap = computeWeeklyRecap([a, b], "2026-07-03");
+    expect(recap.bestStreakHabit).toMatchObject({ name: "a", streak: 3 });
+  });
+
+  it("aucune habitude → tout à zéro, pas de division par zéro", () => {
+    const recap = computeWeeklyRecap([], "2026-07-03");
+    expect(recap).toMatchObject({ completed: 0, goal: 0, pct: 0, daysActive: 0, bestStreakHabit: null });
+  });
+
+  it("aucun log récent → bestStreakHabit null", () => {
+    const h = habit("a", ["2026-06-01"]);
+    const recap = computeWeeklyRecap([h], "2026-07-03");
+    expect(recap.bestStreakHabit).toBeNull();
+    expect(recap.completed).toBe(0);
   });
 });
 

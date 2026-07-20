@@ -19,8 +19,25 @@ async function syncSubscription(subscription: Stripe.Subscription) {
       plan: isActive ? "PRO" : "FREE",
       planStatus: subscription.status,
       trialEndsAt: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
+      // Le crédit de parrainage (s'il y en avait) vient d'être consommé par ce checkout.
+      referralCreditMonths: 0,
     },
   });
+
+  // Programme de parrainage (Sprint 5) : au premier passage en PRO d'un filleul,
+  // son parrain reçoit 1 mois gratuit (consommé à son prochain checkout, voir billing.ts).
+  if (isActive && user.referredById && !user.referralCredited) {
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: user.referredById },
+        data: { referralCreditMonths: { increment: 1 } },
+      }),
+      prisma.user.update({
+        where: { id: user.id },
+        data: { referralCredited: true },
+      }),
+    ]);
+  }
 }
 
 export async function POST(req: Request) {

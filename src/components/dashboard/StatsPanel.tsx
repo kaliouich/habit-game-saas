@@ -1,9 +1,11 @@
-import type { MonthStats } from "@/lib/stats";
+import { computeBadges, type MonthStats } from "@/lib/stats";
 import { BarChart } from "@/components/charts/BarChart";
 import { DonutChart } from "@/components/charts/DonutChart";
 
-/** V5 + V6 + V7 + V8 + V9 : colonne droite — weekly, cartes, donut, analysis, top 10. */
+/** V5 + V6 + V7 + V8 + V9 + B1/B5 (badges) : colonne droite. */
 export function StatsPanel({ stats }: { stats: MonthStats }) {
+  const badges = computeBadges(stats);
+
   return (
     <section className="statspanel">
       <div className="panel">
@@ -34,6 +36,20 @@ export function StatsPanel({ stats }: { stats: MonthStats }) {
         <h2 className="panel__title">Overall Stats</h2>
         <DonutChart pct={stats.overallPct} />
       </div>
+
+      {badges.length > 0 && (
+        <div className="panel">
+          <h2 className="panel__title">Badges</h2>
+          <ul className="badgelist">
+            {badges.map((b) => (
+              <li key={b.id} className="badgelist__item" title={b.description}>
+                <span className="badgelist__emoji">{b.emoji}</span>
+                {b.title}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="panel">
         <h2 className="panel__title">Analysis</h2>

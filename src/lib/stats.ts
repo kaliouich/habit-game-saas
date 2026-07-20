@@ -186,3 +186,118 @@ export function computeMonthStats(params: {
     moodByDate,
   };
 }
+
+export interface WeeklyRecap {
+  completed: number;
+  goal: number;
+  pct: number; // 0..1
+  daysActive: number; // jours des 7 derniers où au moins une habitude a été cochée
+  bestStreakHabit: { name: string; emoji: string | null; streak: number } | null;
+}
+
+/**
+ * Récap glissant des 7 derniers jours (peut chevaucher deux mois) — utilisé par
+ * le pipeline d'email hebdomadaire (Sprint 5), indépendant de `computeMonthStats`.
+ */
+export function computeWeeklyRecap(habits: HabitWithLogs[], today: ISODate): WeeklyRecap {
+  const last7: ISODate[] = [];
+  let cursor = today;
+  for (let i = 0; i < 7; i++) {
+    last7.push(cursor);
+    cursor = prevDay(cursor);
+  }
+
+  let completed = 0;
+  let daysActive = 0;
+  for (const day of last7) {
+    let any = false;
+    for (const h of habits) {
+      if (h.loggedDates.has(day)) {
+        completed++;
+        any = true;
+      }
+    }
+    if (any) daysActive++;
+  }
+
+  const goal = habits.length * 7;
+
+  let bestStreakHabit: WeeklyRecap["bestStreakHabit"] = null;
+  for (const h of habits) {
+    const streak = currentStreak(h.loggedDates, today);
+    if (streak > 0 && (!bestStreakHabit || streak > bestStreakHabit.streak)) {
+      bestStreakHabit = { name: h.name, emoji: h.emoji, streak };
+    }
+  }
+
+  return { completed, goal, pct: goal > 0 ? completed / goal : 0, daysActive, bestStreakHabit };
+}
+
+export interface Badge {
+  id: string;
+  emoji: string;
+  title: string;
+  description: string;
+}
+
+const STREAK_THRESHOLDS = [
+  { days: 30, emoji: "🔥", label: "30-Day Streak" },
+  { days: 7, emoji: "🔥", label: "7-Day Streak" },
+] as const;
+
+/**
+ * Badges dérivés de `MonthStats` — rien n'est stocké en base (règle projet :
+ * aucune duplication des stats), tout est recalculé à l'affichage. B1/B5 (Sprint 5).
+ */
+export function computeBadges(stats: MonthStats): Badge[] {
+  const badges: Badge[] = [];
+
+  // Perfect week(s) : toutes les semaines entièrement écoulées à 100% (un jour
+  // futur ou incomplet exclut naturellement la semaine, via perfectDays).
+  const perfectWeeks = stats.weeks.filter((w) => w.days.every((d) => stats.perfectDays.has(d.date)));
+  if (perfectWeeks.length > 0) {
+    badges.push({
+      id: "perfect_week",
+      emoji: "🏅",
+      title: perfectWeeks.length === 1 ? "Perfect Week" : `${perfectWeeks.length} Perfect Weeks`,
+      description: "Every habit, every day, for a full week.",
+    });
+  }
+
+  // Perfect days (seuil pour éviter le bruit en tout début de mois)
+  if (stats.perfectDays.size >= 3) {
+    badges.push({
+      id: "perfect_days",
+      emoji: "🌟",
+      title: `${stats.perfectDays.size} Perfect Days`,
+      description: "Days where every habit was checked off.",
+    });
+  }
+
+  // Mois parfait
+  if (stats.goalTotal > 0 && stats.completedTotal === stats.goalTotal) {
+    badges.push({
+      id: "full_month",
+      emoji: "👑",
+      title: "Perfect Month",
+      description: "Every goal hit, every habit, the whole month.",
+    });
+  }
+
+  // Streaks par habitude — un seul badge (le plus haut palier atteint) par habitude
+  for (const analysis of stats.analysis) {
+    const streak = stats.streaks.get(analysis.habitId);
+    if (!streak) continue;
+    const tier = STREAK_THRESHOLDS.find((t) => streak.current >= t.days);
+    if (tier) {
+      badges.push({
+        id: `streak_${analysis.habitId}`,
+        emoji: tier.emoji,
+        title: `${tier.label} — ${analysis.name}`,
+        description: `${streak.current} days in a row.`,
+      });
+    }
+  }
+
+  return badges;
+}

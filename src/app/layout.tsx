@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Poppins } from "next/font/google";
 import { APP_NAME } from "@/lib/config";
 import { Analytics } from "@/components/Analytics";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
 const inter = Inter({
@@ -33,6 +34,15 @@ export const metadata: Metadata = {
     title: `${APP_NAME} — rebuild your consistency`,
     description: TAGLINE,
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: APP_NAME,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#111111",
 };
 
 export default function RootLayout({
@@ -45,6 +55,7 @@ export default function RootLayout({
       <body>
         {children}
         <Analytics />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

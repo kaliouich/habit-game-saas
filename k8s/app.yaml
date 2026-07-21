@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: habit-game
-          image: habit-game:v0.2.0
+          image: habit-game:v0.4.0
           imagePullPolicy: Never # image importée localement dans k3s
           ports:
             - containerPort: 3000
@@ -29,6 +29,69 @@ spec:
                 secretKeyRef:
                   name: habit-game-secrets
                   key: DATABASE_URL
+            - name: AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: habit-game-secrets
+                  key: AUTH_SECRET
+            - name: AUTH_URL
+              valueFrom:
+                secretKeyRef:
+                  name: habit-game-secrets
+                  key: AUTH_URL
+            - name: AUTH_GOOGLE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: habit-game-secrets
+                  key: AUTH_GOOGLE_ID
+                  optional: true
+            - name: AUTH_GOOGLE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: habit-game-secrets
+                  key: AUTH_GOOGLE_SECRET
+                  optional: true
+            - name: AUTH_RESEND_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: habit-game-secrets
+                  key: AUTH_RESEND_KEY
+                  optional: true # absent tant que Resend n'est pas configuré — gating dynamique dans lib/auth.ts
+            - name: EMAIL_FROM
+              valueFrom:
+                secretKeyRef:
+                  name: habit-game-secrets
+                  key: EMAIL_FROM
+                  optional: true
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: habit-game-secrets
+                  key: STRIPE_SECRET_KEY
+                  optional: true # absent tant que Stripe n'est pas configuré — client lazy dans lib/stripe.ts
+            - name: STRIPE_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: habit-game-secrets
+                  key: STRIPE_WEBHOOK_SECRET
+                  optional: true
+            - name: STRIPE_PRICE_MONTHLY
+              valueFrom:
+                secretKeyRef:
+                  name: habit-game-secrets
+                  key: STRIPE_PRICE_MONTHLY
+                  optional: true
+            - name: STRIPE_PRICE_YEARLY
+              valueFrom:
+                secretKeyRef:
+                  name: habit-game-secrets
+                  key: STRIPE_PRICE_YEARLY
+                  optional: true
+            - name: CRON_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: habit-game-secrets
+                  key: CRON_SECRET
           readinessProbe:
             httpGet:
               path: /api/health

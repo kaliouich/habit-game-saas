@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import type { Provider } from "next-auth/providers";
-import type { PrismaClient } from "@prisma/client";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
@@ -19,13 +18,18 @@ if (process.env.AUTH_RESEND_KEY) {
   providers.push(Resend({ apiKey: process.env.AUTH_RESEND_KEY, from: process.env.EMAIL_FROM }));
 }
 
-// @auth/prisma-adapter type ses paramètres contre le client généré par défaut
-// de "@prisma/client". Ce projet utilise le générateur Prisma 7 "prisma-client"
-// avec un output custom (src/generated/prisma) : structurellement compatible
-// (mêmes délégués user/account/session/verificationToken), mais nominalement
-// différent aux yeux de TypeScript. D'où ce seul cast, isolé ici.
+// @auth/prisma-adapter type ses paramètres contre le PrismaClient généré par
+// défaut de "@prisma/client" — un export que ce package n'a pas toujours de
+// façon fiable (il réexporte depuis ".prisma/client/default", peuplé par le
+// générateur classique "prisma-client-js" ; ce projet utilise le générateur
+// Prisma 7 "prisma-client" avec un output custom, src/generated/prisma).
+// Le client réel est structurellement compatible (mêmes délégués
+// user/account/session/verificationToken) ; `any` évite de dépendre d'un
+// type externe dont la résolution s'est révélée non fiable d'un environnement
+// à l'autre (marche localement, casse sur `npm ci` propre — vu en prod).
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma as unknown as PrismaClient),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  adapter: PrismaAdapter(prisma as any),
   session: { strategy: "database" },
   pages: { signIn: "/login", verifyRequest: "/login/check-email" },
   providers,

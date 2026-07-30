@@ -1492,3 +1492,160 @@ select {
     width: 100%;
   }
 }
+
+/* ── Shareable monthly recap ─────────────────────────────────────────────── */
+.recap {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 40px 24px 64px;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+}
+
+.recap__brand {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 24px;
+}
+
+.recap__header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.recap__title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.recap__pct {
+  font-size: 72px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent);
+  margin: 0 0 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.recap__sub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.recap__habits {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.recaphabit {
+  display: grid;
+  grid-template-columns: 28px 1fr 120px 40px;
+  align-items: center;
+  gap: 8px;
+}
+
+.recaphabit__emoji {
+  font-size: 18px;
+  text-align: center;
+}
+
+.recaphabit__name {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recaphabit__bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.recaphabit__fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.recaphabit__pct {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.recap__mood {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 40px;
+}
+
+.recap__footer {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+}
+
+.recap__link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* ── Billing: export & share section ────────────────────────────────────── */
+.billingexport {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-top: 24px;
+}
+
+.billingexport__title {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 16px;
+  color: var(--text-primary);
+}
+
+.billingexport__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.billingexport__label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.billingexport__copy {
+  font-size: 11px;
+  font-family: monospace;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: var(--text-secondary);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

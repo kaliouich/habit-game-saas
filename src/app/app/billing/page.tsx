@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/user";
 import { createCheckoutSession, createPortalSession } from "@/lib/actions/billing";
 import { CopyReferralLink } from "@/components/CopyReferralLink";
+import { currentMonth } from "@/lib/dates";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +11,8 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 export default async function BillingPage() {
   const user = await getCurrentUser();
   const trialDays = 14 + user.referralCreditMonths * 30;
+  const month = currentMonth(user.timezone);
+  const recapUrl = `${APP_URL}/recap/${user.id}/${month}`;
 
   return (
     <div className="billingpage">
@@ -51,6 +54,23 @@ export default async function BillingPage() {
           </form>
         )}
       </div>
+
+      {user.plan === "PRO" && (
+        <div className="billingexport">
+          <h2 className="billingexport__title">Export & Share</h2>
+          <div className="billingexport__row">
+            <span className="billingexport__label">Download all habit data as CSV</span>
+            <a href="/api/export" className="btn btn--secondary" download>
+              Export CSV
+            </a>
+          </div>
+          <div className="billingexport__row">
+            <span className="billingexport__label">Share this month&apos;s recap</span>
+            <CopyReferralLink link={recapUrl} />
+          </div>
+          <p className="billingexport__copy">{recapUrl}</p>
+        </div>
+      )}
 
       {user.referralCode && (
         <div className="billingcard referral">

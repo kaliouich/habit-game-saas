@@ -51,7 +51,7 @@ export default async function RecapPage({ params }: Props) {
     id: h.id,
     name: h.name,
     emoji: h.emoji,
-    type: h.type as "boolean" | "counter",
+    type: h.type as "BUILD" | "QUIT",
     goal: h.goal,
     position: h.position,
     loggedDates: new Set(h.logs.map((l) => l.date)),
@@ -61,7 +61,7 @@ export default async function RecapPage({ params }: Props) {
   const weekStartsOn: 0 | 1 = user.weekStartsOn === 0 ? 0 : 1;
   const stats = computeMonthStats({ month, habits, moods, today, weekStartsOn });
 
-  const pct = Math.round(stats.overall.pct * 100);
+  const pct = Math.round(stats.overallPct * 100);
   const label = monthLabel(month);
 
   return (
@@ -73,7 +73,7 @@ export default async function RecapPage({ params }: Props) {
         </h1>
         <p className="recap__pct">{pct}%</p>
         <p className="recap__sub">
-          {stats.overall.completed} / {stats.overall.goal} habits completed
+          {stats.completedTotal} / {stats.goalTotal} habits completed
         </p>
       </header>
 

@@ -3,7 +3,7 @@ import type { ISODate, MonthKey } from "@/lib/dates";
 import type { BoardSkinKey } from "@/lib/config";
 import { BarChart } from "@/components/charts/BarChart";
 import { Sidebar } from "./Sidebar";
-import { MonthGrid } from "./MonthGrid";
+import { WarriorBoard } from "./WarriorBoard";
 import { StatsPanel } from "./StatsPanel";
 
 export interface DashboardHabit {
@@ -69,7 +69,7 @@ export function Dashboard({ month, stats, habits, today, canAdd, limit, userEmai
             height={120}
           />
         </div>
-        <MonthGrid stats={stats} habits={habits} today={today} />
+        <WarriorBoard stats={stats} habits={habits} today={today} />
       </main>
 
       <StatsPanel stats={stats} habits={habits} plan={plan} />

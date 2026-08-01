@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/user";
 import { createCheckoutSession, createPortalSession, createDonationCheckoutSession } from "@/lib/actions/billing";
 import { CopyReferralLink } from "@/components/CopyReferralLink";
 import { DonateForm } from "@/components/DonateForm";
+import { isStripeConfigured, isCheckoutEnabled } from "@/lib/stripe";
 import { currentMonth } from "@/lib/dates";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +17,8 @@ interface BillingPageProps {
 export default async function BillingPage({ searchParams }: BillingPageProps) {
   const { donated } = await searchParams;
   const user = await getCurrentUser();
+  const stripeReady = isStripeConfigured();
+  const checkoutEnabled = isCheckoutEnabled();
   const trialDays = 14 + user.referralCreditMonths * 30;
   const month = currentMonth(user.timezone);
   const recapUrl = `${APP_URL}/recap/${user.id}/${month}`;
@@ -45,7 +48,12 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
           </p>
         )}
 
-        {user.plan === "FREE" ? (
+        {!checkoutEnabled ? (
+          <p className="billingcard__soon">
+            💳 Payments aren&apos;t switched on yet — upgrading will be available shortly.
+            Everything on the Free plan keeps working in the meantime.
+          </p>
+        ) : user.plan === "FREE" ? (
           <form action={createCheckoutSession}>
             <button type="submit" className="btn btn--primary">
               Upgrade to Pro — {trialDays}-day trial
@@ -86,7 +94,13 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
           habit, anything you give helps us keep it going.
         </p>
         {donated === "1" && <p className="donate__thanks">🎉 Thank you for your support!</p>}
-        <DonateForm action={createDonationCheckoutSession} />
+        {stripeReady ? (
+          <DonateForm action={createDonationCheckoutSession} />
+        ) : (
+          <p className="billingcard__soon">
+            Donations open as soon as payments are switched on. Thank you for wanting to help.
+          </p>
+        )}
       </div>
 
       {user.referralCode && (

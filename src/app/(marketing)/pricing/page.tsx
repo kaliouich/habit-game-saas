@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { APP_NAME, PLAN_LIMITS } from "@/lib/config";
 import { createCheckoutSession } from "@/lib/actions/billing";
+import { isCheckoutEnabled } from "@/lib/stripe";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -51,7 +52,14 @@ export default async function PricingPage() {
             <li>Weekly email recap</li>
             <li>Shareable monthly recap</li>
           </ul>
-          {session?.user ? (
+          {!isCheckoutEnabled() ? (
+            <>
+              <Link href="/login" className="btn btn--primary">
+                Start free — 5 habits
+              </Link>
+              <p className="pricingcard__trial">Pro subscriptions open shortly.</p>
+            </>
+          ) : session?.user ? (
             <form action={createCheckoutSession}>
               <button type="submit" className="btn btn--primary">
                 Start free trial

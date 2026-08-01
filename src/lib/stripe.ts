@@ -34,3 +34,18 @@ export const stripe = new Proxy({} as Stripe, {
 export const STRIPE_PRICES = {
   pro: process.env.STRIPE_PRICE_PRO ?? "",
 } as const;
+
+/**
+ * Stripe est-il réellement utilisable ? Tant que les clés ne sont pas dans le
+ * Secret k8s, un clic sur "Upgrade"/"Donate" partait en erreur serveur : on
+ * préfère désactiver les CTA et le dire, plutôt que promettre un paiement
+ * qui échoue. `checkoutEnabled` exige aussi le price (un don peut s'en passer,
+ * il construit son prix à la volée).
+ */
+export function isStripeConfigured(): boolean {
+  return Boolean(process.env.STRIPE_SECRET_KEY);
+}
+
+export function isCheckoutEnabled(): boolean {
+  return isStripeConfigured() && Boolean(process.env.STRIPE_PRICE_PRO);
+}

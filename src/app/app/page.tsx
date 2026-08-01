@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/user";
 import { getDashboardData } from "@/lib/data";
 import { currentMonth, isValidMonthKey } from "@/lib/dates";
 import { canAddHabit, maxHabits, canViewMonth } from "@/lib/quotas";
+import type { BoardSkinKey } from "@/lib/config";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import { OnboardingBanner } from "@/components/dashboard/OnboardingBanner";
 
@@ -22,7 +23,7 @@ export default async function DashboardPage({
   }
   const weekStartsOn = user.weekStartsOn === 0 ? 0 : 1;
 
-  const { stats, habits, today, activeCount } = await getDashboardData(
+  const { stats, habits, today, activeCount, shieldedDates } = await getDashboardData(
     user.id,
     month,
     user.timezone,
@@ -41,6 +42,8 @@ export default async function DashboardPage({
         limit={maxHabits(user.plan)}
         userEmail={user.email}
         plan={user.plan}
+        boardSkin={user.boardSkin as BoardSkinKey}
+        shieldsUsed={shieldedDates.length}
       />
     </>
   );

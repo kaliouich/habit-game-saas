@@ -3,14 +3,12 @@ import { APP_NAME } from "@/lib/config";
 import { HeroPreview } from "@/components/marketing/HeroPreview";
 
 const FEATURES: { emoji: string; title: string; text: string }[] = [
-  { emoji: "📊", title: "Monthly grid", text: "Every habit, every day, one checkbox click away. Just like a spreadsheet — but alive." },
-  { emoji: "📈", title: "Daily & weekly progress", text: "Bar charts that update the instant you check a box. See momentum build in real time." },
-  { emoji: "🍩", title: "Overall stats", text: "One glance at your donut chart tells you exactly where the month stands." },
-  { emoji: "🏆", title: "Top 10 habits", text: "Automatically ranked. Know which habits stick and which need work." },
-  { emoji: "🔥", title: "Streaks", text: "Consecutive-day streaks per habit, with your all-time record — the thing spreadsheets never had." },
+  { emoji: "▦", title: "The month board", text: "One row per habit, one column per day. The whole month on one screen — no other tracker shows you this." },
+  { emoji: "🔥", title: "Streaks & records", text: "Consecutive-day streaks per habit, plus your all-time record. The thing a paper checklist never totaled for you." },
+  { emoji: "🏅", title: "Badges & levels", text: "XP for every tick, levels as you go, badges for perfect weeks and long streaks. Free gets 3 starter badges — Pro unlocks the rest." },
+  { emoji: "🎨", title: "Board skins", text: "8 cosmetic color themes for your board. 2 free, 6 with Pro — zero effect on your data, just your taste." },
   { emoji: "🌤️", title: "Mood tracking", text: "Log how you felt each day and watch it line up against your consistency." },
-  { emoji: "🌓", title: "Dark mode", text: "Because checking boxes at 5am shouldn't hurt your eyes." },
-  { emoji: "📱", title: "Actually usable on mobile", text: "A real 'Today' view for daily use, not just a shrunk-down spreadsheet." },
+  { emoji: "🏖️", title: "Pause mode", text: "Going on vacation? Pause a habit and the days in between won't break your streak (Pro)." },
 ];
 
 export default function LandingPage() {
@@ -18,11 +16,14 @@ export default function LandingPage() {
     <>
       <section className="hero">
         <div className="hero__text">
-          <p className="hero__eyebrow">A dedicated page to rebuild your consistency 🎯</p>
-          <h1 className="hero__title">{APP_NAME}</h1>
+          <p className="hero__eyebrow">✦ Turn showing up into a game you&apos;re winning</p>
+          <h1 className="hero__title">
+            Your habits, tracked like a <em>game you actually want to play</em>.
+          </h1>
           <p className="hero__subtitle">
-            The habit tracker that feels like a premium spreadsheet — gamified, on a single page.
-            Check a box, watch every chart update instantly.
+            {APP_NAME} is a habit tracker built around one board: every habit, every day of the
+            month, filling in as you go. Streaks, XP, levels and badges — no guilt notifications,
+            just the record.
           </p>
           <div className="hero__ctas">
             <Link href="/login" className="btn btn--primary btn--hero">
@@ -32,12 +33,17 @@ export default function LandingPage() {
               See pricing
             </Link>
           </div>
+          <p className="hero__note">
+            <span>3 habits free, forever</span>
+            <span>14-day Pro trial</span>
+            <span>Export your data anytime</span>
+          </p>
         </div>
         <HeroPreview />
       </section>
 
       <section id="features" className="features">
-        <h2 className="features__title">Everything the spreadsheet had. Plus everything it didn&apos;t.</h2>
+        <h2 className="features__title">Everything a spreadsheet had. Plus everything it couldn&apos;t.</h2>
         <div className="features__grid">
           {FEATURES.map((f) => (
             <div key={f.title} className="featurecard">
@@ -60,18 +66,18 @@ export default function LandingPage() {
           <div className="howitworks__step">
             <span className="howitworks__num">2</span>
             <h3>Check the box, daily</h3>
-            <p>One click. Optimistic, instant, no page reload.</p>
+            <p>One click. Optimistic, instant, no page reload. XP and streak update live.</p>
           </div>
           <div className="howitworks__step">
             <span className="howitworks__num">3</span>
-            <h3>Watch the trend</h3>
-            <p>Streaks, percentages, and a ranked list keep you honest.</p>
+            <h3>Level up</h3>
+            <p>Badges, board skins and a ranked list keep you honest and coming back.</p>
           </div>
         </div>
       </section>
 
       <section className="ctaband">
-        <h2>Rebuild your consistency today.</h2>
+        <h2>Day one is the only level that&apos;s hard.</h2>
         <Link href="/login" className="btn btn--primary btn--hero">
           Get started free
         </Link>

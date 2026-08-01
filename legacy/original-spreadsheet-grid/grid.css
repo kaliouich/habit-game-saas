@@ -1,0 +1,252 @@
+/* ─── Grille mensuelle (V3) ──────────────────────────────────────────────── */
+.gridwrap {
+  background: var(--cell);
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+
+.grid {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+
+.grid th,
+.grid td {
+  border: 1px solid var(--grid-line);
+  text-align: center;
+  padding: 0;
+}
+
+.grid__corner,
+.grid__dows th:first-child,
+.grid__nums th:first-child {
+  border: none;
+  background: var(--cell);
+}
+
+.grid__week {
+  position: relative;
+  background: var(--panel);
+  color: var(--panel-fg);
+  font-family: var(--font-display), sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 0;
+}
+
+.grid__week::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--check), var(--accent));
+}
+
+.grid__dow {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 0;
+  min-width: 26px;
+}
+
+.grid__num {
+  font-weight: 600;
+  font-size: 11px;
+  padding: 3px 0;
+}
+
+.grid__dow--today,
+.grid__num--today {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+/* Jour parfait : toutes les habitudes cochées — pulsation lente de la pastille. */
+.grid__num--perfect {
+  background: var(--accent);
+  color: #111;
+  animation: perfect-glow 3s ease-in-out infinite;
+}
+
+@keyframes perfect-glow {
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow: inset 0 0 8px 0 color-mix(in srgb, var(--check) 70%, transparent);
+  }
+}
+
+.grid__habit {
+  background: var(--panel);
+  color: var(--panel-fg);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 170px;
+  min-width: 140px;
+  padding: 0 10px;
+  position: sticky;
+  left: 0;
+  z-index: 5;
+}
+
+.grid__row:hover .grid__habit {
+  color: var(--accent);
+}
+
+.grid__cell {
+  height: 28px;
+  min-width: 26px;
+}
+
+.grid__cell--today {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.cell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--check);
+  border-radius: var(--radius-cell);
+  background: transparent;
+  vertical-align: middle;
+  transition: border-color 120ms, background 120ms, transform 100ms;
+}
+
+.cell:hover {
+  border-color: var(--accent);
+  transform: scale(1.12);
+}
+
+.cell:active {
+  transform: scale(0.88);
+}
+
+/* Pop à la coche : léger dépassement puis retour, façon "hit" de jeu. */
+.cell--checked {
+  animation: cell-pop 260ms cubic-bezier(0.2, 0.9, 0.3, 1.6);
+}
+
+@keyframes cell-pop {
+  0% {
+    transform: scale(0.8);
+  }
+  55% {
+    transform: scale(1.28);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* XP flottant — hors flux, ne doit jamais décaler la grille. */
+.cell__xp {
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--accent);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 20;
+  animation: xp-float 800ms ease-out forwards;
+}
+
+@keyframes xp-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 4px) scale(0.7);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -6px) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -26px) scale(1);
+  }
+}
+
+.cell__check {
+  width: 13px;
+  height: 13px;
+  stroke: var(--panel-fg);
+  stroke-dasharray: 16;
+  stroke-dashoffset: 16;
+}
+
+.cell--checked {
+  background: var(--check);
+  border-color: var(--check);
+}
+
+.cell--checked .cell__check {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 140ms ease-out;
+}
+
+.cell--future {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--grid-line);
+  border-radius: var(--radius-cell);
+  opacity: 0.5;
+}
+
+/* ─── Ligne wellness (V10) ───────────────────────────────────────────────── */
+.grid__wellness {
+  background: var(--panel);
+  color: var(--panel-fg);
+  font-family: var(--font-display), sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 0;
+}
+
+.grid__habit--mood {
+  font-style: italic;
+}
+
+.grid__cell--mood {
+  height: 26px;
+}
+
+.mood {
+  width: 24px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 12px;
+  cursor: pointer;
+  appearance: none;
+  padding: 0;
+  color: var(--fg);
+}
+
+.mood--future {
+  display: inline-block;
+  width: 24px;
+  height: 22px;
+  opacity: 0.3;
+}
+
+/* ─── Charts ─────────────────────────────────────────────────────────────── */

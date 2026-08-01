@@ -1,5 +1,6 @@
 import type { MonthStats } from "@/lib/stats";
 import type { ISODate, MonthKey } from "@/lib/dates";
+import type { BoardSkinKey } from "@/lib/config";
 import { BarChart } from "@/components/charts/BarChart";
 import { Sidebar } from "./Sidebar";
 import { MonthGrid } from "./MonthGrid";
@@ -11,6 +12,10 @@ export interface DashboardHabit {
   emoji: string | null;
   goal: number | null;
   loggedDates: Set<ISODate>;
+  /** Pauses + boucliers déjà consommés (voir lib/data.ts) — optionnel comme
+   *  dans HabitWithLogs, dont ce type est alimenté. */
+  pausedDates?: Set<ISODate>;
+  tags?: string[];
 }
 
 interface DashboardProps {
@@ -22,14 +27,24 @@ interface DashboardProps {
   limit: number;
   userEmail: string;
   plan: "FREE" | "PRO";
+  boardSkin: BoardSkinKey;
+  shieldsUsed: number;
 }
 
 /** Assemblage 3 zones : sidebar noire / centre (daily + grille) / stats à droite. */
-export function Dashboard({ month, stats, habits, today, canAdd, limit, userEmail, plan }: DashboardProps) {
+export function Dashboard({ month, stats, habits, today, canAdd, limit, userEmail, plan, boardSkin, shieldsUsed }: DashboardProps) {
   const todayIndex = stats.days.findIndex((d) => d.date === today);
 
+  // Jour "manqué" = jour passé du mois sans une seule coche. Les jours déjà
+  // couverts par un bouclier sont exclus : le calcul les traite comme des
+  // pauses, donc ils ne comptent plus comme des trous.
+  const missedDates = stats.days
+    .filter((d) => d.date < today)
+    .filter((d) => !habits.some((h) => h.loggedDates.has(d.date) || h.pausedDates?.has(d.date)))
+    .map((d) => d.date);
+
   return (
-    <div className="dashboard">
+    <div className="dashboard" data-skin={boardSkin}>
       <Sidebar
         month={month}
         habits={habits}
@@ -38,6 +53,10 @@ export function Dashboard({ month, stats, habits, today, canAdd, limit, userEmai
         limit={limit}
         userEmail={userEmail}
         plan={plan}
+        boardSkin={boardSkin}
+        today={today}
+        shieldsUsed={shieldsUsed}
+        missedDates={missedDates}
       />
 
       <main className="dashboard__main">
@@ -53,7 +72,7 @@ export function Dashboard({ month, stats, habits, today, canAdd, limit, userEmai
         <MonthGrid stats={stats} habits={habits} today={today} />
       </main>
 
-      <StatsPanel stats={stats} />
+      <StatsPanel stats={stats} habits={habits} plan={plan} />
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { createCheckoutSession } from "@/lib/actions/billing";
 
 export const metadata: Metadata = {
   title: "Pricing",
-  description: `${APP_NAME} pricing: Free forever, or Pro with a 14-day trial — unlimited habits, history and streaks.`,
+  description: `${APP_NAME} pricing: Free forever, or Pro at €0.99/month (billed €9.99/year) — unlimited habits, history, badges and CSV export.`,
 };
 
 export default async function PricingPage() {
@@ -26,6 +26,7 @@ export default async function PricingPage() {
             <li>Current month only</li>
             <li>Mood tracking</li>
             <li>Streaks</li>
+            <li>3 starter badges</li>
           </ul>
           {!session?.user && (
             <Link href="/login" className="btn btn--secondary">
@@ -37,35 +38,29 @@ export default async function PricingPage() {
         <div className="pricingcard pricingcard--highlight">
           <h2 className="pricingcard__name">Pro</h2>
           <p className="pricingcard__price">
-            $6<span>/mo</span>
+            $0.99<span>/mo</span>
           </p>
-          <p className="pricingcard__trial">14-day free trial · no card charged until then</p>
+          <p className="pricingcard__trial">billed $9.99/year · 14-day free trial · no card charged until then</p>
           <ul className="pricingcard__features">
-            <li>{PLAN_LIMITS.PRO.maxHabits} habits</li>
+            <li>Unlimited habits</li>
             <li>Unlimited history</li>
+            <li>Full badge set &amp; XP levels</li>
+            <li>All board skins</li>
+            <li>Pause / vacation mode</li>
             <li>CSV export</li>
             <li>Weekly email recap</li>
             <li>Shareable monthly recap</li>
           </ul>
           {session?.user ? (
             <form action={createCheckoutSession}>
-              <input type="hidden" name="price" value="monthly" />
               <button type="submit" className="btn btn--primary">
-                Start free trial — monthly
+                Start free trial
               </button>
             </form>
           ) : (
             <Link href="/login" className="btn btn--primary">
               Sign in to subscribe
             </Link>
-          )}
-          {session?.user && (
-            <form action={createCheckoutSession}>
-              <input type="hidden" name="price" value="yearly" />
-              <button type="submit" className="btn btn--link">
-                or pay yearly ($49/yr) →
-              </button>
-            </form>
           )}
         </div>
       </div>

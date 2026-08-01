@@ -1,17 +1,20 @@
 import Link from "next/link";
-import { APP_NAME } from "@/lib/config";
-import { addMonths, monthLabel, type MonthKey } from "@/lib/dates";
+import { APP_NAME, type BoardSkinKey } from "@/lib/config";
+import { addMonths, monthLabel, type MonthKey, type ISODate } from "@/lib/dates";
 import type { MonthStats } from "@/lib/stats";
 import { LineChart } from "@/components/charts/LineChart";
 import { AddHabitForm } from "./AddHabitForm";
 import { HabitMenu } from "./HabitMenu";
 import { SignOutButton } from "./SignOutButton";
+import { BoardSkinPicker } from "./BoardSkinPicker";
+import { ShieldPanel } from "./ShieldPanel";
 
 interface SidebarHabit {
   id: string;
   name: string;
   emoji: string | null;
   goal: number | null;
+  tags?: string[];
 }
 
 interface SidebarProps {
@@ -22,16 +25,20 @@ interface SidebarProps {
   limit: number;
   userEmail: string;
   plan: "FREE" | "PRO";
+  boardSkin: BoardSkinKey;
+  today: ISODate;
+  shieldsUsed: number;
+  missedDates: ISODate[];
 }
 
 /** V1 + V2 : colonne noire — titre, mois, My Habits, mood chart, logo. */
-export function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan }: SidebarProps) {
+export function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan, boardSkin, today, shieldsUsed, missedDates }: SidebarProps) {
   const moodValues = stats.days.map((d) => stats.moodByDate.get(d.date) ?? null);
 
   return (
     <aside className="sidebar">
       <div className="sidebar__top">
-        <h1 className="sidebar__title">HABIT TRACKER</h1>
+        <h1 className="sidebar__title">{APP_NAME.toUpperCase()}</h1>
         <nav className="monthpicker" aria-label="Month">
           <Link href={`/app?month=${addMonths(month, -1)}`} className="monthpicker__arrow" aria-label="Previous month">
             ‹
@@ -52,13 +59,30 @@ export function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan }
               <li key={h.id} className="habitlist__row">
                 <span className="habitlist__name">
                   {h.name} {h.emoji}
+                  {h.tags && h.tags.length > 0 && (
+                    <span className="habitlist__tags">
+                      {h.tags.map((t) => (
+                        <span key={t} className="habitlist__tag">
+                          {t}
+                        </span>
+                      ))}
+                    </span>
+                  )}
                 </span>
                 {streak && streak.current >= 2 && (
                   <span className="habitlist__streak" title={`${streak.current} jours de suite (record ${streak.best})`}>
                     {streak.current}🔥
                   </span>
                 )}
-                <HabitMenu habitId={h.id} name={h.name} emoji={h.emoji} goal={h.goal} />
+                <HabitMenu
+                  habitId={h.id}
+                  name={h.name}
+                  emoji={h.emoji}
+                  goal={h.goal}
+                  tags={h.tags ?? []}
+                  plan={plan}
+                  today={today}
+                />
               </li>
             );
           })}
@@ -71,6 +95,8 @@ export function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan }
           <span className="sidebar__moodlabel">● Mood</span>
           <LineChart values={moodValues} />
         </div>
+        <ShieldPanel plan={plan} shieldsUsed={shieldsUsed} missedDates={missedDates} />
+        <BoardSkinPicker current={boardSkin} plan={plan} />
         <p className="sidebar__logo">
           {APP_NAME.split(" ").map((w) => (
             <span key={w}>{w.toUpperCase()}</span>

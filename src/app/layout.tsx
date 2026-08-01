@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { Inter, Poppins, Fredoka } from "next/font/google";
 import { APP_NAME } from "@/lib/config";
 import { Analytics } from "@/components/Analytics";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
@@ -16,8 +16,16 @@ const poppins = Poppins({
   subsets: ["latin"],
 });
 
+// Marketing-only display face (scoped under .marketing in globals.css) —
+// the dashboard keeps Poppins via --font-display, the landing page doesn't.
+const fredoka = Fredoka({
+  variable: "--font-arcade",
+  weight: ["500", "600", "700"],
+  subsets: ["latin"],
+});
+
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-const TAGLINE = "The habit tracker that feels like a premium spreadsheet";
+const TAGLINE = "The habit tracker that plays like a game you actually want to win";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
@@ -51,7 +59,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+    <html lang="en" className={`${inter.variable} ${poppins.variable} ${fredoka.variable}`}>
       <body>
         {children}
         <Analytics />

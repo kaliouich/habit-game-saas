@@ -1,14 +1,20 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/user";
-import { createCheckoutSession, createPortalSession } from "@/lib/actions/billing";
+import { createCheckoutSession, createPortalSession, createDonationCheckoutSession } from "@/lib/actions/billing";
 import { CopyReferralLink } from "@/components/CopyReferralLink";
+import { DonateForm } from "@/components/DonateForm";
 import { currentMonth } from "@/lib/dates";
 
 export const dynamic = "force-dynamic";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
-export default async function BillingPage() {
+interface BillingPageProps {
+  searchParams: Promise<{ donated?: string }>;
+}
+
+export default async function BillingPage({ searchParams }: BillingPageProps) {
+  const { donated } = await searchParams;
   const user = await getCurrentUser();
   const trialDays = 14 + user.referralCreditMonths * 30;
   const month = currentMonth(user.timezone);
@@ -41,7 +47,6 @@ export default async function BillingPage() {
 
         {user.plan === "FREE" ? (
           <form action={createCheckoutSession}>
-            <input type="hidden" name="price" value="monthly" />
             <button type="submit" className="btn btn--primary">
               Upgrade to Pro — {trialDays}-day trial
             </button>
@@ -71,6 +76,18 @@ export default async function BillingPage() {
           <p className="billingexport__copy">{recapUrl}</p>
         </div>
       )}
+
+      <div className="billingcard donate">
+        <h2 className="donate__title">Support this project</h2>
+        <p className="donate__text">
+          Habit Game is built and run by a small team. Every donation goes straight back into
+          keeping the servers running and shipping the features on the roadmap — no ads, no
+          data selling, just a tool we want to keep making better. If it&apos;s helped you build a
+          habit, anything you give helps us keep it going.
+        </p>
+        {donated === "1" && <p className="donate__thanks">🎉 Thank you for your support!</p>}
+        <DonateForm action={createDonationCheckoutSession} />
+      </div>
 
       {user.referralCode && (
         <div className="billingcard referral">

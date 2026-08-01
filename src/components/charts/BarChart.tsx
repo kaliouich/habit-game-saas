@@ -11,10 +11,15 @@ export function BarChart({ values, labels, height = 110, labelEvery = 1, highlig
   const n = values.length;
   const axisW = 30;
   const labelH = 26;
+  // Room above the chart for the "100%" tick label's ascent — at chart__tick's
+  // 7px font-size, a baseline flush with y=0 clips the glyph against the
+  // viewBox top edge. Without this the top tick is invisible, not just tight.
+  const topPad = 8;
   const gap = 2;
   const barW = 12;
   const width = axisW + n * (barW + gap);
-  const chartH = height - labelH;
+  const chartH = height - labelH - topPad;
+  const chartBottom = topPad + chartH;
 
   const yTicks = [0, 0.25, 0.5, 0.75, 1];
 
@@ -26,20 +31,17 @@ export function BarChart({ values, labels, height = 110, labelEvery = 1, highlig
       aria-label="Bar chart"
       preserveAspectRatio="none"
     >
-      {yTicks.map((t) => (
-        <g key={t}>
-          <text x={axisW - 4} y={chartH - t * chartH + 3} textAnchor="end" className="chart__tick">
-            {Math.round(t * 100)}%
-          </text>
-          <line
-            x1={axisW}
-            x2={width}
-            y1={chartH - t * chartH}
-            y2={chartH - t * chartH}
-            className="chart__gridline"
-          />
-        </g>
-      ))}
+      {yTicks.map((t) => {
+        const y = chartBottom - t * chartH;
+        return (
+          <g key={t}>
+            <text x={axisW - 4} y={y + 3} textAnchor="end" className="chart__tick">
+              {Math.round(t * 100)}%
+            </text>
+            <line x1={axisW} x2={width} y1={y} y2={y} className="chart__gridline" />
+          </g>
+        );
+      })}
       {values.map((v, i) => {
         const x = axisW + i * (barW + gap);
         if (v === null) return null;
@@ -48,7 +50,7 @@ export function BarChart({ values, labels, height = 110, labelEvery = 1, highlig
           <rect
             key={i}
             x={x}
-            y={chartH - h}
+            y={chartBottom - h}
             width={barW}
             height={h}
             className={i === highlightIndex ? "chart__bar chart__bar--highlight" : "chart__bar"}

@@ -1,13 +1,51 @@
-import { computeBadges, type MonthStats } from "@/lib/stats";
+import Link from "next/link";
+import { computeBadges, computeLifetimeProgress, type MonthStats } from "@/lib/stats";
+import type { ISODate } from "@/lib/dates";
 import { BarChart } from "@/components/charts/BarChart";
 import { DonutChart } from "@/components/charts/DonutChart";
 
-/** V5 + V6 + V7 + V8 + V9 + B1/B5 (badges) : colonne droite. */
-export function StatsPanel({ stats }: { stats: MonthStats }) {
-  const badges = computeBadges(stats);
+interface StatsPanelHabit {
+  loggedDates: Set<ISODate>;
+}
+
+interface StatsPanelProps {
+  stats: MonthStats;
+  habits: StatsPanelHabit[];
+  plan: "FREE" | "PRO";
+}
+
+/** V5 + V6 + V7 + V8 + V9 + B1/B5 (badges) + XP/levels (Sprint 6) : colonne droite. */
+export function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
+  const allBadges = computeBadges(stats, habits);
+  const unlocked = allBadges.filter((b) => plan === "PRO" || b.tier === "free");
+  const lockedCount = allBadges.length - unlocked.length;
+  const progress = computeLifetimeProgress(habits);
+  const levelPct = Math.round((progress.xpIntoLevel / progress.xpForNextLevel) * 100);
 
   return (
     <section className="statspanel">
+      <div className="herocard">
+        <div className="herocard__crest" aria-hidden>
+          <span className="herocard__emblem">{progress.rank.emblem}</span>
+          <span className="herocard__lvl">{progress.level}</span>
+        </div>
+        <div className="herocard__body">
+          <p className="herocard__rank">{progress.rank.label}</p>
+          <p className="herocard__sub">
+            Level {progress.level}
+            {progress.nextRank
+              ? ` · ${progress.nextRank.label} at ${progress.nextRank.minLevel}`
+              : " · max rank"}
+          </p>
+          <div className="herocard__track">
+            <span className="herocard__fill" style={{ width: `${levelPct}%` }} />
+          </div>
+          <p className="herocard__xp">
+            {progress.xpIntoLevel} / {progress.xpForNextLevel} XP
+          </p>
+        </div>
+      </div>
+
       <div className="panel">
         <h2 className="panel__title">Weekly Progress</h2>
         <BarChart
@@ -37,17 +75,22 @@ export function StatsPanel({ stats }: { stats: MonthStats }) {
         <DonutChart pct={stats.overallPct} />
       </div>
 
-      {badges.length > 0 && (
+      {(unlocked.length > 0 || lockedCount > 0) && (
         <div className="panel">
           <h2 className="panel__title">Badges</h2>
           <ul className="badgelist">
-            {badges.map((b) => (
+            {unlocked.map((b) => (
               <li key={b.id} className="badgelist__item" title={b.description}>
                 <span className="badgelist__emoji">{b.emoji}</span>
                 {b.title}
               </li>
             ))}
           </ul>
+          {lockedCount > 0 && (
+            <Link href="/pricing" className="badgelist__upsell">
+              🔒 +{lockedCount} more badge{lockedCount > 1 ? "s" : ""} with Pro
+            </Link>
+          )}
         </div>
       )}
 

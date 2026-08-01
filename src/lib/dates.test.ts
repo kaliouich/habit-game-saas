@@ -3,6 +3,7 @@ import {
   addMonths,
   currentMonth,
   daysInMonth,
+  expandDateRange,
   isFuture,
   isValidMonthKey,
   monthDays,
@@ -96,5 +97,27 @@ describe("prevDay", () => {
     expect(prevDay("2026-07-01")).toBe("2026-06-30");
     expect(prevDay("2026-01-01")).toBe("2025-12-31");
     expect(prevDay("2024-03-01")).toBe("2024-02-29");
+  });
+});
+
+describe("expandDateRange (pause / vacation mode, Sprint 6)", () => {
+  it("liste toutes les dates inclusives", () => {
+    expect(expandDateRange("2026-07-01", "2026-07-03")).toEqual([
+      "2026-07-01",
+      "2026-07-02",
+      "2026-07-03",
+    ]);
+  });
+
+  it("une seule date quand from === to", () => {
+    expect(expandDateRange("2026-07-01", "2026-07-01")).toEqual(["2026-07-01"]);
+  });
+
+  it("traverse un bord de mois", () => {
+    expect(expandDateRange("2026-06-29", "2026-07-01")).toEqual([
+      "2026-06-29",
+      "2026-06-30",
+      "2026-07-01",
+    ]);
   });
 });

@@ -6,6 +6,11 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/user";
 import { isFuture } from "@/lib/dates";
 
+const NoteDateSchema = z.object({
+  habitId: z.string().min(1),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+});
+
 const ToggleLogSchema = z.object({
   habitId: z.string().min(1),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -38,6 +43,43 @@ export async function toggleLog(input: unknown): Promise<{ ok: boolean }> {
     }
   }
 
+  revalidatePath("/app");
+  return { ok: true };
+}
+
+/** Note par jour (Pro) — nécessite un HabitLog existant, donc pas de check préalable ici. */
+export async function getLogNote(input: unknown): Promise<{ note: string | null }> {
+  const { habitId, date } = NoteDateSchema.parse(input);
+  const user = await getCurrentUser();
+
+  const log = await prisma.habitLog.findFirst({
+    where: { habitId, date, habit: { userId: user.id } },
+    select: { note: true },
+  });
+  return { note: log?.note ?? null };
+}
+
+const SetLogNoteSchema = NoteDateSchema.extend({
+  note: z.string().trim().max(280),
+});
+
+export async function setLogNote(input: unknown): Promise<{ ok: boolean; error?: string }> {
+  const { habitId, date, note } = SetLogNoteSchema.parse(input);
+  const user = await getCurrentUser();
+
+  if (user.plan !== "PRO") {
+    return { ok: false, error: "PRO_REQUIRED" };
+  }
+
+  const log = await prisma.habitLog.findFirst({
+    where: { habitId, date, habit: { userId: user.id } },
+    select: { id: true },
+  });
+  if (!log) {
+    return { ok: false, error: "NO_LOG" }; // check the habit for this day before adding a note
+  }
+
+  await prisma.habitLog.update({ where: { id: log.id }, data: { note: note || null } });
   revalidatePath("/app");
   return { ok: true };
 }

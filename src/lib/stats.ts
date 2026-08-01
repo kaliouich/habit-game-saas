@@ -12,6 +12,7 @@ import {
   prevDay,
   monthOf,
 } from "./dates";
+import { RANKS } from "./config";
 
 export interface HabitWithLogs {
   id: string;
@@ -22,6 +23,10 @@ export interface HabitWithLogs {
   position: number;
   /** Dates cochées — peut contenir des dates hors mois (utilisées pour les streaks). */
   loggedDates: Set<ISODate>;
+  /** Jours en pause / vacation mode (Pro) — n'entrent ni ne cassent un streak. */
+  pausedDates?: Set<ISODate>;
+  /** Tags libres (Pro) — non utilisés par les formules ci-dessous, portés pour l'UI. */
+  tags?: string[];
 }
 
 export interface HabitAnalysis {
@@ -59,27 +64,35 @@ export interface MonthStats {
   moodByDate: Map<ISODate, number>; // V10
 }
 
-/** Série en cours : jours consécutifs cochés en remontant depuis `today` (ou hier si today pas coché). */
-export function currentStreak(logged: Set<ISODate>, today: ISODate): number {
+/**
+ * Série en cours : jours consécutifs cochés en remontant depuis `today` (ou hier
+ * si today pas coché). `paused` (vacation mode, Pro) : les jours dans cet
+ * ensemble sont traversés sans compter ET sans casser la série.
+ */
+export function currentStreak(
+  logged: Set<ISODate>,
+  today: ISODate,
+  paused: Set<ISODate> = new Set(),
+): number {
   let cursor = logged.has(today) ? today : prevDay(today);
   let count = 0;
-  while (logged.has(cursor)) {
-    count++;
+  while (logged.has(cursor) || paused.has(cursor)) {
+    if (logged.has(cursor)) count++;
     cursor = prevDay(cursor);
   }
   return count;
 }
 
-/** Record absolu de jours consécutifs. */
-export function bestStreak(logged: Set<ISODate>): number {
+/** Record absolu de jours consécutifs (mêmes règles de pause que currentStreak). */
+export function bestStreak(logged: Set<ISODate>, paused: Set<ISODate> = new Set()): number {
   let best = 0;
   for (const date of logged) {
-    // départ de série uniquement
-    if (logged.has(prevDay(date))) continue;
+    // départ de série uniquement : la veille n'est ni cochée ni en pause
+    if (logged.has(prevDay(date)) || paused.has(prevDay(date))) continue;
     let len = 0;
     let cursor = date;
-    while (logged.has(cursor)) {
-      len++;
+    while (logged.has(cursor) || paused.has(cursor)) {
+      if (logged.has(cursor)) len++;
       const y = Number(cursor.slice(0, 4));
       const m = Number(cursor.slice(5, 7));
       const d = Number(cursor.slice(8, 10));
@@ -149,13 +162,13 @@ export function computeMonthStats(params: {
   // V9 — Top 10
   const top10 = [...analysis].sort((a, b) => b.pct - a.pct || a.name.localeCompare(b.name)).slice(0, 10);
 
-  // B1 — Streaks (utilisent les logs hors mois si fournis)
+  // B1 — Streaks (utilisent les logs hors mois si fournis, pauses = Sprint 6)
   const streaks = new Map<string, HabitStreak>();
   for (const h of habits) {
     streaks.set(h.id, {
       habitId: h.id,
-      current: currentStreak(h.loggedDates, today),
-      best: bestStreak(h.loggedDates),
+      current: currentStreak(h.loggedDates, today, h.pausedDates),
+      best: bestStreak(h.loggedDates, h.pausedDates),
     });
   }
 
@@ -224,7 +237,7 @@ export function computeWeeklyRecap(habits: HabitWithLogs[], today: ISODate): Wee
 
   let bestStreakHabit: WeeklyRecap["bestStreakHabit"] = null;
   for (const h of habits) {
-    const streak = currentStreak(h.loggedDates, today);
+    const streak = currentStreak(h.loggedDates, today, h.pausedDates);
     if (streak > 0 && (!bestStreakHabit || streak > bestStreakHabit.streak)) {
       bestStreakHabit = { name: h.name, emoji: h.emoji, streak };
     }
@@ -238,18 +251,22 @@ export interface Badge {
   emoji: string;
   title: string;
   description: string;
+  /** FREE voit les badges "free", PRO voit tout (Sprint 6 — monétisation). */
+  tier: "free" | "pro";
 }
 
 const STREAK_THRESHOLDS = [
-  { days: 30, emoji: "🔥", label: "30-Day Streak" },
-  { days: 7, emoji: "🔥", label: "7-Day Streak" },
-] as const;
+  { days: 100, emoji: "💎", label: "100-Day Streak", tier: "pro" as const },
+  { days: 30, emoji: "🔥", label: "30-Day Streak", tier: "pro" as const },
+  { days: 7, emoji: "🔥", label: "7-Day Streak", tier: "free" as const },
+];
 
 /**
- * Badges dérivés de `MonthStats` — rien n'est stocké en base (règle projet :
- * aucune duplication des stats), tout est recalculé à l'affichage. B1/B5 (Sprint 5).
+ * Badges dérivés de `MonthStats` + de l'historique complet des habitudes —
+ * rien n'est stocké en base (règle projet : aucune duplication des stats),
+ * tout est recalculé à l'affichage. B1/B5 (Sprint 5) + badges lifetime (Sprint 6).
  */
-export function computeBadges(stats: MonthStats): Badge[] {
+export function computeBadges(stats: MonthStats, habits: { loggedDates: Set<ISODate> }[]): Badge[] {
   const badges: Badge[] = [];
 
   // Perfect week(s) : toutes les semaines entièrement écoulées à 100% (un jour
@@ -261,6 +278,7 @@ export function computeBadges(stats: MonthStats): Badge[] {
       emoji: "🏅",
       title: perfectWeeks.length === 1 ? "Perfect Week" : `${perfectWeeks.length} Perfect Weeks`,
       description: "Every habit, every day, for a full week.",
+      tier: "pro",
     });
   }
 
@@ -271,6 +289,7 @@ export function computeBadges(stats: MonthStats): Badge[] {
       emoji: "🌟",
       title: `${stats.perfectDays.size} Perfect Days`,
       description: "Days where every habit was checked off.",
+      tier: "free",
     });
   }
 
@@ -281,6 +300,7 @@ export function computeBadges(stats: MonthStats): Badge[] {
       emoji: "👑",
       title: "Perfect Month",
       description: "Every goal hit, every habit, the whole month.",
+      tier: "pro",
     });
   }
 
@@ -295,9 +315,86 @@ export function computeBadges(stats: MonthStats): Badge[] {
         emoji: tier.emoji,
         title: `${tier.label} — ${analysis.name}`,
         description: `${streak.current} days in a row.`,
+        tier: tier.tier,
       });
     }
   }
 
+  // Lifetime — utilisent `habits[].loggedDates` (historique complet, pas juste le mois affiché).
+  const totalTicks = habits.reduce((sum, h) => sum + h.loggedDates.size, 0);
+  if (totalTicks >= 100) {
+    badges.push({
+      id: "century",
+      emoji: "💯",
+      title: "Century",
+      description: `${totalTicks} completions, lifetime.`,
+      tier: "pro",
+    });
+  }
+
+  const everBest = habits.reduce((best, h) => Math.max(best, bestStreak(h.loggedDates)), 0);
+  if (everBest >= 60) {
+    badges.push({
+      id: "dedication",
+      emoji: "🏔",
+      title: "Dedication",
+      description: `${everBest}-day streak, your best ever.`,
+      tier: "pro",
+    });
+  }
+
   return badges;
+}
+
+export interface Rank {
+  key: string;
+  label: string;
+  emblem: string;
+  minLevel: number;
+}
+
+export interface LifetimeProgress {
+  xp: number;
+  level: number;
+  xpIntoLevel: number;
+  xpForNextLevel: number;
+  rank: Rank;
+  /** Prochain rang à atteindre — null quand le rang max est déjà tenu. */
+  nextRank: Rank | null;
+}
+
+const XP_PER_TICK = 10;
+const XP_PER_LEVEL = 500;
+
+/** Rang le plus élevé dont `minLevel` est atteint. */
+export function rankForLevel(level: number): Rank {
+  let current: Rank = RANKS[0];
+  for (const r of RANKS) {
+    if (level >= r.minLevel) current = r;
+  }
+  return current;
+}
+
+function nextRankForLevel(level: number): Rank | null {
+  return RANKS.find((r) => r.minLevel > level) ?? null;
+}
+
+/**
+ * XP et niveau dérivés du nombre total de logs, toutes habitudes et tous mois
+ * confondus — pas de compteur persisté (mêmes raisons que les badges : un
+ * compteur incrémental pourrait diverger si un log est supprimé/une habitude
+ * archivée, alors que `loggedDates.size` ne peut jamais être faux).
+ */
+export function computeLifetimeProgress(habits: { loggedDates: Set<ISODate> }[]): LifetimeProgress {
+  const totalTicks = habits.reduce((sum, h) => sum + h.loggedDates.size, 0);
+  const xp = totalTicks * XP_PER_TICK;
+  const level = Math.floor(xp / XP_PER_LEVEL) + 1;
+  return {
+    xp,
+    level,
+    xpIntoLevel: xp % XP_PER_LEVEL,
+    xpForNextLevel: XP_PER_LEVEL,
+    rank: rankForLevel(level),
+    nextRank: nextRankForLevel(level),
+  };
 }

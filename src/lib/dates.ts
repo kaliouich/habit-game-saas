@@ -119,3 +119,21 @@ export function prevDay(date: ISODate): ISODate {
   const t = new Date(Date.UTC(y, m - 1, d - 1));
   return `${t.getUTCFullYear()}-${pad2(t.getUTCMonth() + 1)}-${pad2(t.getUTCDate())}`;
 }
+
+/** Toutes les dates entre `from` et `to` inclus (pause / vacation mode, Sprint 6). */
+export function expandDateRange(from: ISODate, to: ISODate): ISODate[] {
+  const dates: ISODate[] = [];
+  let cursor = from;
+  let guard = 0;
+  while (cursor <= to && guard < 3660) {
+    // borne haute : 10 ans, garde-fou contre une plage mal formée
+    dates.push(cursor);
+    const y = Number(cursor.slice(0, 4));
+    const m = Number(cursor.slice(5, 7));
+    const d = Number(cursor.slice(8, 10));
+    const t = new Date(Date.UTC(y, m - 1, d + 1));
+    cursor = `${t.getUTCFullYear()}-${pad2(t.getUTCMonth() + 1)}-${pad2(t.getUTCDate())}`;
+    guard++;
+  }
+  return dates;
+}

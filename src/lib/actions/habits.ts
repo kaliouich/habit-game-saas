@@ -46,14 +46,17 @@ export async function createHabit(input: unknown): Promise<{ ok: boolean; error?
   return { ok: true };
 }
 
+const TagSchema = z.string().trim().min(1).max(20);
+
 const UpdateHabitSchema = z.object({
   habitId: z.string().min(1),
   name: NameSchema.optional(),
   emoji: EmojiSchema,
   goal: z.number().int().min(1).max(31).nullable().optional(),
+  tags: z.array(TagSchema).max(5).optional(),
 });
 
-export async function updateHabit(input: unknown): Promise<{ ok: boolean }> {
+export async function updateHabit(input: unknown): Promise<{ ok: boolean; error?: string }> {
   const { habitId, ...data } = UpdateHabitSchema.parse(input);
   const user = await getCurrentUser();
 
@@ -63,12 +66,18 @@ export async function updateHabit(input: unknown): Promise<{ ok: boolean }> {
   });
   if (!habit) throw new Error("NOT_FOUND");
 
+  // Tags = organisation, réservée à Pro (voir PRO-PLAN.md).
+  if (data.tags !== undefined && user.plan !== "PRO") {
+    return { ok: false, error: "PRO_REQUIRED" };
+  }
+
   await prisma.habit.update({
     where: { id: habitId },
     data: {
       ...(data.name !== undefined && { name: data.name }),
       ...(data.emoji !== undefined && { emoji: data.emoji || null }),
       ...(data.goal !== undefined && { goal: data.goal }),
+      ...(data.tags !== undefined && { tags: data.tags }),
     },
   });
 

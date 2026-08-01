@@ -29,6 +29,7 @@ model User {
   theme            String    @default("light")
   weekStartsOn     Int       @default(1)
   timezone         String    @default("Africa/Tunis")
+  boardSkin        String    @default("classic") // cosmétique — voir BOARD_SKINS (config.ts), tiers pro appliqués côté serveur
   // Parrainage (B-referral) — code généré paresseusement dans lib/user.ts
   // (l'adapter Auth.js crée les users sans ce champ, donc pas de défaut requis en base)
   referralCode         String?  @unique
@@ -39,6 +40,7 @@ model User {
   referralCredited     Boolean  @default(false) // ce user (en tant que filleul) a-t-il déjà déclenché le crédit de son parrain ?
   habits           Habit[]
   moods            MoodLog[]
+  shields          StreakShield[]
   accounts         Account[]
   sessions         Session[]
   createdAt        DateTime  @default(now())
@@ -53,18 +55,20 @@ enum HabitType {
 }
 
 model Habit {
-  id         String     @id @default(cuid())
+  id         String       @id @default(cuid())
   userId     String
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   name       String
   emoji      String?
-  type       HabitType  @default(BUILD)
+  type       HabitType    @default(BUILD)
   goal       Int?
-  position   Int        @default(0)
+  position   Int          @default(0)
+  tags       String[]     @default([]) // libre, pro-only côté UI (voir actions/habits.ts)
   archivedAt DateTime?
   logs       HabitLog[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  pauses     HabitPause[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   @@index([userId, archivedAt])
 }
@@ -75,10 +79,38 @@ model HabitLog {
   habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
   date      String // "YYYY-MM-DD" dans le fuseau du user
   completed Boolean  @default(true)
+  note      String? // pro-only côté UI, max 280 caractères (zod)
   createdAt DateTime @default(now())
 
   @@unique([habitId, date])
   @@index([habitId, date])
+}
+
+/// Pause / vacation mode (Pro) : les jours dans [from, to] n'entrent ni ne
+/// cassent un streak (voir currentStreak/bestStreak dans lib/stats.ts).
+model HabitPause {
+  id      String @id @default(cuid())
+  habitId String
+  habit   Habit  @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  from    String // "YYYY-MM-DD"
+  to      String // "YYYY-MM-DD", inclusif
+
+  @@index([habitId])
+}
+
+/// Streak Shield (Sprint 7) : un jour manqué absorbé pour TOUTES les habitudes
+/// — même traitement qu'une pause côté calcul de série (voir lib/stats.ts),
+/// donc aucun changement d'algorithme. Quota mensuel selon le plan
+/// (SHIELDS_PER_MONTH, config.ts), consommé a posteriori sur un jour passé.
+model StreakShield {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      String // "YYYY-MM-DD" — le jour couvert
+  createdAt DateTime @default(now())
+
+  @@unique([userId, date])
+  @@index([userId])
 }
 
 model MoodLog {

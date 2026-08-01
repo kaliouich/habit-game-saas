@@ -40,8 +40,17 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# artefacts de build égarés (sourcemaps SSR sortis du .next/)
+/ssr_chunks
+
+# état local des outils IA (machine-spécifique, pas du code produit)
+/.claude
+/.claude-flow
+/.agents
+
 # Prisma generated client
 /src/generated/
 
 # env example must stay tracked
 !.env.example
+.gstack/

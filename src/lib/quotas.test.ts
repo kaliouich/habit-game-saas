@@ -39,23 +39,24 @@ describe("canViewMonth", () => {
 });
 
 describe("canAddHabit", () => {
-  it("FREE user blocked at 3 habits", () => {
-    expect(canAddHabit("FREE", 3)).toBe(false);
+  it("FREE user blocked at 5 habits", () => {
+    expect(canAddHabit("FREE", 5)).toBe(false);
   });
 
   it("FREE user allowed below limit", () => {
-    expect(canAddHabit("FREE", 2)).toBe(true);
+    expect(canAddHabit("FREE", 4)).toBe(true);
   });
 
-  it("PRO user allowed up to 24 habits", () => {
+  it("PRO user has no habit limit", () => {
     expect(canAddHabit("PRO", 23)).toBe(true);
-    expect(canAddHabit("PRO", 24)).toBe(false);
+    expect(canAddHabit("PRO", 24)).toBe(true);
+    expect(canAddHabit("PRO", 1000)).toBe(true);
   });
 });
 
 describe("maxHabits", () => {
   it("returns correct limits per plan", () => {
-    expect(maxHabits("FREE")).toBe(3);
-    expect(maxHabits("PRO")).toBe(24);
+    expect(maxHabits("FREE")).toBe(5);
+    expect(maxHabits("PRO")).toBe(Infinity);
   });
 });

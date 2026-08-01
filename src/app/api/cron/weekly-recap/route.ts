@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { computeWeeklyRecap, type HabitWithLogs } from "@/lib/stats";
-import { prevDay, todayInTz } from "@/lib/dates";
+import { expandDateRange, prevDay, todayInTz } from "@/lib/dates";
 import { sendEmail } from "@/lib/email";
 import { renderWeeklyRecapEmail } from "@/lib/weeklyRecapEmail";
 
@@ -29,7 +29,10 @@ export async function POST(req: Request) {
     include: {
       habits: {
         where: { archivedAt: null },
-        include: { logs: { where: { date: { gte: cutoff } }, select: { date: true } } },
+        include: {
+          logs: { where: { date: { gte: cutoff } }, select: { date: true } },
+          pauses: { select: { from: true, to: true } },
+        },
       },
     },
   });
@@ -52,6 +55,7 @@ export async function POST(req: Request) {
       goal: h.goal,
       position: h.position,
       loggedDates: new Set(h.logs.map((l) => l.date)),
+      pausedDates: new Set(h.pauses.flatMap((p) => expandDateRange(p.from, p.to))),
     }));
 
     const recap = computeWeeklyRecap(habits, today);

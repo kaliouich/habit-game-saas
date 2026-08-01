@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: habit-game
-          image: habit-game:v0.5.0
+          image: habit-game:v0.8.0
           imagePullPolicy: Never # image importée localement dans k3s
           ports:
             - containerPort: 3000
@@ -75,18 +75,12 @@ spec:
                   name: habit-game-secrets
                   key: STRIPE_WEBHOOK_SECRET
                   optional: true
-            - name: STRIPE_PRICE_MONTHLY
+            - name: STRIPE_PRICE_PRO
               valueFrom:
                 secretKeyRef:
                   name: habit-game-secrets
-                  key: STRIPE_PRICE_MONTHLY
-                  optional: true
-            - name: STRIPE_PRICE_YEARLY
-              valueFrom:
-                secretKeyRef:
-                  name: habit-game-secrets
-                  key: STRIPE_PRICE_YEARLY
-                  optional: true
+                  key: STRIPE_PRICE_PRO
+                  optional: true # €9.99/an — remplace STRIPE_PRICE_MONTHLY/YEARLY (6€/49€), voir PRO-PLAN.md
             - name: CRON_SECRET
               valueFrom:
                 secretKeyRef:

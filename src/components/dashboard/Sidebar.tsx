@@ -103,6 +103,9 @@ export function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan, 
           ))}
         </p>
         <div className="sidebar__account">
+          <Link href={`/app/report?month=${month}`} className="sidebar__report">
+            ⬇ Download progress report
+          </Link>
           <span className="sidebar__email" title={userEmail}>
             {userEmail}
           </span>

@@ -27,36 +27,92 @@
   --muted: #8f8f8c;
 }
 
-/* ─── Board skins (Sprint 6) — cosmétique pur, scoped à .dashboard ────────── */
-/* "classic" = tokens par défaut ci-dessus, pas de bloc nécessaire. */
-.dashboard[data-skin="mono"] {
-  --check: #3a3a3a;
-  --accent: #6b6b68;
+/* ─── Thèmes d'encre (Sprint 7) — scoped à .dashboard ─────────────────────────
+   Encre de base #1f2530, échantillonnée sur la vidéo de spec (noir biaisé bleu).
+   Les accents s'appliquent toujours ; la palette complète est réservée au mode
+   clair (`html:not([data-theme="dark"])`) pour ne pas écraser le thème sombre,
+   dont les blocs sont moins spécifiques que `.dashboard[data-skin]`.
+   Voir BOARD_SKINS dans src/lib/config.ts — les deux doivent rester synchro. */
+
+/* ── Accents (valables en clair comme en sombre) ── */
+.dashboard[data-skin="classic"] {
+  --check: #c8901f;
+  --accent: #d9a227;
 }
-.dashboard[data-skin="arcade"] {
-  /* Matches the marketing page's corrected vivid gold/coral — do not mute. */
-  --check: #ffc61a;
-  --accent: #f0478a;
+.dashboard[data-skin="forest"] {
+  --check: #2e7d5b;
+  --accent: #2e7d5b;
 }
-.dashboard[data-skin="sunset"] {
-  --check: #e0603f;
-  --accent: #2fa58a;
+.dashboard[data-skin="coral"] {
+  --check: #d9503f;
+  --accent: #e0674f;
 }
-.dashboard[data-skin="atlas"] {
-  --check: #1f4d45;
-  --accent: #9a7629;
+.dashboard[data-skin="teal"] {
+  --check: #1f8a8a;
+  --accent: #24a0a0;
 }
-.dashboard[data-skin="ledger"] {
-  --check: #b03a24;
-  --accent: #a8760f;
+.dashboard[data-skin="royal"] {
+  --check: #1b3a6b;
+  --accent: #d9a227;
 }
-.dashboard[data-skin="riso"] {
-  --check: #ff3d9a;
-  --accent: #1b45d8;
+.dashboard[data-skin="oxblood"] {
+  --check: #6b1f28;
+  --accent: #c8901f;
 }
-.dashboard[data-skin="signal"] {
-  --check: #d2801f;
-  --accent: #8a4a16;
+.dashboard[data-skin="pine"] {
+  --check: #1e4032;
+  --accent: #b08d3f;
+}
+.dashboard[data-skin="violet"] {
+  --check: #3e2a6b;
+  --accent: #e0a82e;
+}
+
+/* ── Encre vidéo : même papier/encre pour les 4 premiers ── */
+html:not([data-theme="dark"]) .dashboard[data-skin="classic"],
+html:not([data-theme="dark"]) .dashboard[data-skin="forest"],
+html:not([data-theme="dark"]) .dashboard[data-skin="coral"],
+html:not([data-theme="dark"]) .dashboard[data-skin="teal"] {
+  --bg: #f2f5f8;
+  --cell: #ffffff;
+  --panel: #1f2530;
+  --grid-line: #c8d2de;
+  --fg: #141a22;
+  --muted: #66707e;
+}
+
+/* ── Encres colorées : le panneau prend la couleur du tampon ── */
+html:not([data-theme="dark"]) .dashboard[data-skin="royal"] {
+  --bg: #f1f4fa;
+  --cell: #ffffff;
+  --panel: #1b3a6b;
+  --grid-line: #c4d2e8;
+  --fg: #152742;
+  --muted: #64738c;
+}
+html:not([data-theme="dark"]) .dashboard[data-skin="oxblood"] {
+  --bg: #faf2f2;
+  --cell: #ffffff;
+  --panel: #6b1f28;
+  --grid-line: #e3cbcb;
+  --fg: #3d1218;
+  --muted: #8a6a6d;
+}
+html:not([data-theme="dark"]) .dashboard[data-skin="pine"] {
+  --bg: #f1f6f2;
+  --cell: #ffffff;
+  --panel: #1e4032;
+  --grid-line: #c9dcd0;
+  --fg: #12271e;
+  --muted: #668073;
+}
+html:not([data-theme="dark"]) .dashboard[data-skin="violet"] {
+  --bg: #f5f2fa;
+  --cell: #ffffff;
+  --panel: #3e2a6b;
+  --grid-line: #d5cbe8;
+  --fg: #251a42;
+  --muted: #71688c;
 }
 
 /* ─── Reset & base ───────────────────────────────────────────────────────── */
@@ -609,9 +665,23 @@ select {
 }
 
 .skinpicker__label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 11px;
   color: var(--panel-muted);
   margin-bottom: 6px;
+}
+
+.skinpicker__badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--panel-fg);
+  background: rgb(255 255 255 / 0.16);
+  border-radius: 8px;
+  padding: 1px 6px;
 }
 
 .skinpicker__row {

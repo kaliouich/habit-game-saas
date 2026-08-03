@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: habit-game
-          image: habit-game:v0.9.0
+          image: habit-game:v0.9.1
           imagePullPolicy: Never # image importée localement dans k3s
           ports:
             - containerPort: 3000

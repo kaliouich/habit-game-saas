@@ -10,14 +10,21 @@ interface BoardSkinPickerProps {
   plan: "FREE" | "PRO";
 }
 
-/** Sélecteur de skin cosmétique — 2 gratuits, 6 verrouillés sans Pro (Sprint 6). */
+/**
+ * Sélecteur de thème d'encre — 1 seul gratuit (imposé sur le plan Free),
+ * 7 réservés au Pro. Le verrou est décoratif : `setBoardSkin` revalide le
+ * tier côté serveur, et `resolveBoardSkin` force le thème gratuit au rendu.
+ */
 export function BoardSkinPicker({ current, plan }: BoardSkinPickerProps) {
   const [, startTransition] = useTransition();
   const lockedCount = BOARD_SKINS.filter((s) => s.tier === "pro").length;
 
   return (
     <div className="skinpicker">
-      <p className="skinpicker__label">Board skin</p>
+      <p className="skinpicker__label">
+        Ink theme
+        {plan !== "PRO" && <span className="skinpicker__badge">Free</span>}
+      </p>
       <div className="skinpicker__row">
         {BOARD_SKINS.map((skin) => {
           const locked = skin.tier === "pro" && plan !== "PRO";
@@ -45,7 +52,7 @@ export function BoardSkinPicker({ current, plan }: BoardSkinPickerProps) {
       </div>
       {plan !== "PRO" && (
         <Link href="/pricing" className="skinpicker__upsell">
-          Unlock all {lockedCount} Pro skins →
+          Unlock {lockedCount} more ink themes →
         </Link>
       )}
     </div>

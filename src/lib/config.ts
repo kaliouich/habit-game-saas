@@ -12,20 +12,53 @@ export const PLAN_LIMITS = {
  * lib/actions/settings.ts. Les 6 pro reprennent les palettes des 5 directions
  * explorées pour la landing page (voir PRO-PLAN.md).
  */
+/**
+ * Thèmes d'encre (Sprint 7). L'encre de base — #1f2530 — est échantillonnée
+ * directement sur la vidéo de spec : un noir biaisé bleu (B > V > R à chaque
+ * palier), pas le #111111 neutre utilisé jusqu'ici.
+ *
+ * Deux familles : « ink » garde cette encre et ne change que l'accent ;
+ * « stamp » colore l'encre elle-même, comme un vrai tampon encreur.
+ *
+ * Les valeurs doivent rester synchro avec les blocs .dashboard[data-skin=…]
+ * de globals.css — ici ce sont les pastilles du picker, là-bas le rendu réel.
+ * La clé du thème gratuit reste "classic" : c'est le @default du schéma, donc
+ * aucune migration n'est nécessaire.
+ */
 export const BOARD_SKINS = [
-  { key: "classic", label: "Classic", check: "#e8b93c", accent: "#e8b93c", tier: "free" },
-  { key: "mono", label: "Mono", check: "#3a3a3a", accent: "#6b6b68", tier: "free" },
-  // Les valeurs doivent rester synchro avec les blocs .dashboard[data-skin=…]
-  // de globals.css — ici ce sont les pastilles du picker, là-bas le rendu réel.
-  { key: "arcade", label: "Arcade Gold", check: "#ffc61a", accent: "#f0478a", tier: "pro" },
-  { key: "sunset", label: "Sunset", check: "#e0603f", accent: "#2fa58a", tier: "pro" },
-  { key: "atlas", label: "Atlas Teal", check: "#1f4d45", accent: "#9a7629", tier: "pro" },
-  { key: "ledger", label: "Ledger Red", check: "#b03a24", accent: "#a8760f", tier: "pro" },
-  { key: "riso", label: "Riso Pink", check: "#ff3d9a", accent: "#1b45d8", tier: "pro" },
-  { key: "signal", label: "Signal Amber", check: "#d2801f", accent: "#8a4a16", tier: "pro" },
+  // ── Gratuit : imposé à tout le monde sur le plan Free ──
+  { key: "classic", label: "Ink & Amber", check: "#c8901f", accent: "#d9a227", tier: "free" },
+
+  // ── Pro — encre vidéo, accent coloré ──
+  { key: "forest", label: "Ink & Forest", check: "#2e7d5b", accent: "#2e7d5b", tier: "pro" },
+  { key: "coral", label: "Ink & Coral", check: "#d9503f", accent: "#e0674f", tier: "pro" },
+  { key: "teal", label: "Ink & Teal", check: "#1f8a8a", accent: "#24a0a0", tier: "pro" },
+
+  // ── Pro — encre colorée (tampon) ──
+  { key: "royal", label: "Royal Blue ink", check: "#1b3a6b", accent: "#d9a227", tier: "pro" },
+  { key: "oxblood", label: "Oxblood ink", check: "#6b1f28", accent: "#c8901f", tier: "pro" },
+  { key: "pine", label: "Forest ink", check: "#1e4032", accent: "#b08d3f", tier: "pro" },
+  { key: "violet", label: "Violet ink", check: "#3e2a6b", accent: "#e0a82e", tier: "pro" },
 ] as const;
 
 export type BoardSkinKey = (typeof BOARD_SKINS)[number]["key"];
+
+/** Thème imposé au plan Free (et repli pour toute valeur inconnue en base). */
+export const DEFAULT_BOARD_SKIN: BoardSkinKey = "classic";
+
+/**
+ * Thème réellement appliqué au rendu. Couvre deux cas que la valeur brute en
+ * base ne couvre pas :
+ *  - clé héritée d'une ancienne version (arcade, riso, …) → repli ;
+ *  - utilisateur Pro repassé en Free → on force le thème gratuit sans toucher
+ *    à sa préférence, qu'il retrouvera s'il se réabonne.
+ */
+export function resolveBoardSkin(stored: string, plan: "FREE" | "PRO"): BoardSkinKey {
+  const skin = BOARD_SKINS.find((s) => s.key === stored);
+  if (!skin) return DEFAULT_BOARD_SKIN;
+  if (skin.tier === "pro" && plan !== "PRO") return DEFAULT_BOARD_SKIN;
+  return skin.key;
+}
 
 /**
  * Don libre (Sprint 6) — one-off, hors abonnement Pro. Les presets ne sont que

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { canViewMonth, canAddHabit, maxHabits } from "./quotas";
+import { resolveBoardSkin } from "./config";
 
 describe("canViewMonth", () => {
   const current = "2026-07";
@@ -58,5 +59,26 @@ describe("maxHabits", () => {
   it("returns correct limits per plan", () => {
     expect(maxHabits("FREE")).toBe(5);
     expect(maxHabits("PRO")).toBe(Infinity);
+  });
+});
+
+describe("resolveBoardSkin (Sprint 7)", () => {
+  it("le plan Free est forcé sur le thème gratuit, quel que soit le choix stocké", () => {
+    expect(resolveBoardSkin("violet", "FREE")).toBe("classic");
+    expect(resolveBoardSkin("royal", "FREE")).toBe("classic");
+    expect(resolveBoardSkin("classic", "FREE")).toBe("classic");
+  });
+
+  it("le plan Pro garde son thème", () => {
+    expect(resolveBoardSkin("violet", "PRO")).toBe("violet");
+    expect(resolveBoardSkin("oxblood", "PRO")).toBe("oxblood");
+  });
+
+  // Un Pro qui repasse en Free ne perd pas sa préférence en base : elle est
+  // seulement ignorée au rendu, et revient telle quelle s'il se réabonne.
+  it("une clé héritée d'une ancienne version retombe sur le thème gratuit", () => {
+    expect(resolveBoardSkin("arcade", "PRO")).toBe("classic");
+    expect(resolveBoardSkin("riso", "FREE")).toBe("classic");
+    expect(resolveBoardSkin("", "PRO")).toBe("classic");
   });
 });

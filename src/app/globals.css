@@ -218,15 +218,6 @@ select {
   padding: 8px 12px;
 }
 
-.panel__title::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--check), var(--accent));
-}
 
 .panel > .chart {
   display: block;
@@ -236,7 +227,7 @@ select {
 
 /* ─── Sidebar (V1 + V2) ──────────────────────────────────────────────────── */
 .sidebar {
-  background: linear-gradient(165deg, color-mix(in srgb, var(--panel), white 6%), var(--panel) 55%);
+  background: var(--panel);
   color: var(--panel-fg);
   border-radius: var(--radius-panel);
   box-shadow: var(--shadow);
@@ -607,8 +598,7 @@ select {
 .shieldpanel__pip {
   flex: 1;
   height: 5px;
-  border-radius: 3px;
-  background: linear-gradient(90deg, var(--check), var(--accent));
+  background: var(--accent);
 }
 
 .shieldpanel__pip.is-spent {
@@ -781,15 +771,6 @@ select {
   padding: 5px 0;
 }
 
-.grid__week::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--check), var(--accent));
-}
 
 .grid__dow {
   color: var(--muted);
@@ -1083,15 +1064,6 @@ select {
   text-align: center;
 }
 
-.statcard::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--check), var(--accent));
-}
 
 .statcard__label {
   display: block;
@@ -1224,89 +1196,44 @@ select {
   text-decoration: underline;
 }
 
-/* ─── Hero card : rang guerrier + XP (Sprint 7) ───────────────────────────── */
+/* ─── Hero card : rang + XP (Sprint 7) ────────────────────────────────────────
+   Volontairement plat, comme la vidéo : panneau d'encre, texte blanc, barre
+   pleine. Pas d'écu en dégradé, pas d'emblème emoji, pas de lueur. */
 .herocard {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px;
-  border-radius: var(--radius-panel);
-  overflow: hidden;
-  background: linear-gradient(150deg, color-mix(in srgb, var(--panel), white 8%), var(--panel) 60%);
+  background: var(--panel);
   color: var(--panel-fg);
+  border-radius: var(--radius-panel);
   box-shadow: var(--shadow);
+  padding: 12px 14px;
 }
 
-/* Lueur d'ambiance derrière le crest — décoratif, n'intercepte pas le curseur. */
-.herocard::before {
-  content: "";
-  position: absolute;
-  top: -60%;
-  left: -10%;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--check) 40%, transparent), transparent 70%);
-  pointer-events: none;
-}
-
-.herocard__crest {
-  position: relative;
-  flex: none;
-  width: 3.4rem;
-  height: 3.8rem;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(160deg, var(--check), var(--accent));
-  /* Écu héraldique : pointe en bas, épaules carrées. */
-  clip-path: polygon(50% 100%, 0% 72%, 0% 0%, 100% 0%, 100% 72%);
-  box-shadow: 0 4px 10px rgb(0 0 0 / 0.35);
-}
-
-.herocard__emblem {
-  font-size: 20px;
-  line-height: 1;
-  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.35));
-}
-
-.herocard__lvl {
-  position: absolute;
-  bottom: 6px;
-  font-family: var(--font-display), sans-serif;
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--cell);
-  text-shadow: 0 1px 2px rgb(0 0 0 / 0.4);
-  font-variant-numeric: tabular-nums;
-}
-
-.herocard__body {
-  flex: 1;
-  min-width: 0;
+.herocard__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .herocard__rank {
   font-family: var(--font-display), sans-serif;
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  line-height: 1.1;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.herocard__sub {
-  font-size: 10px;
+.herocard__lvl {
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--panel-muted);
-  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
 }
 
 .herocard__track {
-  height: 8px;
-  border-radius: 4px;
-  background: rgb(255 255 255 / 0.14);
+  height: 6px;
+  background: rgb(255 255 255 / 0.16);
   overflow: hidden;
   margin-top: 9px;
 }
@@ -1314,17 +1241,19 @@ select {
 .herocard__fill {
   display: block;
   height: 100%;
-  border-radius: 4px;
-  background: linear-gradient(90deg, var(--check), var(--accent));
-  transition: width 320ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  background: var(--accent);
+  transition: width 260ms ease;
 }
 
-.herocard__xp {
+.herocard__foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
   font-size: 11px;
-  font-weight: 600;
   color: var(--panel-muted);
   font-variant-numeric: tabular-nums;
-  margin-top: 5px;
 }
 
 /* ─── Responsive (B6, v1 : empilement + scroll horizontal maîtrisé) ──────── */

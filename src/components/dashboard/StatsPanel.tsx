@@ -25,24 +25,20 @@ export function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
   return (
     <section className="statspanel">
       <div className="herocard">
-        <div className="herocard__crest" aria-hidden>
-          <span className="herocard__emblem">{progress.rank.emblem}</span>
-          <span className="herocard__lvl">{progress.level}</span>
+        <div className="herocard__head">
+          <span className="herocard__rank">{progress.rank.label}</span>
+          <span className="herocard__lvl">Level {progress.level}</span>
         </div>
-        <div className="herocard__body">
-          <p className="herocard__rank">{progress.rank.label}</p>
-          <p className="herocard__sub">
-            Level {progress.level}
-            {progress.nextRank
-              ? ` · ${progress.nextRank.label} at ${progress.nextRank.minLevel}`
-              : " · max rank"}
-          </p>
-          <div className="herocard__track">
-            <span className="herocard__fill" style={{ width: `${levelPct}%` }} />
-          </div>
-          <p className="herocard__xp">
+        <div className="herocard__track">
+          <span className="herocard__fill" style={{ width: `${levelPct}%` }} />
+        </div>
+        <div className="herocard__foot">
+          <span>
             {progress.xpIntoLevel} / {progress.xpForNextLevel} XP
-          </p>
+          </span>
+          <span>
+            {progress.nextRank ? `Next: ${progress.nextRank.label}` : "Max rank"}
+          </span>
         </div>
       </div>
 

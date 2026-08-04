@@ -188,6 +188,10 @@ select {
   padding: 14px;
   min-height: 100vh;
   align-items: start;
+  /* Sans ceci, `min-height: 100vh` répartit la hauteur restante entre les
+     lignes auto : en mono-colonne (mobile) ça creuse des vides énormes entre
+     la grille, la sidebar et les stats. */
+  align-content: start;
 }
 
 .dashboard__main {
@@ -1333,6 +1337,57 @@ select {
 
   .statcard__value {
     font-size: 20px;
+  }
+
+  /* Le mois et « My Habits » vivent dans la sidebar, sous la grille : sans
+     marge de fin, le dernier bloc colle au bord bas de l'écran. */
+  .statspanel {
+    padding-bottom: 8px;
+  }
+
+  /* Rapport : l'en-tête passe en colonne, le bloc marque se réaligne à gauche
+     au lieu de flotter au milieu une fois passé à la ligne. */
+  .report {
+    padding: 16px 12px 40px;
+  }
+
+  .report__sheet {
+    padding: 18px 14px;
+  }
+
+  .report__brand {
+    text-align: left;
+  }
+
+  /* Champs de date : 16px évite le zoom automatique d'iOS Safari au focus. */
+  .report__custom {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .report__custom input[type="date"] {
+    flex: 1;
+    min-width: 8.5rem;
+    font-size: 16px;
+  }
+
+  .report__apply {
+    flex: 1;
+    padding: 8px 12px;
+  }
+
+  .report__period {
+    padding: 8px 14px;
+  }
+
+  .report__weekdays {
+    gap: 3px;
+    padding: 10px 6px;
+  }
+
+  .report__wdlbl,
+  .report__wdpct {
+    font-size: 9px;
   }
 }
 

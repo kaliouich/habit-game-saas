@@ -2,6 +2,7 @@ import type { MonthStats } from "@/lib/stats";
 import type { ISODate } from "@/lib/dates";
 import { DayCheckbox } from "./DayCheckbox";
 import { MoodCell } from "./MoodCell";
+import { ScrollToToday } from "./ScrollToToday";
 
 interface GridHabit {
   id: string;
@@ -22,6 +23,7 @@ export function MonthGrid({ stats, habits, today }: MonthGridProps) {
 
   return (
     <div className="gridwrap">
+      <ScrollToToday />
       <table className="grid">
         <thead>
           <tr className="grid__weeks">
@@ -45,6 +47,7 @@ export function MonthGrid({ stats, habits, today }: MonthGridProps) {
             {days.map((d) => (
               <th
                 key={d.date}
+                data-today={d.date === today ? "1" : undefined}
                 className={[
                   "grid__num",
                   d.date === today ? "grid__num--today" : "",

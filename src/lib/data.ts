@@ -68,3 +68,44 @@ export async function getDashboardData(
 
   return { stats, habits, today, activeCount, shieldedDates };
 }
+
+/**
+ * Données du rapport sur une plage arbitraire (Sprint 7). Distinct de
+ * `getDashboardData`, qui est indexé sur un mois calendaire.
+ */
+export async function getReportData(userId: string, from: string, to: string) {
+  const [habitRows, moods, shields] = await Promise.all([
+    prisma.habit.findMany({
+      where: {
+        userId,
+        OR: [{ archivedAt: null }, { archivedAt: { gt: new Date(`${to}T23:59:59Z`) } }],
+      },
+      include: {
+        logs: { where: { date: { gte: from, lte: to } }, select: { date: true } },
+        pauses: { select: { from: true, to: true } },
+      },
+      orderBy: { position: "asc" },
+    }),
+    prisma.moodLog.findMany({
+      where: { userId, date: { gte: from, lte: to } },
+      select: { date: true, value: true },
+    }),
+    prisma.streakShield.findMany({ where: { userId }, select: { date: true } }),
+  ]);
+
+  const shielded = shields.map((s) => s.date);
+
+  return {
+    habits: habitRows.map((h) => ({
+      id: h.id,
+      name: h.name,
+      emoji: h.emoji,
+      loggedDates: new Set(h.logs.map((l) => l.date)),
+      pausedDates: new Set([
+        ...h.pauses.flatMap((p) => expandDateRange(p.from, p.to)),
+        ...shielded,
+      ]),
+    })),
+    moods,
+  };
+}

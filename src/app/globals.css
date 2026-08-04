@@ -2878,6 +2878,175 @@ select {
   color: var(--muted);
 }
 
+
+/* ── Sélecteur de période ── */
+.report__periods {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.report__periodslbl {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.report__period {
+  padding: 6px 12px;
+  border: 1px solid var(--grid-line);
+  border-radius: 20px;
+  background: var(--cell);
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: border-color 140ms, background 140ms;
+}
+
+.report__period:hover:not(:disabled) {
+  border-color: var(--check);
+}
+
+.report__period.is-active {
+  background: var(--panel);
+  color: var(--panel-fg);
+  border-color: var(--panel);
+}
+
+.report__period.is-locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.report__custom {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.report__custom input[type="date"] {
+  border: 1px solid var(--grid-line);
+  border-radius: 6px;
+  padding: 5px 8px;
+  background: var(--cell);
+  color: var(--fg);
+  font-size: 12px;
+}
+
+.report__apply {
+  padding: 5px 12px;
+  border: 1px solid var(--grid-line);
+  border-radius: 6px;
+  background: var(--bg);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.report__apply:hover {
+  border-color: var(--check);
+}
+
+.report__notice {
+  font-size: 12.5px;
+  color: var(--muted);
+  background: var(--bg);
+  border: 1px dashed var(--grid-line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+}
+
+.report__notice a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* ── Graphiques ── */
+.report__chart {
+  border: 1px solid var(--grid-line);
+  border-radius: 8px;
+  padding: 10px 8px 4px;
+}
+
+.trendchart {
+  display: block;
+  width: 100%;
+  height: 130px;
+}
+
+.trendchart__area {
+  fill: color-mix(in srgb, var(--check) 18%, transparent);
+}
+
+.trendchart__line {
+  stroke: var(--check);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+.trendchart__avg {
+  stroke: var(--muted);
+  stroke-width: 0.8;
+  stroke-dasharray: 3 3;
+}
+
+.report__caption {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.report__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  border: 1px solid var(--grid-line);
+  border-radius: 8px;
+  padding: 12px 10px;
+}
+
+.report__wd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.report__wdbarwrap {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: flex-end;
+  background: var(--bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.report__wdbar {
+  width: 100%;
+  background: var(--check);
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+}
+
+.report__wdpct {
+  font-size: 10.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.report__wdlbl {
+  font-size: 10px;
+  color: var(--muted);
+}
+
 @media print {
   @page {
     size: A4;
@@ -2885,7 +3054,9 @@ select {
   }
 
   /* Le chrome de navigation n'a aucun sens sur papier. */
-  .report__actions {
+  .report__actions,
+  .report__periods,
+  .report__notice {
     display: none !important;
   }
 
@@ -2920,6 +3091,16 @@ select {
 
   .report__grid td.is-on {
     color: #000;
+  }
+
+  .trendchart__area {
+    fill: #ddd;
+  }
+
+  .trendchart__line,
+  .report__wdbar {
+    stroke: #000;
+    background: #000;
   }
 
   .report__kpi,

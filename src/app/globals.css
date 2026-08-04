@@ -13,6 +13,7 @@
   --cell: #ffffff;
   --check: #c8901f;
   --fg: #141a22;
+  --ink-2: #3d4754; /* texte secondaire — entre --fg et --muted */
   --muted: #66707e;
   --accent: #d9a227;
   --danger: #c0392b;
@@ -1783,8 +1784,8 @@ select {
 }
 
 .pricingpage .btn--primary {
-  background: linear-gradient(150deg, var(--m-gold), var(--m-amber));
-  color: #2a1400;
+  background: var(--panel);
+  color: var(--panel-fg);
 }
 
 .pricingpage .btn--secondary {
@@ -1997,35 +1998,38 @@ select {
 }
 
 /* ─── Marketing : header / footer ────────────────────────────────────────── */
-/* ═══ Marketing (Sprint 6) — palette "Arcade" gold-sur-espresso, scoped ═══
-   Volontairement séparée des tokens du dashboard (--bg/--fg/--accent...) :
-   le produit garde son identité claire/sombre neutre, la landing vend le jeu. */
+/* ═══ Marketing — même encre que le produit ═══
+   La landing avait sa propre palette « Arcade » gold-sur-espresso : arriver sur
+   un site sombre puis atterrir dans une app claire donnait deux produits
+   différents. Les tokens --m-* sont désormais des ALIAS des tokens globaux, il
+   n'y a donc plus qu'une seule palette à maintenir — changer :root change les
+   deux. Les noms (--m-paper = texte) sont hérités de la version sombre ;
+   se fier au commentaire de rôle, pas au nom. */
 .marketing {
-  --m-ground: #14110a;
-  --m-panel: #1f1a10;
-  --m-panel-2: #2b2415;
-  --m-sunk: #0c0a05;
-  --m-edge: #3a3120;
-  --m-edge-hi: #584b2e;
-  --m-paper: #f6f0e1;
-  --m-paper-2: #c6b994;
-  --m-dim: #8b7e60;
-  /* Full-saturation arcade accents — do not mute these, the "game" pitch
-     depends on them actually popping against the dark ground. */
-  --m-gold: #ffc61a;
-  --m-coral: #f0478a;
-  --m-mint: #2fbf9e;
-  --m-amber: #ff9f1c;
-  /* Marketing-only display face — dashboard keeps --font-display (Poppins). */
-  --font-display: var(--font-arcade), sans-serif;
+  --m-ground: var(--bg); /* fond de page (papier) */
+  --m-panel: var(--cell); /* surface des cartes */
+  --m-panel-2: var(--bg); /* surface enfoncée */
+  --m-sunk: var(--bg);
+  --m-edge: var(--grid-line); /* bordures */
+  --m-edge-hi: var(--muted);
+  --m-paper: var(--fg); /* texte principal (encre) */
+  --m-paper-2: var(--ink-2); /* texte secondaire */
+  --m-dim: var(--muted);
+  --m-gold: var(--check);
+  --m-coral: var(--accent);
+  --m-mint: var(--check);
+  --m-amber: var(--accent);
 
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: var(--m-ground);
+  background-color: var(--m-ground);
   color: var(--m-paper);
-  background-image: radial-gradient(circle at 12% -5%, rgb(224 180 0 / 0.12), transparent 45%),
-    radial-gradient(circle at 92% 8%, rgb(214 62 122 / 0.1), transparent 42%);
+  /* Papier quadrillé : la même trame que la grille du tracker et que /login. */
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 26px 26px;
 }
 
 .marketingheader {
@@ -2075,8 +2079,8 @@ select {
 }
 
 .marketingheader .btn--primary {
-  background: linear-gradient(150deg, var(--m-gold), var(--m-amber));
-  color: #2a1400;
+  background: var(--panel);
+  color: var(--panel-fg);
 }
 
 .marketingfooter {
@@ -2140,10 +2144,7 @@ select {
 
 .hero__title em {
   font-style: normal;
-  background: linear-gradient(100deg, var(--m-gold), var(--m-amber) 45%, var(--m-coral));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--check);
 }
 
 .hero__subtitle {
@@ -2168,8 +2169,8 @@ select {
 }
 
 .hero .btn--primary.btn--hero {
-  background: linear-gradient(150deg, var(--m-gold), var(--m-amber));
-  color: #2a1400;
+  background: var(--panel);
+  color: var(--panel-fg);
   box-shadow: 0 5px 0 #a8670f;
 }
 
@@ -2209,7 +2210,7 @@ select {
   border: 1px solid var(--m-edge);
   border-radius: 20px;
   padding: 22px;
-  box-shadow: 0 40px 70px -45px rgb(0 0 0 / 0.7), inset 0 1px 0 var(--m-edge-hi);
+  box-shadow: var(--shadow);
 }
 
 .heroboard__top {
@@ -2229,12 +2230,12 @@ select {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 12px;
-  background: linear-gradient(150deg, var(--m-coral), var(--m-amber));
+  background: var(--check);
   display: grid;
   place-items: center;
   font-weight: 900;
   font-size: 17px;
-  color: #2a1400;
+  color: var(--panel-fg);
 }
 
 .heroboard__level small {
@@ -2340,8 +2341,8 @@ select {
   content: "";
   width: 0.5rem;
   height: 0.28rem;
-  border-left: 2.5px solid #2a1400;
-  border-bottom: 2.5px solid #2a1400;
+  border-left: 2.5px solid var(--cell);
+  border-bottom: 2.5px solid var(--cell);
   transform: rotate(-45deg) scale(0);
   transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.6);
 }
@@ -2399,7 +2400,7 @@ select {
 }
 
 .heroboard__badge[data-got="1"] {
-  background: linear-gradient(150deg, var(--m-panel-2), var(--m-sunk));
+  background: var(--bg);
   border-color: var(--m-gold);
   box-shadow: 0 0 0 1px rgb(255 198 26 / 0.25);
 }
@@ -2525,8 +2526,8 @@ select {
   justify-content: center;
   width: 32px;
   height: 32px;
-  background: linear-gradient(150deg, var(--m-coral), var(--m-amber));
-  color: #2a1400;
+  background: var(--panel);
+  color: var(--panel-fg);
   border-radius: 10px;
   font-family: var(--font-display), sans-serif;
   font-weight: 800;
@@ -2557,8 +2558,8 @@ select {
 }
 
 .ctaband .btn--hero {
-  background: linear-gradient(150deg, var(--m-gold), var(--m-amber));
-  color: #2a1400;
+  background: var(--panel);
+  color: var(--panel-fg);
   box-shadow: 0 5px 0 #a8670f;
 }
 

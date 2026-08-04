@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Poppins, Fredoka } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import { APP_NAME } from "@/lib/config";
 import { Analytics } from "@/components/Analytics";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
@@ -12,14 +12,6 @@ const inter = Inter({
 
 const poppins = Poppins({
   variable: "--font-display",
-  weight: ["500", "600", "700"],
-  subsets: ["latin"],
-});
-
-// Marketing-only display face (scoped under .marketing in globals.css) —
-// the dashboard keeps Poppins via --font-display, the landing page doesn't.
-const fredoka = Fredoka({
-  variable: "--font-arcade",
   weight: ["500", "600", "700"],
   subsets: ["latin"],
 });
@@ -59,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable} ${fredoka.variable}`}>
+    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body>
         {children}
         <Analytics />

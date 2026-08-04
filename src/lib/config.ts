@@ -27,18 +27,18 @@ export const PLAN_LIMITS = {
  */
 export const BOARD_SKINS = [
   // ── Gratuit : imposé à tout le monde sur le plan Free ──
-  { key: "classic", label: "Ink & Amber", check: "#c8901f", accent: "#d9a227", tier: "free" },
+  // Bleu encre + rouge crayon sur papier : le carnet annoté.
+  { key: "classic", label: "E-Ink Blue", check: "#37547f", accent: "#a4453c", tier: "free" },
 
-  // ── Pro — encre vidéo, accent coloré ──
-  { key: "forest", label: "Ink & Forest", check: "#2e7d5b", accent: "#2e7d5b", tier: "pro" },
-  { key: "coral", label: "Ink & Coral", check: "#d9503f", accent: "#e0674f", tier: "pro" },
-  { key: "teal", label: "Ink & Teal", check: "#1f8a8a", accent: "#24a0a0", tier: "pro" },
-
-  // ── Pro — encre colorée (tampon) ──
-  { key: "royal", label: "Royal Blue ink", check: "#1b3a6b", accent: "#d9a227", tier: "pro" },
-  { key: "oxblood", label: "Oxblood ink", check: "#6b1f28", accent: "#c8901f", tier: "pro" },
-  { key: "pine", label: "Forest ink", check: "#1e4032", accent: "#b08d3f", tier: "pro" },
-  { key: "violet", label: "Violet ink", check: "#3e2a6b", accent: "#e0a82e", tier: "pro" },
+  // ── Pro — toutes désaturées au même niveau que le thème gratuit.
+  // Une teinte vive à côté d'une palette e-ink casserait l'illusion de papier.
+  { key: "graphite", label: "Graphite", check: "#4a4740", accent: "#7c766d", tier: "pro" },
+  { key: "sepia", label: "Sepia", check: "#7a5a3c", accent: "#a4453c", tier: "pro" },
+  { key: "forest", label: "Pine", check: "#3d5c48", accent: "#7a5a3c", tier: "pro" },
+  { key: "royal", label: "Indigo", check: "#3b3f6b", accent: "#8c6a3f", tier: "pro" },
+  { key: "oxblood", label: "Oxblood", check: "#7a3a38", accent: "#37547f", tier: "pro" },
+  { key: "teal", label: "Slate Teal", check: "#356b6b", accent: "#a4453c", tier: "pro" },
+  { key: "plum", label: "Plum", check: "#5e3f5c", accent: "#7a5a3c", tier: "pro" },
 ] as const;
 
 export type BoardSkinKey = (typeof BOARD_SKINS)[number]["key"];

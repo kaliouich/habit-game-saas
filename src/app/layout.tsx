@@ -1,19 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { Literata } from "next/font/google";
 import { APP_NAME } from "@/lib/config";
 import { Analytics } from "@/components/Analytics";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-body",
+// Literata est dessinée pour les liseuses (c'est la police par défaut de Google
+// Play Livres) : c'est le plus proche disponible du Bookerly du Kindle. Sérif
+// partout — un Kindle n'affiche pas de sans-serif pour le texte.
+const literata = Literata({
+  variable: "--font-serif",
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
-});
-
-const poppins = Poppins({
-  variable: "--font-display",
-  weight: ["500", "600", "700"],
-  subsets: ["latin"],
+  display: "swap",
 });
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
@@ -51,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+    <html lang="en" className={literata.variable}>
       <body>
         {children}
         <Analytics />

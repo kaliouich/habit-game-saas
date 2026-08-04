@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { canViewMonth, canAddHabit, maxHabits } from "./quotas";
-import { resolveBoardSkin } from "./config";
+import { resolveBoardSkin, BOARD_SKINS } from "./config";
 
 describe("canViewMonth", () => {
   const current = "2026-07";
@@ -70,8 +70,16 @@ describe("resolveBoardSkin (Sprint 7)", () => {
   });
 
   it("le plan Pro garde son thème", () => {
-    expect(resolveBoardSkin("violet", "PRO")).toBe("violet");
+    expect(resolveBoardSkin("plum", "PRO")).toBe("plum");
     expect(resolveBoardSkin("oxblood", "PRO")).toBe("oxblood");
+  });
+
+  // Garde-fou : renommer une clé dans BOARD_SKINS sans mettre à jour le reste
+  // ferait silencieusement retomber les utilisateurs sur le thème gratuit.
+  it("chaque thème déclaré se résout en lui-même pour un compte Pro", () => {
+    for (const skin of BOARD_SKINS) {
+      expect(resolveBoardSkin(skin.key, "PRO")).toBe(skin.key);
+    }
   });
 
   // Un Pro qui repasse en Free ne perd pas sa préférence en base : elle est
@@ -79,6 +87,7 @@ describe("resolveBoardSkin (Sprint 7)", () => {
   it("une clé héritée d'une ancienne version retombe sur le thème gratuit", () => {
     expect(resolveBoardSkin("arcade", "PRO")).toBe("classic");
     expect(resolveBoardSkin("riso", "FREE")).toBe("classic");
+    expect(resolveBoardSkin("violet", "PRO")).toBe("classic"); // clé renommée en "plum"
     expect(resolveBoardSkin("", "PRO")).toBe("classic");
   });
 });

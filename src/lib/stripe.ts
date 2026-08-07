@@ -26,13 +26,13 @@ export const stripe = new Proxy({} as Stripe, {
 });
 
 /**
- * Un seul plan payant : €9.99/an (affiché "€0.99/mois, facturé €9.99/an").
- * Les abonnés existants sur STRIPE_PRICE_MONTHLY/YEARLY (6€/mois, 49€/an)
- * restent sur leur prix — le webhook resynchronise leur statut quel que soit
- * le price Stripe attaché à leur subscription, donc aucune migration requise.
+ * Plan Pro : €0.99/mois (récurrence mensuelle).
+ * Ancien abonnements (6€/mois ou 49€/an) restent actifs — le webhook
+ * resynchronise le statut indépendamment du price Stripe, donc aucune
+ * migration requise.
  */
 export const STRIPE_PRICES = {
-  pro: process.env.STRIPE_PRICE_PRO ?? "",
+  proMonthly: process.env.STRIPE_PRICE_PRO ?? "",
 } as const;
 
 /**

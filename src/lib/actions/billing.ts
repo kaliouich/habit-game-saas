@@ -68,7 +68,7 @@ export async function createDonationCheckoutSession(formData: FormData): Promise
   redirect(session.url);
 }
 
-/** Un seul plan payant : €9.99/an. Pas de formData à parser. */
+/** Plan Pro : €0.99/mois. Pas de formData à parser. */
 export async function createCheckoutSession(): Promise<void> {
   const user = await getCurrentUser();
 
@@ -89,7 +89,7 @@ export async function createCheckoutSession(): Promise<void> {
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
-    line_items: [{ price: STRIPE_PRICES.pro, quantity: 1 }],
+    line_items: [{ price: STRIPE_PRICES.proMonthly, quantity: 1 }],
     subscription_data: { trial_period_days: trialDays },
     success_url: `${APP_URL}/app?upgraded=1`,
     cancel_url: `${APP_URL}/pricing`,

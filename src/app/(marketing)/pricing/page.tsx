@@ -28,6 +28,7 @@ export default async function PricingPage() {
             <li>Mood tracking</li>
             <li>Streaks</li>
             <li>3 starter badges</li>
+            <li>Contains ads</li>
           </ul>
           {!session?.user && (
             <Link href="/login" className="btn btn--secondary">
@@ -51,6 +52,7 @@ export default async function PricingPage() {
             <li>CSV export</li>
             <li>Weekly email recap</li>
             <li>Shareable monthly recap</li>
+            <li>No ads</li>
           </ul>
           {!isCheckoutEnabled() ? (
             <>

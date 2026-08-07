@@ -25,6 +25,8 @@ model User {
   plan             Plan      @default(FREE)
   planStatus       String?
   trialEndsAt      DateTime?
+  stripeSubscriptionId String?
+  stripePriceId    String?
   // Préférences
   theme            String    @default("light")
   weekStartsOn     Int       @default(1)

@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/user";
 import { createCheckoutSession, createPortalSession, createDonationCheckoutSession } from "@/lib/actions/billing";
 import { CopyReferralLink } from "@/components/CopyReferralLink";
 import { DonateForm } from "@/components/DonateForm";
+import { SubscriptionComparison } from "@/components/SubscriptionComparison";
 import { isStripeConfigured, isCheckoutEnabled } from "@/lib/stripe";
 import { currentMonth } from "@/lib/dates";
 
@@ -56,7 +57,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
         ) : user.plan === "FREE" ? (
           <form action={createCheckoutSession}>
             <button type="submit" className="btn btn--primary">
-              Upgrade to Pro — {trialDays}-day trial
+              Upgrade to Pro — €0.99/month, {trialDays}-day trial
             </button>
           </form>
         ) : (
@@ -67,6 +68,8 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
           </form>
         )}
       </div>
+
+      <SubscriptionComparison />
 
       {user.plan === "PRO" && (
         <div className="billingexport">

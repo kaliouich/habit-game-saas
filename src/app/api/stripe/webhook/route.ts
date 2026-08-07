@@ -12,6 +12,7 @@ async function syncSubscription(subscription: Stripe.Subscription) {
   if (!user) return;
 
   const isActive = subscription.status === "active" || subscription.status === "trialing";
+  const priceId = subscription.items.data[0]?.price.id;
 
   await prisma.user.update({
     where: { id: user.id },
@@ -19,6 +20,8 @@ async function syncSubscription(subscription: Stripe.Subscription) {
       plan: isActive ? "PRO" : "FREE",
       planStatus: subscription.status,
       trialEndsAt: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
+      stripeSubscriptionId: subscription.id,
+      stripePriceId: priceId,
       // Le crédit de parrainage (s'il y en avait) vient d'être consommé par ce checkout.
       referralCreditMonths: 0,
     },

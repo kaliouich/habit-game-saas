@@ -1,0 +1,19 @@
+Habit Game déployé ({{ .Release.Name }} / namespace {{ .Values.app.namespace }})
+
+Vérifier le rollout :
+  kubectl -n {{ .Values.app.namespace }} rollout status deploy/{{ include "habit-game.name" . }}
+
+{{- if .Values.route.enabled }}
+
+App accessible sur :
+  https://{{ .Values.route.hostname }}
+{{- end }}
+
+Secrets utilisés : {{ include "habit-game.secretName" . }}
+{{- if not .Values.secrets.create }}
+  (Secret non géré par ce chart — doit déjà exister dans le cluster :
+   kubectl -n {{ .Values.app.namespace }} get secret {{ .Values.secrets.existingSecretName }})
+{{- end }}
+
+Logs :
+  kubectl -n {{ .Values.app.namespace }} logs -f deploy/{{ include "habit-game.name" . }}

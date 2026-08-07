@@ -1,0 +1,89 @@
+# Valeurs par défaut du chart habit-game.
+# Prod réelle : voir values-production.yaml (image tag, replicas, hostnames)
+# et NE JAMAIS committer de vrais secrets ici — utiliser --set-string / -f secrets.local.yaml
+# (gitignored) ou un Secret k8s externe (voir secrets.existingSecret ci-dessous).
+
+app:
+  name: habit-game
+  namespace: default
+  replicas: 1
+
+  image:
+    repository: habit-game
+    tag: v0.18.1
+    pullPolicy: Never # image importée localement dans k3s (pas de registry)
+
+  containerPort: 3000
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  probes:
+    readiness:
+      path: /api/health
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    liveness:
+      path: /api/health
+      initialDelaySeconds: 15
+      periodSeconds: 20
+
+service:
+  port: 80
+
+route:
+  enabled: true
+  hostname: habits.khalilaliouich.com
+  gatewayName: main-gateway
+  gatewayNamespace: default
+
+# ── PostgreSQL (Deployment simple, pas de chart tiers — 1 replica, PVC Longhorn) ──
+postgres:
+  enabled: true
+  image: postgres:16-alpine
+  user: habit
+  database: habitgame
+  storage: 5Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+
+# ── CronJob : récap hebdomadaire (lundi 08:00) ──────────────────────────────
+weeklyRecap:
+  enabled: true
+  schedule: "0 8 * * 1"
+  curlImage: curlimages/curl:8.11.0
+
+# ── Secrets ──────────────────────────────────────────────────────────────────
+# secrets.create=true : le chart crée les Secrets k8s à partir des valeurs
+# ci-dessous (à passer via -f secrets.local.yaml gitignored, ou --set-string).
+# secrets.create=false : le chart suppose que `habit-game-secrets` existe déjà
+# dans le cluster (créé manuellement ou par un autre outil — ex sealed-secrets,
+# external-secrets) et se contente de le référencer.
+secrets:
+  create: false
+  existingSecretName: habit-game-secrets
+
+  # Utilisés seulement si create=true — laisser vide dans values.yaml commité,
+  # fournir via -f secrets.local.yaml (voir secrets.local.yaml.example)
+  postgresPassword: ""
+  databaseUrl: ""
+  cronSecret: ""
+  authSecret: ""
+  authUrl: ""
+  authGoogleId: ""
+  authGoogleSecret: ""
+  authResendKey: ""
+  emailFrom: ""
+  stripeSecretKey: ""
+  stripePublishableKey: ""
+  stripeWebhookSecret: ""
+  stripePricePro: ""

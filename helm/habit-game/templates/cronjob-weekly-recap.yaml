@@ -1,0 +1,34 @@
+{{- if .Values.weeklyRecap.enabled }}
+# Déclenche le récap hebdomadaire par email (Pro uniquement) chaque semaine.
+# No-op propre côté app tant que AUTH_RESEND_KEY n'est pas configurée.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "habit-game.name" . }}-weekly-recap
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    {{- include "habit-game.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.weeklyRecap.schedule | quote }}
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: trigger
+              image: {{ .Values.weeklyRecap.curlImage }}
+              env:
+                - name: CRON_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "habit-game.secretName" . }}
+                      key: CRON_SECRET
+              command:
+                - sh
+                - -c
+                - >
+                  curl -f -X POST http://{{ include "habit-game.name" . }}-svc/api/cron/weekly-recap
+                  -H "Authorization: Bearer $CRON_SECRET"
+{{- end }}

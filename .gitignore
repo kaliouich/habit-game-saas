@@ -54,3 +54,6 @@ next-env.d.ts
 # env example must stay tracked
 !.env.example
 .gstack/
+
+# Helm : vrais secrets jamais commités (voir secrets.local.yaml.example)
+/helm/habit-game/secrets.local.yaml

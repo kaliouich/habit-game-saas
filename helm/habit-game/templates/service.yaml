@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "habit-game.name" . }}-svc
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    {{- include "habit-game.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "habit-game.selectorLabels" . | nindent 4 }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.app.containerPort }}
+      protocol: TCP

@@ -1,107 +1,100 @@
-# Remplace le Deployment du prototype — même nom/labels pour réutiliser
-# habit-game-svc et la HTTPRoute Cloudflare existante (habits.khalilaliouich.com).
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: habit-game
-  namespace: default
+  name: {{ include "habit-game.name" . }}
+  namespace: {{ .Values.app.namespace }}
   labels:
-    app: habit-game
+    {{- include "habit-game.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.app.replicas }}
   selector:
     matchLabels:
-      app: habit-game
+      {{- include "habit-game.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: habit-game
+        {{- include "habit-game.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-        - name: habit-game
-          image: habit-game:v0.18.1
-          imagePullPolicy: Never # image importée localement dans k3s
+        - name: {{ include "habit-game.name" . }}
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
           ports:
-            - containerPort: 3000
+            - containerPort: {{ .Values.app.containerPort }}
           env:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: habit-game-secrets
+                  name: {{ include "habit-game.secretName" . }}
                   key: DATABASE_URL
             - name: AUTH_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: habit-game-secrets
+                  name: {{ include "habit-game.secretName" . }}
                   key: AUTH_SECRET
             - name: AUTH_URL
               valueFrom:
                 secretKeyRef:
-                  name: habit-game-secrets
+                  name: {{ include "habit-game.secretName" . }}
                   key: AUTH_URL
             - name: AUTH_GOOGLE_ID
               valueFrom:
                 secretKeyRef:
-                  name: habit-game-secrets
+                  name: {{ include "habit-game.secretName" . }}
                   key: AUTH_GOOGLE_ID
                   optional: true
             - name: AUTH_GOOGLE_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: habit-game-secrets
+                  name: {{ include "habit-game.secretName" . }}
                   key: AUTH_GOOGLE_SECRET
                   optional: true
             - name: AUTH_RESEND_KEY
               valueFrom:
                 secretKeyRef:
-                  name: habit-game-secrets
+                  name: {{ include "habit-game.secretName" . }}
                   key: AUTH_RESEND_KEY
                   optional: true # absent tant que Resend n'est pas configuré — gating dynamique dans lib/auth.ts
             - name: EMAIL_FROM
               valueFrom:
                 secretKeyRef:
-                  name: habit-game-secrets
+                  name: {{ include "habit-game.secretName" . }}
                   key: EMAIL_FROM
                   optional: true
             - name: STRIPE_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: habit-game-secrets
+                  name: {{ include "habit-game.secretName" . }}
                   key: STRIPE_SECRET_KEY
                   optional: true # absent tant que Stripe n'est pas configuré — client lazy dans lib/stripe.ts
             - name: STRIPE_WEBHOOK_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: habit-game-secrets
+                  name: {{ include "habit-game.secretName" . }}
                   key: STRIPE_WEBHOOK_SECRET
                   optional: true
             - name: STRIPE_PRICE_PRO
               valueFrom:
                 secretKeyRef:
-                  name: habit-game-secrets
+                  name: {{ include "habit-game.secretName" . }}
                   key: STRIPE_PRICE_PRO
-                  optional: true # €9.99/an — remplace STRIPE_PRICE_MONTHLY/YEARLY (6€/49€), voir PRO-PLAN.md
+                  optional: true
             - name: CRON_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: habit-game-secrets
+                  name: {{ include "habit-game.secretName" . }}
                   key: CRON_SECRET
           readinessProbe:
             httpGet:
-              path: /api/health
-              port: 3000
-            initialDelaySeconds: 5
-            periodSeconds: 10
+              path: {{ .Values.app.probes.readiness.path }}
+              port: {{ .Values.app.containerPort }}
+            initialDelaySeconds: {{ .Values.app.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.app.probes.readiness.periodSeconds }}
           livenessProbe:
             httpGet:
-              path: /api/health
-              port: 3000
-            initialDelaySeconds: 15
-            periodSeconds: 20
+              path: {{ .Values.app.probes.liveness.path }}
+              port: {{ .Values.app.containerPort }}
+            initialDelaySeconds: {{ .Values.app.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.app.probes.liveness.periodSeconds }}
           resources:
-            requests:
-              memory: 128Mi
-              cpu: 100m
-            limits:
-              memory: 512Mi
-              cpu: 500m
+            {{- toYaml .Values.app.resources | nindent 12 }}

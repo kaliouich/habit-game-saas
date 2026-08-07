@@ -1,0 +1,15 @@
+apiVersion: v2
+name: habit-game
+description: Habit Game — SaaS de tracking d'habitudes (Next.js + PostgreSQL) sur k3s
+type: application
+version: 0.1.0
+appVersion: "0.18.1"
+keywords:
+  - nextjs
+  - saas
+  - habit-tracker
+home: https://habits.khalilaliouich.com
+sources:
+  - https://github.com/kaliouich/habit-game-saas
+maintainers:
+  - name: kaliouich

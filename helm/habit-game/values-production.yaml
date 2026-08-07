@@ -1,0 +1,21 @@
+# Overrides pour la prod k3s (habits.khalilaliouich.com).
+# Usage: helm upgrade --install habit-game ./helm/habit-game \
+#          -f helm/habit-game/values-production.yaml \
+#          -f secrets.local.yaml   # non commité, voir secrets.local.yaml.example
+
+app:
+  replicas: 1
+  image:
+    tag: v0.18.1
+
+route:
+  enabled: true
+  hostname: habits.khalilaliouich.com
+
+postgres:
+  enabled: true
+  storage: 5Gi
+
+secrets:
+  create: false
+  existingSecretName: habit-game-secrets

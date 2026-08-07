@@ -1,0 +1,81 @@
+{{- if .Values.postgres.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "habit-game.postgresName" . }}-pvc
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    {{- include "habit-game.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.postgres.storage }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "habit-game.postgresName" . }}
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    app: {{ include "habit-game.postgresName" . }}
+    {{- include "habit-game.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate # un seul writer sur le PVC
+  selector:
+    matchLabels:
+      app: {{ include "habit-game.postgresName" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "habit-game.postgresName" . }}
+    spec:
+      containers:
+        - name: postgres
+          image: {{ .Values.postgres.image }}
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.postgres.user | quote }}
+            - name: POSTGRES_DB
+              value: {{ .Values.postgres.database | quote }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "habit-game.secretName" . }}
+                  key: POSTGRES_PASSWORD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", {{ .Values.postgres.user | quote }}, "-d", {{ .Values.postgres.database | quote }}]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.postgres.resources | nindent 12 }}
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: {{ include "habit-game.postgresName" . }}-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "habit-game.postgresName" . }}
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    {{- include "habit-game.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ include "habit-game.postgresName" . }}
+  ports:
+    - port: 5432
+      targetPort: 5432
+{{- end }}

@@ -1,0 +1,59 @@
+name: Android build
+
+# Runner GitHub natif x86_64/arm64 obligatoire — un serveur ARM64 local (k3s,
+# ou n'importe quel Gitea Actions self-hosted sur la même machine) ne peut pas
+# builder cet APK : aapt2 (Android build-tools) n'a pas de binaire Linux
+# ARM64, et l'émuler via QEMU user-mode fait planter la JVM (crash silencieux
+# "Aborted, core dumped" au démarrage — le runtime C++ de la JVM utilise des
+# instructions AVX/SSE que QEMU TCG ne traduit pas fiablement, indépendamment
+# des flags -Xint qui ne couvrent que le bytecode Java applicatif, pas le
+# runtime HotSpot natif). Voir MOBILE_SETUP.md.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "android/**"
+      - "capacitor.config.ts"
+      - "src/**"
+      - ".github/workflows/android-build.yml"
+  workflow_dispatch:
+
+jobs:
+  build-debug-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Sync Capacitor (copie web assets + plugins natifs)
+        run: npx cap sync android
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('android/**/*.gradle*', 'android/gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: habit-game-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30

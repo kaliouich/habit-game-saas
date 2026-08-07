@@ -5,6 +5,8 @@ import { BarChart } from "@/components/charts/BarChart";
 import { Sidebar } from "./Sidebar";
 import { MonthGrid } from "./MonthGrid";
 import { StatsPanel } from "./StatsPanel";
+import { AdBanner } from "@/components/AdBanner";
+import { AdSidebar } from "@/components/AdSidebar";
 
 export interface DashboardHabit {
   id: string;
@@ -43,8 +45,12 @@ export function Dashboard({ month, stats, habits, today, canAdd, limit, userEmai
     .filter((d) => !habits.some((h) => h.loggedDates.has(d.date) || h.pausedDates?.has(d.date)))
     .map((d) => d.date);
 
+  const showAds = plan === "FREE";
+
   return (
     <div className="dashboard" data-skin={boardSkin}>
+      <AdBanner showAds={showAds} slot="0000000000" />
+
       <Sidebar
         month={month}
         habits={habits}
@@ -72,7 +78,10 @@ export function Dashboard({ month, stats, habits, today, canAdd, limit, userEmai
         <MonthGrid stats={stats} habits={habits} today={today} />
       </main>
 
-      <StatsPanel stats={stats} habits={habits} plan={plan} />
+      <div className="dashboard__right">
+        <StatsPanel stats={stats} habits={habits} plan={plan} />
+        <AdSidebar showAds={showAds} slot="0000000001" />
+      </div>
     </div>
   );
 }

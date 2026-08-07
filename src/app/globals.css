@@ -174,6 +174,12 @@ select {
   min-width: 0;
 }
 
+.dashboard__right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 /* ─── Panneaux génériques ────────────────────────────────────────────────── */
 .panel {
   background: var(--cell);
@@ -3229,4 +3235,104 @@ select {
   .report__h2 {
     break-after: avoid;
   }
+}
+
+/* ─── Subscription Comparison (Sprint 3) ─────────────────────────────── */
+.subscription-comparison {
+  margin: 32px 0;
+  padding: 20px;
+  border: 1.5px solid var(--grid-line);
+  border-radius: 8px;
+  background: var(--cell);
+}
+
+.subscription-comparison__title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.subscription-comparison__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.subscription-comparison__table thead th {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 2px solid var(--grid-line);
+  font-weight: 600;
+  background: var(--bg);
+}
+
+.subscription-comparison__table tbody tr {
+  border-bottom: 1px solid var(--grid-line);
+}
+
+.subscription-comparison__table tbody td {
+  padding: 12px;
+  text-align: left;
+}
+
+.subscription-comparison__feature {
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.subscription-comparison__free,
+.subscription-comparison__pro {
+  text-align: center;
+  color: var(--muted);
+}
+
+.subscription-comparison__pro {
+  font-weight: 500;
+  color: var(--check);
+}
+
+.feature-check {
+  color: var(--check);
+  font-weight: 600;
+}
+
+.feature-x {
+  color: var(--accent);
+  opacity: 0.5;
+}
+
+/* ─── Ad Components (Sprint 3) ───────────────────────────────────────── */
+.ad-banner {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+  min-height: 90px;
+  background: var(--bg);
+  border-radius: 4px;
+}
+
+/* Placé en 1er enfant de la grille 3 colonnes (.dashboard : sidebar/main/stats) :
+   sans ceci il prend la 1re piste de colonne (230px) et décale sidebar/main/stats
+   d'une piste chacun — d'où une sidebar étirée en pleine largeur et le contenu
+   principal écrasé dans la piste de 300px. */
+.dashboard > .ad-banner {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.ad-banner__container {
+  width: 100%;
+}
+
+.ad-sidebar {
+  position: sticky;
+  top: 20px;
+  margin-left: 20px;
+  min-width: 300px;
+}
+
+.ad-sidebar__container {
+  border-radius: 4px;
+  background: var(--bg);
 }

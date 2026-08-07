@@ -12,6 +12,15 @@ WORKDIR /app
 # changer. Un Secret k8s au runtime n'y changera jamais rien.
 ARG NEXT_PUBLIC_APP_URL=https://habits.khalilaliouich.com
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+# Même contrainte que NEXT_PUBLIC_APP_URL ci-dessus : figé au build. Vide par
+# défaut = AdBanner/AdSidebar ne chargent pas le script AdSense (no-op propre,
+# voir isAdSenseConfigured() dans lib/ads.ts) tant que ce n'est pas fourni.
+ARG NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT=""
+ENV NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT=$NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT
+ARG NEXT_PUBLIC_ADMOB_ANDROID_BANNER_ID=""
+ENV NEXT_PUBLIC_ADMOB_ANDROID_BANNER_ID=$NEXT_PUBLIC_ADMOB_ANDROID_BANNER_ID
+ARG NEXT_PUBLIC_ADMOB_IOS_BANNER_ID=""
+ENV NEXT_PUBLIC_ADMOB_IOS_BANNER_ID=$NEXT_PUBLIC_ADMOB_IOS_BANNER_ID
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate && npm run build

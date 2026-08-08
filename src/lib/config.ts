@@ -91,6 +91,15 @@ export const RANKS = [
  */
 export const SHIELDS_PER_MONTH = { FREE: 1, PRO: 3 } as const;
 
+/**
+ * Durée maximale d'une pause (vacation mode), bornes incluses.
+ * Sans cette borne, une pause 1970 → 2999 rendait toute série définitivement
+ * incassable — la mécanique de jeu entière contournée en un seul appel — et
+ * faisait expanser des milliers de dates par habitude à chaque rendu du
+ * dashboard. 90 jours couvre très largement le cas d'usage réel (congés).
+ */
+export const MAX_PAUSE_DAYS = 90;
+
 export const MOODS = [
   { value: 1, emoji: "😞", label: "Awful" },
   { value: 2, emoji: "😕", label: "Bad" },

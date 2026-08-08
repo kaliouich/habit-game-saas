@@ -3307,7 +3307,12 @@ select {
   display: flex;
   justify-content: center;
   margin: 16px 0;
+  /* Réserve la hauteur du slot avant chargement : sans ça l'arrivée de la pub
+     pousse le dashboard vers le bas (Cumulative Layout Shift). */
   min-height: 90px;
+  /* Un slot AdSense ne doit jamais élargir la page au-delà du viewport. */
+  max-width: 100%;
+  overflow: hidden;
   background: var(--bg);
   border-radius: 4px;
 }
@@ -3325,14 +3330,76 @@ select {
   width: 100%;
 }
 
+/* `min-width: 300px` + `margin-left` faisaient déborder la page sur mobile
+   (écran 360px). Largeur fluide, et masquée sous 1180px : en dessous, la
+   grille passe à 2 puis 1 colonne et il n'y a plus d'emplacement latéral. */
 .ad-sidebar {
   position: sticky;
   top: 20px;
-  margin-left: 20px;
-  min-width: 300px;
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (max-width: 1180px) {
+  .ad-sidebar {
+    display: none;
+  }
 }
 
 .ad-sidebar__container {
   border-radius: 4px;
   background: var(--bg);
+}
+
+/* ─── Pages d'erreur / 404 (audit QA) ────────────────────────────────────── */
+.errorpage {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 26px 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.errorcard {
+  background: var(--cell);
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow);
+  max-width: 420px;
+  width: 100%;
+  padding: 28px 24px;
+  text-align: center;
+}
+
+.errorcard__title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.errorcard__text {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+.errorcard__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.errorcard__digest {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 14px;
+  font-variant-numeric: tabular-nums;
 }

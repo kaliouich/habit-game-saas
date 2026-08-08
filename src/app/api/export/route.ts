@@ -5,6 +5,18 @@ import type { MonthKey } from "@/lib/dates";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Neutralise l'injection de formule CSV (CWE-1236) : Excel/LibreOffice/Sheets
+ * évaluent toute cellule commençant par = + - @ (ou tab/CR) comme une formule.
+ * Les noms d'habitudes sont saisis par l'utilisateur, donc un nom comme
+ * `=HYPERLINK("http://evil","cliquez")` s'exécuterait à l'ouverture du fichier
+ * exporté — y compris sur la machine de quelqu'un d'autre si le CSV est partagé.
+ * On préfixe d'une apostrophe, la convention tableur pour « ceci est du texte ».
+ */
+function neutralizeFormula(value: string): string {
+  return /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
+}
+
 function buildCsv(
   months: MonthKey[],
   habits: { id: string; name: string; emoji: string | null }[],
@@ -22,7 +34,9 @@ function buildCsv(
     }
   }
 
-  return rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(",")).join("\r\n");
+  return rows
+    .map((r) => r.map((c) => `"${neutralizeFormula(c).replace(/"/g, '""')}"`).join(","))
+    .join("\r\n");
 }
 
 export async function GET(req: Request) {

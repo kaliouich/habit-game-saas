@@ -1,16 +1,13 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ADSENSE_CLIENT, isAdSenseConfigured } from "@/lib/ads";
+import { ADSENSE_CLIENT, isAdSenseConfigured, loadAdSenseScript, pushAdSlot } from "@/lib/ads";
 
 /**
  * Bannière 300x600 pour les utilisateurs FREE — web uniquement.
  * Pas d'équivalent natif : AdMob n'a pas de format "sidebar", et AdSense est
  * interdit en app mobile (voir AdBanner.tsx) — sur Capacitor natif, la
- * bannière AdMob (AdMobBanner, montée par AdBanner) est la seule pub visible.
- * Même correctif que AdBanner : DOM réel via createElement, pas
- * dangerouslySetInnerHTML (les <script> injectés via innerHTML ne s'exécutent
- * jamais dans un navigateur).
+ * bannière AdMob (montée par AdBanner) est la seule pub visible.
  */
 interface AdSidebarProps {
   showAds: boolean;
@@ -24,40 +21,37 @@ export function AdSidebar({ showAds, slot = "0000000001" }: AdSidebarProps) {
   useEffect(() => {
     if (!showAds || loaded.current) return;
 
+    let cancelled = false;
+
     (async () => {
       const { Capacitor } = await import("@capacitor/core");
       if (Capacitor.isNativePlatform()) return; // pas d'équivalent AdMob sidebar
-
-      if (!isAdSenseConfigured() || !containerRef.current) return;
+      if (!isAdSenseConfigured() || !containerRef.current || cancelled) return;
 
       loaded.current = true;
 
-      const script = document.createElement("script");
-      script.async = true;
-      script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`;
-      script.crossOrigin = "anonymous";
-
       const ins = document.createElement("ins");
       ins.className = "adsbygoogle";
-      ins.style.display = "inline-block";
-      ins.style.width = "300px";
-      ins.style.height = "600px";
+      // Largeur fluide bornée par le conteneur (la colonne de stats fait 300px
+      // sur desktop) — pas de dimension figée qui déborderait ailleurs.
+      ins.style.display = "block";
+      ins.style.width = "100%";
       ins.setAttribute("data-ad-client", ADSENSE_CLIENT);
       ins.setAttribute("data-ad-slot", slot);
-
+      ins.setAttribute("data-ad-format", "vertical");
       containerRef.current.appendChild(ins);
-      containerRef.current.appendChild(script);
 
-      script.onload = () => {
-        try {
-          (window as unknown as { adsbygoogle: unknown[] }).adsbygoogle =
-            (window as unknown as { adsbygoogle: unknown[] }).adsbygoogle || [];
-          (window as unknown as { adsbygoogle: unknown[] }).adsbygoogle.push({});
-        } catch {
-          // AdSense pas encore prêt — non bloquant
-        }
-      };
+      try {
+        await loadAdSenseScript();
+        if (!cancelled) pushAdSlot();
+      } catch {
+        // Bloqueur de pub ou réseau coupé : emplacement vide, dashboard intact.
+      }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [showAds, slot]);
 
   if (!showAds) return null;

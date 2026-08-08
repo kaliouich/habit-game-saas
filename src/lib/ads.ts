@@ -32,3 +32,41 @@ export const ADMOB_IOS_BANNER_UNIT_ID =
 export function isAdSenseConfigured(): boolean {
   return Boolean(ADSENSE_CLIENT);
 }
+
+/**
+ * Charge `adsbygoogle.js` une seule fois par page (client uniquement).
+ * AdBanner et AdSidebar coexistent sur le dashboard : chacun injectait sa
+ * propre balise <script>, ce qui charge deux fois la même lib AdSense —
+ * source d'erreurs "adsbygoogle.push() error" et de slots non remplis.
+ * Idempotent : renvoie la même promesse à tous les appelants.
+ */
+let adsensePromise: Promise<void> | null = null;
+
+export function loadAdSenseScript(): Promise<void> {
+  if (adsensePromise) return adsensePromise;
+
+  adsensePromise = new Promise<void>((resolve, reject) => {
+    const src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`;
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${src}"]`);
+    if (existing) {
+      resolve();
+      return;
+    }
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = src;
+    script.crossOrigin = "anonymous";
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("ADSENSE_SCRIPT_FAILED"));
+    document.head.appendChild(script);
+  });
+
+  return adsensePromise;
+}
+
+/** Déclare un slot au script AdSense une fois celui-ci chargé. */
+export function pushAdSlot(): void {
+  const w = window as unknown as { adsbygoogle?: unknown[] };
+  w.adsbygoogle = w.adsbygoogle || [];
+  w.adsbygoogle.push({});
+}

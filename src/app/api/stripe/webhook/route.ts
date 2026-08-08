@@ -4,7 +4,16 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-async function syncSubscription(subscription: Stripe.Subscription) {
+/**
+ * @param consumesReferralCredit true uniquement pour l'événement qui matérialise
+ *   un NOUVEAU checkout (checkout.session.completed) : c'est là que les mois
+ *   offerts ont réellement été convertis en `trial_period_days` (voir
+ *   createCheckoutSession). Remettre le compteur à 0 sur tous les événements
+ *   détruisait les crédits gagnés : `customer.subscription.updated` est émis à
+ *   chaque renouvellement mensuel, donc un parrain déjà abonné perdait ses mois
+ *   offerts sans jamais en profiter — et `…deleted` les effaçait à la résiliation.
+ */
+async function syncSubscription(subscription: Stripe.Subscription, consumesReferralCredit = false) {
   const customerId =
     typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;
 
@@ -22,8 +31,7 @@ async function syncSubscription(subscription: Stripe.Subscription) {
       trialEndsAt: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
       stripeSubscriptionId: subscription.id,
       stripePriceId: priceId,
-      // Le crédit de parrainage (s'il y en avait) vient d'être consommé par ce checkout.
-      referralCreditMonths: 0,
+      ...(consumesReferralCredit && { referralCreditMonths: 0 }),
     },
   });
 
@@ -73,7 +81,9 @@ export async function POST(req: Request) {
           const subscription = await stripe.subscriptions.retrieve(
             typeof session.subscription === "string" ? session.subscription : session.subscription.id,
           );
-          await syncSubscription(subscription);
+          // Seul cet événement suit un checkout : c'est ici, et nulle part
+          // ailleurs, que les mois de parrainage ont été convertis en trial.
+          await syncSubscription(subscription, true);
         }
         break;
       }

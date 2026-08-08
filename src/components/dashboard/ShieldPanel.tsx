@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useStreakShield } from "@/lib/actions/shield";
+import { consumeStreakShield } from "@/lib/actions/shield";
 import { SHIELDS_PER_MONTH } from "@/lib/config";
 
 interface ShieldPanelProps {
@@ -59,7 +59,7 @@ export function ShieldPanel({ plan, shieldsUsed, missedDates }: ShieldPanelProps
             onClick={() => {
               setError(null);
               startTransition(async () => {
-                const res = await useStreakShield({ date: target });
+                const res = await consumeStreakShield({ date: target });
                 if (!res.ok) setError(ERRORS[res.error ?? ""] ?? "Could not use shield.");
               });
             }}

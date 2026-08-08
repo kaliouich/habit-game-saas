@@ -20,7 +20,10 @@ const UseShieldSchema = z.object({
  * est encore rattrapable en cochant), quota mensuel selon le plan, un seul
  * bouclier par date (contrainte unique en base).
  */
-export async function useStreakShield(input: unknown): Promise<{ ok: boolean; error?: string }> {
+// Nommée "consume" et non "use…" : un préfixe `use` fait passer cette Server
+// Action pour un hook React aux yeux d'eslint (react-hooks/rules-of-hooks), qui
+// interdit alors son appel dans un callback — ce qui est précisément l'usage ici.
+export async function consumeStreakShield(input: unknown): Promise<{ ok: boolean; error?: string }> {
   const { date } = UseShieldSchema.parse(input);
   const user = await getCurrentUser();
   const today = todayInTz(user.timezone);

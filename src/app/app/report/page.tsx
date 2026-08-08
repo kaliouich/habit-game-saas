@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/user";
 import { getReportData } from "@/lib/data";
 import { computeReport } from "@/lib/report";
-import { resolvePeriod, PERIOD_PRESETS, type PeriodKey } from "@/lib/period";
+import { resolvePeriod, PERIOD_PRESETS } from "@/lib/period";
 import { todayInTz } from "@/lib/dates";
 import { APP_NAME, MOODS } from "@/lib/config";
 import { PrintButton } from "@/components/PrintButton";

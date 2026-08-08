@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Artefacts de build (gitignorés, donc absents en CI mais présents en local
+    // après un build/`cap sync` — sans ça `npm run lint` noie les vraies erreurs
+    // sous un millier de warnings sur du JS minifié).
+    "ssr_chunks/**",
+    "android/**",
+    "ios/**",
   ]),
 ]);
 

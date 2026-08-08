@@ -24,33 +24,40 @@ n'est nécessaire pour un changement de code** (les déploiements web normaux
 suffisent), seuls les changements natifs (icône, splash, plugins, permissions)
 demandent un nouveau build/submit sur les stores.
 
-## ⚠️ Limite connue : Google Sign-In dans l'app native
+## ⚠️ Google Sign-In dans l'app native — non résolu
 
-Google interdit l'authentification OAuth dans une WebView embarquée nue
-(erreur `disallowed_useragent`). `NativeGoogleSignIn.tsx` route donc le clic
-sur "Continue with Google" vers le navigateur système (Custom Tabs sur
-Android, SFSafariViewController sur iOS) au lieu de la webview de l'app —
-ça évite le blocage pur et simple.
+État actuel : le bouton "Continue with Google" fait un POST normal (Server
+Action Auth.js) **y compris dans l'app**. Aucune interception native.
 
-**Mais** le navigateur système a un cookie jar séparé de la webview de l'app.
-Après connexion réussie dans le navigateur système, la session n'est **pas**
-automatiquement récupérée par l'app — l'utilisateur doit revenir manuellement.
-C'est une limitation connue et non triviale de tout l'écosystème
-Capacitor/Cordova pour l'OAuth tiers (pas un bug de cette implémentation).
+### Piste écartée : ouvrir le flow dans le navigateur système
 
-**Solutions possibles (non implémentées, à évaluer si besoin réel) :**
-1. **Recommandé pour mobile : activer Resend (magic link email)** — ce flow
-   reste entièrement dans la webview de l'app (pas d'écran de consentement
-   tiers), donc aucun problème de cookie cross-domain. Voir
-   `AUTH_RESEND_KEY` dans les secrets k8s (actuellement vide).
-2. Implémenter un pont d'échange de session : après l'auth Google dans le
-   navigateur système, rediriger vers un deep link personnalisé
-   (`habitgame://auth-callback?code=...`) qui renvoie l'app, laquelle
-   appelle un endpoint serveur dédié pour échanger ce code contre un cookie
-   de session posé directement par la webview elle-même. Travail backend
-   non négligeable (nouvelle table de codes à usage unique + route API).
-3. SDK natif Google Sign-In + Credentials provider Auth.js dédié — plus
-   robuste mais plus de travail natif par plateforme.
+Une première version routait le clic vers Custom Tabs via `Browser.open()`
+sur `/api/auth/signin/google`. **Ça ne marche pas** : Auth.js v5 exige un
+POST avec token CSRF pour se connecter — un GET sur cette route n'est pas
+une action valide et redirige vers `/api/auth/error?error=Configuration`
+(`UnknownAction` côté logs serveur). Piège : un `curl` sur cette URL
+renvoie bien `302`, mais le `Location` pointe vers la page d'erreur, pas
+vers Google — vérifier le header, pas juste le code HTTP.
+
+Et même en corrigeant l'URL, le navigateur système a un **cookie jar séparé**
+de la WebView : la session obtenue dans Custom Tabs n'est pas visible par
+l'app. L'approche est donc structurellement sans issue sans pont de session.
+
+### Ce qu'il reste à trancher
+
+1. **Tester d'abord si la WebView Capacitor passe chez Google.** Google
+   bloque les WebView embarquées via user-agent (`disallowed_useragent`),
+   mais ce n'est pas systématique selon les versions. C'est gratuit à
+   tester avec l'APK actuel — à faire avant tout développement.
+2. **Activer Resend (magic link email)** — le flow reste entièrement dans
+   la WebView (pas d'écran de consentement tiers), donc aucun problème de
+   cookie. C'est la solution la plus simple et la plus fiable pour mobile.
+   `AUTH_RESEND_KEY` est actuellement vide dans les secrets k8s.
+3. **Pont de session par deep link** — après OAuth dans Custom Tabs,
+   rediriger vers `habitgame://auth-callback?code=…`, l'app appelle un
+   endpoint qui échange ce code contre un cookie posé dans la WebView.
+   Robuste mais demande une table de codes à usage unique + route API +
+   config deep link (travail backend sensible, touche à l'auth).
 
 ## Build de l'APK — via GitHub Actions (recommandé)
 

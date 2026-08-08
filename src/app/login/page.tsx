@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { APP_NAME } from "@/lib/config";
 import { signInWithEmail, signInWithGoogle } from "@/lib/actions/auth";
-import { NativeGoogleSignIn } from "@/components/NativeGoogleSignIn";
 
 export const metadata: Metadata = { title: "Sign in" };
 // Sans ça, Next prérend cette page une fois au build (où les secrets ne sont
@@ -32,14 +31,11 @@ export default function LoginPage() {
 
         <div className="authcard__body">
           {googleEnabled && (
-            <>
-              <NativeGoogleSignIn />
-              <form action={signInWithGoogle} data-google-signin>
-                <button type="submit" className="btn btn--google">
-                  Continue with Google
-                </button>
-              </form>
-            </>
+            <form action={signInWithGoogle}>
+              <button type="submit" className="btn btn--google">
+                Continue with Google
+              </button>
+            </form>
           )}
 
           {googleEnabled && emailEnabled && (

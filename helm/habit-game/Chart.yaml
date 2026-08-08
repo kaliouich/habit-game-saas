@@ -3,7 +3,7 @@ name: habit-game
 description: Habit Game — SaaS de tracking d'habitudes (Next.js + PostgreSQL) sur k3s
 type: application
 version: 0.1.0
-appVersion: "0.19.0"
+appVersion: "0.22.0"
 keywords:
   - nextjs
   - saas

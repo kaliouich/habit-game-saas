@@ -66,6 +66,33 @@ npx prisma migrate dev   # Créer migration
 npx prisma db seed      # Démo 12 habits + logs
 ```
 
+## 🚀 Déploiement — GitOps (ArgoCD)
+
+**Déployer = `git push` sur `main`.** Rien d'autre.
+
+```
+push main → CI build l'image ARM64 → GHCR → commit du tag → ArgoCD synchronise
+```
+
+⚠️ **Ne plus faire `kubectl apply -f k8s/`** (dossier legacy) ni `helm upgrade`
+à la main : ArgoCD a `selfHeal` activé et ramènera l'état du dépôt sous ~3 min.
+Un correctif à chaud doit finir dans git, sinon il disparaît.
+
+```bash
+# État du déploiement
+sudo kubectl get application habit-game -n argocd \
+  -o custom-columns=SYNC:.status.sync.status,HEALTH:.status.health.status
+
+# Forcer une synchro sans attendre le polling
+sudo kubectl patch application habit-game -n argocd --type merge \
+  -p '{"operation":{"sync":{"revision":"main"}}}'
+
+# Rollback = git revert (chaque image porte un SHA immuable, conservé sur GHCR)
+git revert <sha-du-commit-de-tag> && git push
+```
+
+Détails, périmètre et procédure de secours → [argocd/README.md](argocd/README.md)
+
 ## 🐳 Ops k3s
 
 ```bash
@@ -73,13 +100,8 @@ npx prisma db seed      # Démo 12 habits + logs
 sudo kubectl get pods -o wide
 sudo kubectl logs deploy/habit-game --tail=30
 
-# Déployer / redémarrer
-sudo kubectl apply -f k8s/app.yaml
-sudo kubectl rollout restart deploy/habit-game
-sudo kubectl rollout status deploy/habit-game --timeout=180s
-
 # Accès DB
-sudo kubectl port-forward svc/postgres 5432:5432  # Depuis l'hôte
+sudo kubectl port-forward svc/habit-postgres 5432:5432  # Depuis l'hôte
 psql $DATABASE_URL
 ```
 

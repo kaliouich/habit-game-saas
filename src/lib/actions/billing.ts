@@ -6,6 +6,7 @@ import { stripe, STRIPE_PRICES } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/user";
 import { DONATION_MIN, DONATION_MAX } from "@/lib/config";
+import { rateLimit, RATE_LIMITS } from "@/lib/rateLimit";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
@@ -33,6 +34,11 @@ export async function createDonationCheckoutSession(formData: FormData): Promise
   // flottant, donc l'arrondi n'est pas cosmétique, il évite un rejet API.
   const unitAmount = Math.round(amount * 100);
   const user = await getCurrentUser();
+
+  // Chaque appel crée un objet côté Stripe : on plafonne pour qu'un script ne
+  // puisse pas noyer le tableau de bord de sessions abandonnées.
+  const limited = rateLimit(`donation:${user.id}`, RATE_LIMITS.checkout.limit, RATE_LIMITS.checkout.windowMs);
+  if (!limited.ok) throw new Error("RATE_LIMITED");
 
   let customerId = user.stripeCustomerId;
   if (!customerId) {
@@ -72,6 +78,9 @@ export async function createDonationCheckoutSession(formData: FormData): Promise
 export async function createCheckoutSession(): Promise<void> {
   const user = await getCurrentUser();
 
+  const limited = rateLimit(`checkout:${user.id}`, RATE_LIMITS.checkout.limit, RATE_LIMITS.checkout.windowMs);
+  if (!limited.ok) throw new Error("RATE_LIMITED");
+
   let customerId = user.stripeCustomerId;
   if (!customerId) {
     const customer = await stripe.customers.create({
@@ -101,6 +110,9 @@ export async function createCheckoutSession(): Promise<void> {
 
 export async function createPortalSession(): Promise<void> {
   const user = await getCurrentUser();
+
+  const limited = rateLimit(`portal:${user.id}`, RATE_LIMITS.portal.limit, RATE_LIMITS.portal.windowMs);
+  if (!limited.ok) throw new Error("RATE_LIMITED");
   if (!user.stripeCustomerId) throw new Error("NO_STRIPE_CUSTOMER");
 
   const session = await stripe.billingPortal.sessions.create({

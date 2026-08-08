@@ -2,6 +2,27 @@ import { prisma } from "./prisma";
 import { computeMonthStats, type HabitWithLogs, type MonthStats } from "./stats";
 import { daysInMonth, expandDateRange, pad2, todayInTz, type MonthKey } from "./dates";
 
+/**
+ * Fenêtre d'historique chargée pour le dashboard (~3 ans).
+ *
+ * Sans borne, la requête ramenait TOUS les logs depuis la création du compte à
+ * chaque affichage : le coût croît linéairement avec l'ancienneté (24 habitudes
+ * × 3 ans ≈ 26 000 lignes) alors que l'écran n'en montre qu'un mois.
+ *
+ * Compromis assumé : `bestStreak` (« record absolu ») est donc calculé sur
+ * cette fenêtre. Une série ininterrompue de plus de 3 ans serait tronquée —
+ * cas inexistant en pratique pour un produit récent. Si le besoin d'un record
+ * à vie apparaît, la bonne réponse est de dénormaliser `bestStreak` sur la
+ * ligne Habit (mis à jour au toggle), pas d'élargir cette fenêtre.
+ */
+const LOG_LOOKBACK_DAYS = 1100;
+
+function shiftIso(date: string, delta: number): string {
+  const [y, m, d] = date.split("-").map(Number);
+  const t = new Date(Date.UTC(y, m - 1, d + delta));
+  return `${t.getUTCFullYear()}-${pad2(t.getUTCMonth() + 1)}-${pad2(t.getUTCDate())}`;
+}
+
 export interface DashboardData {
   stats: MonthStats;
   habits: HabitWithLogs[];
@@ -22,13 +43,23 @@ export async function getDashboardData(
   const monthEnd = `${month}-${pad2(daysInMonth(month))}`;
   const monthEndDate = new Date(`${monthEnd}T23:59:59Z`);
 
+  // La borne basse doit couvrir DEUX besoins : le mois affiché (qui peut être
+  // passé, un Pro navigue dans son historique) et la série en cours, qui elle
+  // se calcule toujours à partir d'aujourd'hui. D'où le min des deux.
+  const lookbackFloor = shiftIso(todayInTz(timezone), -LOG_LOOKBACK_DAYS);
+  const monthStart = `${month}-01`;
+  const logsFrom = monthStart < lookbackFloor ? monthStart : lookbackFloor;
+
   const [habitRows, moods, shields] = await Promise.all([
     prisma.habit.findMany({
       where: {
         userId,
         OR: [{ archivedAt: null }, { archivedAt: { gt: monthEndDate } }],
       },
-      include: { logs: { select: { date: true } }, pauses: { select: { from: true, to: true } } },
+      include: {
+        logs: { where: { date: { gte: logsFrom } }, select: { date: true } },
+        pauses: { select: { from: true, to: true } },
+      },
       orderBy: { position: "asc" },
     }),
     prisma.moodLog.findMany({

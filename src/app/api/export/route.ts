@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/user";
 import { prisma } from "@/lib/prisma";
 import { isValidMonthKey, daysInMonth, pad2, currentMonth } from "@/lib/dates";
 import type { MonthKey } from "@/lib/dates";
+import { rateLimit, RATE_LIMITS } from "@/lib/rateLimit";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,16 @@ export async function GET(req: Request) {
 
   if (user.plan !== "PRO") {
     return Response.json({ error: "PRO plan required for CSV export" }, { status: 403 });
+  }
+
+  // Requête lourde (tout l'historique du compte) : on la plafonne pour qu'une
+  // boucle ne puisse pas saturer la base à elle seule.
+  const limited = rateLimit(`export:${user.id}`, RATE_LIMITS.export.limit, RATE_LIMITS.export.windowMs);
+  if (!limited.ok) {
+    return Response.json(
+      { error: "Too many exports, please retry later" },
+      { status: 429, headers: { "Retry-After": String(limited.retryAfter) } },
+    );
   }
 
   const { searchParams } = new URL(req.url);

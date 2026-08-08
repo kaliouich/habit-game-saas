@@ -10,8 +10,8 @@
 - Plateforme **Android scaffoldée** (`android/`) : icônes + splash screen
   générés depuis l'icône live du site (`resources/icon-512.png`)
 - Plateforme **iOS non générée** — nécessite Xcode, donc un Mac. Voir plus bas.
-- Fix Google Sign-In natif (`NativeGoogleSignIn.tsx`) — ouvre le flow dans le
-  navigateur système au lieu de la webview embarquée
+- Google Sign-In fonctionnel dans la WebView, sans interception (voir section
+  dédiée plus bas — testé empiriquement)
 - AdMob natif (`AdMobBanner.tsx`) pour iOS/Android, AdSense corrigé pour le web
   (voir `ADS_SETUP.md`)
 
@@ -24,10 +24,34 @@ n'est nécessaire pour un changement de code** (les déploiements web normaux
 suffisent), seuls les changements natifs (icône, splash, plugins, permissions)
 demandent un nouveau build/submit sur les stores.
 
-## ⚠️ Google Sign-In dans l'app native — non résolu
+## Google Sign-In dans l'app native — résolu
 
-État actuel : le bouton "Continue with Google" fait un POST normal (Server
-Action Auth.js) **y compris dans l'app**. Aucune interception native.
+État : le bouton "Continue with Google" fait un POST normal (Server Action
+Auth.js) **y compris dans l'app**. Aucune interception native, aucune
+passerelle de session à maintenir.
+
+### Vérifié : Google n'interdit pas la WebView Capacitor
+
+La crainte du `disallowed_useragent` a été testée empiriquement (2026-08-08)
+en rejouant le flux OAuth réel avec l'user-agent d'une WebView Android
+(celui qui contient le marqueur `; wv)`), puis avec un Chrome standard :
+
+| User-Agent | Résultat |
+|---|---|
+| WebView (`; wv)`) | 302 → page de connexion Google servie (HTTP 200) |
+| Chrome standard | 302 → **exactement la même** destination |
+
+Aucun `disallowed_useragent`, aucun écran « ce navigateur n'est peut-être pas
+sécurisé ». Le blocage historique de Google ne s'applique pas à ce client
+OAuth. Conclusion : **ne pas construire de passerelle de session par deep
+link** — ce serait de l'authentification maison, donc du risque de
+compromission de compte, pour résoudre un problème qui n'existe pas.
+
+Si Google durcissait sa politique un jour, la réponse la moins risquée reste
+d'activer Resend (magic link) : ce flux se déroule entièrement dans la
+WebView, sans écran de consentement tiers. Il suffit de renseigner
+`AUTH_RESEND_KEY` dans le Secret k8s, le code est déjà en place et le
+provider s'enregistre tout seul (voir `src/lib/auth.ts`).
 
 ### Piste écartée : ouvrir le flow dans le navigateur système
 
@@ -43,21 +67,10 @@ Et même en corrigeant l'URL, le navigateur système a un **cookie jar séparé*
 de la WebView : la session obtenue dans Custom Tabs n'est pas visible par
 l'app. L'approche est donc structurellement sans issue sans pont de session.
 
-### Ce qu'il reste à trancher
-
-1. **Tester d'abord si la WebView Capacitor passe chez Google.** Google
-   bloque les WebView embarquées via user-agent (`disallowed_useragent`),
-   mais ce n'est pas systématique selon les versions. C'est gratuit à
-   tester avec l'APK actuel — à faire avant tout développement.
-2. **Activer Resend (magic link email)** — le flow reste entièrement dans
-   la WebView (pas d'écran de consentement tiers), donc aucun problème de
-   cookie. C'est la solution la plus simple et la plus fiable pour mobile.
-   `AUTH_RESEND_KEY` est actuellement vide dans les secrets k8s.
-3. **Pont de session par deep link** — après OAuth dans Custom Tabs,
-   rediriger vers `habitgame://auth-callback?code=…`, l'app appelle un
-   endpoint qui échange ce code contre un cookie posé dans la WebView.
-   Robuste mais demande une table de codes à usage unique + route API +
-   config deep link (travail backend sensible, touche à l'auth).
+Le pont de session par deep link (`habitgame://auth-callback?code=…` + table
+de codes à usage unique) reste techniquement possible, mais n'a **aucune
+raison d'être construit** tant que le test ci-dessus reste vert : ce serait
+de l'authentification maison en pure perte.
 
 ## Build de l'APK — via GitHub Actions (recommandé)
 

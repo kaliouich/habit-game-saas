@@ -7,15 +7,25 @@ metadata:
   labels:
     {{- include "habit-game.labels" . | nindent 4 }}
 spec:
+  # `group`, `kind` et `weight` sont ajoutés par le serveur d'API s'ils sont
+  # omis. Les écrire explicitement évite un écart permanent entre le dépôt et
+  # le cluster : sans ça, ArgoCD voyait cette ressource éternellement
+  # OutOfSync et la resynchronisait en boucle (selfHeal). On préfère aligner
+  # le manifeste sur la réalité plutôt que masquer la différence.
   hostnames:
     - {{ .Values.route.hostname | quote }}
   parentRefs:
-    - name: {{ .Values.route.gatewayName }}
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: {{ .Values.route.gatewayName }}
       namespace: {{ .Values.route.gatewayNamespace }}
   rules:
     - backendRefs:
-        - name: {{ include "habit-game.name" . }}-svc
+        - group: ""
+          kind: Service
+          name: {{ include "habit-game.name" . }}-svc
           port: {{ .Values.service.port }}
+          weight: 1
       matches:
         - path:
             type: PathPrefix

@@ -52,7 +52,43 @@ Capacitor/Cordova pour l'OAuth tiers (pas un bug de cette implémentation).
 3. SDK natif Google Sign-In + Credentials provider Auth.js dédié — plus
    robuste mais plus de travail natif par plateforme.
 
-## Build & test — Android
+## Build de l'APK — via GitHub Actions (recommandé)
+
+**L'APK debug se construit automatiquement en CI**, pas besoin d'Android
+Studio ni de machine locale :
+
+```bash
+gh workflow run android-build.yml --repo kaliouich/habit-game-saas --ref main
+```
+
+(ou onglet **Actions → Android build → Run workflow** sur GitHub). L'APK est
+téléchargeable en artifact du run (~8,9 Mo, rétention 30 j) :
+
+```bash
+gh run download <RUN_ID> --repo kaliouich/habit-game-saas --dir ./apk
+```
+
+### Contraintes de version (apprises à la dure)
+
+| Outil | Version requise | Symptôme si mauvaise version |
+|---|---|---|
+| Node | **≥ 22** | `The Capacitor CLI requires NodeJS >=22.0.0` au `cap sync` |
+| Java | **21** | `invalid source release: 21` à `compileDebugJavaWithJavac` |
+
+Ces deux versions sont figées dans `.github/workflows/android-build.yml` —
+ne pas les baisser sans vérifier que Capacitor 8 suit.
+
+### ⚠️ Pourquoi pas de build sur le serveur k3s
+
+Ce serveur est **ARM64** et Google ne publie pas de binaire `aapt2` Linux
+ARM64 dans les build-tools. Les contournements testés et écartés :
+émulation QEMU x86_64 (fait planter le runtime natif de la JVM — `Aborted,
+core dumped`, non contournable par `-Xint` qui ne couvre que le bytecode
+applicatif), et `aapt2` ARM64 des dépôts Termux (lié à la libc Android
+Bionic, incompatible avec la glibc Ubuntu). D'où le passage par un runner
+GitHub x86_64 natif.
+
+## Build & test en local — Android
 
 Nécessite **Android Studio** (SDK + émulateur ou téléphone physique) —
 non disponible sur ce serveur Linux ARM64. Depuis une machine avec Android

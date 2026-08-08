@@ -1,0 +1,57 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: habit-game
+  namespace: argocd
+  finalizers:
+    # Sans ce finalizer, supprimer l'Application laisserait les ressources
+    # orphelines dans le cluster (plus gérées, mais toujours actives).
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    # Dépôt public : ArgoCD lit sans credential. Rien de sensible n'y transite
+    # (les secrets restent des objets k8s créés hors GitOps).
+    repoURL: https://github.com/kaliouich/habit-game-saas.git
+    targetRevision: main
+    path: helm/habit-game
+    helm:
+      valueFiles:
+        - values-production.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    # Namespace où vivent déjà l'app et sa base — ArgoCD adopte l'existant
+    # plutôt que de recréer quoi que ce soit.
+    namespace: default
+
+  syncPolicy:
+    automated:
+      # selfHeal : toute dérive manuelle (kubectl edit à chaud) est corrigée.
+      # C'est le point — le dépôt redevient la seule source de vérité.
+      selfHeal: true
+      # prune : supprime les ressources retirées du chart. Sans risque pour le
+      # Secret `habit-game-secrets` ni pour le PVC Postgres : le premier n'est
+      # pas rendu par le chart (secrets.create=false), le second l'est mais
+      # porte une annotation de conservation (voir ci-dessous).
+      prune: true
+    syncOptions:
+      # Les ressources existent déjà (créées par `helm upgrade`) : ArgoCD doit
+      # les adopter au lieu d'échouer sur un conflit de propriété.
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 15s
+        factor: 2
+        maxDuration: 3m
+
+  ignoreDifferences:
+    # Le nombre de replicas peut être ajusté à chaud en incident sans qu'ArgoCD
+    # ne le ramène immédiatement à la valeur du dépôt.
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas

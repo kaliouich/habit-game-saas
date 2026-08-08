@@ -1,7 +1,14 @@
 # Overrides pour la prod k3s (habits.khalilaliouich.com).
-# Usage: helm upgrade --install habit-game ./helm/habit-game \
-#          -f helm/habit-game/values-production.yaml \
-#          -f secrets.local.yaml   # non commité, voir secrets.local.yaml.example
+#
+# ⚠️ Fichier piloté par la CI : le workflow build-image.yml réécrit `app.image.tag`
+# à chaque build et committe le changement. C'est CE commit qu'ArgoCD observe
+# pour déployer. Ne pas modifier le tag à la main — il serait écrasé, et surtout
+# il désignerait une image que personne n'a construite.
+#
+# Déploiement : automatique via ArgoCD (voir argocd/application.yaml).
+# Secours manuel si ArgoCD est indisponible :
+#   helm upgrade --install habit-game ./helm/habit-game \
+#     -f helm/habit-game/values-production.yaml
 
 app:
   replicas: 1
@@ -16,6 +23,9 @@ postgres:
   enabled: true
   storage: 5Gi
 
+# Les secrets ne transitent jamais par git : le chart se contente de référencer
+# un Secret déjà présent dans le cluster (créé hors GitOps). C'est ce qui rend
+# ce dépôt publiable sans risque.
 secrets:
   create: false
   existingSecretName: habit-game-secrets

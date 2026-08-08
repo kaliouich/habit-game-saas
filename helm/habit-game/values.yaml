@@ -9,9 +9,16 @@ app:
   replicas: 1
 
   image:
-    repository: habit-game
+    # Registry public GHCR : le cluster tire l'image, il ne la reçoit plus par
+    # `docker save | k3s ctr images import` (qui imposait un accès SSH au nœud
+    # et rendait tout déploiement manuel).
+    repository: ghcr.io/kaliouich/habit-game-saas
+    # Tag = SHA de commit, écrit par le workflow build-image.yml. Immuable :
+    # on sait toujours quel code tourne, et un rollback est déterministe.
     tag: v0.23.0
-    pullPolicy: Never # image importée localement dans k3s (pas de registry)
+    # IfNotPresent et non Always : le tag étant immuable, un re-pull serait
+    # inutile — et Never empêcherait le tirage depuis le registry.
+    pullPolicy: IfNotPresent
 
   containerPort: 3000
 

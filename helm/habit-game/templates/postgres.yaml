@@ -4,6 +4,14 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "habit-game.postgresName" . }}-pvc
   namespace: {{ .Values.app.namespace }}
+  annotations:
+    # Le volume PORTE LA BASE DE DONNÉES. Ces deux annotations empêchent sa
+    # suppression automatique — respectivement par `helm uninstall` et par le
+    # `prune` d'ArgoCD. Sans elles, retirer l'app du dépôt (ou une erreur de
+    # chemin dans l'Application) effacerait toutes les données utilisateurs.
+    # Suppression volontaire = manuelle, jamais un effet de bord.
+    helm.sh/resource-policy: keep
+    argocd.argoproj.io/sync-options: Delete=false
   labels:
     {{- include "habit-game.labels" . | nindent 4 }}
 spec:

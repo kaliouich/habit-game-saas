@@ -33,6 +33,47 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "database" },
   pages: { signIn: "/login", verifyRequest: "/login/check-email" },
   providers,
+  /**
+   * Cookies éphémères du handshake OAuth en SameSite=None.
+   *
+   * Pourquoi : dans une WebView Android (app Capacitor), la redirection
+   * accounts.google.com → notre domaine est évaluée comme un contexte TIERS.
+   * En SameSite=Lax (défaut), le navigateur retient donc ces cookies au
+   * retour, et Auth.js échoue sur
+   * `InvalidCheck: pkceCodeVerifier value could not be parsed`.
+   *
+   * Périmètre volontairement limité à `pkceCodeVerifier` et `state` :
+   * - Ils vivent 15 min, sont HttpOnly + Secure, et ne servent qu'à être
+   *   renvoyés une fois pour prouver que le callback correspond bien à la
+   *   demande émise. Les exposer en contexte tiers n'autorise aucune action.
+   * - `state` reste par ailleurs la protection CSRF du flux OAuth lui-même.
+   *
+   * Le COOKIE DE SESSION n'est délibérément PAS touché : il reste en Lax,
+   * qui est ce qui protège les actions authentifiées contre le CSRF. Le
+   * passer en None élargirait réellement la surface d'attaque.
+   */
+  cookies: {
+    pkceCodeVerifier: {
+      name: "__Secure-authjs.pkce.code_verifier",
+      options: {
+        httpOnly: true,
+        sameSite: "none",
+        path: "/",
+        secure: true,
+        maxAge: 900,
+      },
+    },
+    state: {
+      name: "__Secure-authjs.state",
+      options: {
+        httpOnly: true,
+        sameSite: "none",
+        path: "/",
+        secure: true,
+        maxAge: 900,
+      },
+    },
+  },
   callbacks: {
     async session({ session, user }) {
       if (session.user) session.user.id = user.id;

@@ -16,6 +16,33 @@ const config: CapacitorConfig = {
   server: {
     url: "https://habits.khalilaliouich.com",
     cleartext: false,
+    /**
+     * Hôtes tiers autorisés à s'ouvrir DANS la WebView.
+     *
+     * Par défaut, Capacitor ouvre toute navigation vers un hôte différent de
+     * `url` dans le NAVIGATEUR EXTERNE. Sans cette liste, le login Google
+     * cassait systématiquement :
+     *
+     *   1. le serveur pose le cookie PKCE → dans le jar de la WebView
+     *   2. redirection vers accounts.google.com → Capacitor ouvre Chrome
+     *   3. Google renvoie sur /api/auth/callback → toujours dans Chrome
+     *   4. Chrome n'a pas le cookie PKCE (posé dans la WebView) → échec
+     *      `InvalidCheck: pkceCodeVerifier value could not be parsed`
+     *
+     * Garder ces flux dans la WebView = un seul jar de cookies, donc un
+     * handshake OAuth cohérent de bout en bout.
+     *
+     * Stripe est listé pour la même raison : le retour de Checkout
+     * (success_url) doit atterrir dans la WebView, là où vit la session —
+     * sinon l'utilisateur paie puis se retrouve connecté dans Chrome.
+     */
+    allowNavigation: [
+      "accounts.google.com",
+      "*.google.com",
+      "checkout.stripe.com",
+      "billing.stripe.com",
+      "*.stripe.com",
+    ],
   },
   ios: {
     contentInset: "automatic",

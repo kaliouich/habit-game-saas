@@ -30,6 +30,37 @@ demandent un nouveau build/submit sur les stores.
 Auth.js) **y compris dans l'app**. Aucune interception native, aucune
 passerelle de session à maintenir.
 
+### ⚠️ Le piège n°1 : `server.allowNavigation`
+
+Capacitor ouvre dans le **navigateur externe** toute navigation vers un hôte
+différent de `server.url`. Sans liste blanche, le login OAuth se déroule à
+cheval sur deux contextes et échoue systématiquement :
+
+```
+1. le serveur pose le cookie PKCE   → jar de la WebView
+2. redirection vers accounts.google.com → Capacitor ouvre Chrome
+3. Google renvoie sur /api/auth/callback → toujours dans Chrome
+4. Chrome n'a pas le cookie PKCE    → InvalidCheck: pkceCodeVerifier…
+```
+
+**Signature du bug** : ça marche dans un navigateur mobile (un seul jar de
+cookies), ça casse dans l'app (deux jars). Si tu vois un bandeau de navigateur
+(✕, partage, ⋮) apparaître pendant le flux, c'est exactement ça.
+
+`accounts.google.com` et les hôtes Stripe sont donc listés dans
+`allowNavigation` (`capacitor.config.ts`). Stripe pour la même raison : le
+retour de Checkout doit atterrir là où vit la session.
+
+### Les trois réglages sont nécessaires ENSEMBLE
+
+| Réglage | Où | Rôle |
+|---|---|---|
+| `allowNavigation` | `capacitor.config.ts` | garde le flux dans la WebView (un seul jar) |
+| `SameSite=None` sur pkce/state | `src/lib/auth.ts` | autorise l'envoi du cookie en contexte tiers |
+| `setAcceptThirdPartyCookies` | `MainActivity.java` | autorise la WebView à accepter ces cookies |
+
+En retirer un suffit à recasser le login mobile.
+
 ### Vérifié : Google n'interdit pas la WebView Capacitor
 
 La crainte du `disallowed_useragent` a été testée empiriquement (2026-08-08)

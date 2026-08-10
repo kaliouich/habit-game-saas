@@ -39,6 +39,12 @@ const config: CapacitorConfig = {
     allowNavigation: [
       "accounts.google.com",
       "*.google.com",
+      // La validation en deux étapes et le consentement peuvent transiter par
+      // ces hôtes ; un seul manquant renvoie l'utilisateur dans le navigateur
+      // externe, où le flux meurt faute de cookies de session Google.
+      "*.googleusercontent.com",
+      "*.gstatic.com",
+      "accounts.youtube.com",
       "checkout.stripe.com",
       "billing.stripe.com",
       "*.stripe.com",

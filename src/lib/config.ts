@@ -107,3 +107,25 @@ export const MOODS = [
   { value: 4, emoji: "🙂", label: "Good" },
   { value: 5, emoji: "😄", label: "Great" },
 ] as const;
+
+/**
+ * Phase 1 roadmap (socle quantifié). TIMES reste la case à cocher classique
+ * (pas d'input supplémentaire) ; les autres unités affichent un stepper dans
+ * la grille (DayValueCell) — `step` = incrément par clic, `defaultTarget` =
+ * cible pré-remplie à la création (l'utilisateur peut l'ajuster).
+ */
+export const HABIT_UNITS = [
+  { key: "TIMES", label: "Check", suffix: "", step: 1, defaultTarget: 1 },
+  { key: "COUNT", label: "Count", suffix: "", step: 1, defaultTarget: 1 },
+  { key: "MINUTES", label: "Minutes", suffix: "min", step: 5, defaultTarget: 30 },
+  { key: "HOURS", label: "Hours", suffix: "h", step: 0.5, defaultTarget: 1 },
+  { key: "STEPS", label: "Steps", suffix: "steps", step: 1000, defaultTarget: 10000 },
+  { key: "KM", label: "Kilometers", suffix: "km", step: 1, defaultTarget: 5 },
+  { key: "CALORIES", label: "Calories", suffix: "cal", step: 100, defaultTarget: 500 },
+] as const;
+
+export type HabitUnitKey = (typeof HABIT_UNITS)[number]["key"];
+
+export function habitUnitConfig(key: string): (typeof HABIT_UNITS)[number] {
+  return HABIT_UNITS.find((u) => u.key === key) ?? HABIT_UNITS[0];
+}

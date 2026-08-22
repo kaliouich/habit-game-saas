@@ -15,38 +15,40 @@ enum Plan {
 }
 
 model User {
-  id               String    @id @default(cuid())
-  email            String    @unique
-  name             String?
-  image            String?
-  emailVerified    DateTime?
+  id                   String         @id @default(cuid())
+  email                String         @unique
+  name                 String?
+  image                String?
+  emailVerified        DateTime?
   // Billing
-  stripeCustomerId String?   @unique
-  plan             Plan      @default(FREE)
-  planStatus       String?
-  trialEndsAt      DateTime?
+  stripeCustomerId     String?        @unique
+  plan                 Plan           @default(FREE)
+  planStatus           String?
+  trialEndsAt          DateTime?
   stripeSubscriptionId String?
-  stripePriceId    String?
+  stripePriceId        String?
   // Préférences
-  theme            String    @default("light")
-  weekStartsOn     Int       @default(1)
-  timezone         String    @default("Africa/Tunis")
-  boardSkin        String    @default("classic") // cosmétique — voir BOARD_SKINS (config.ts), tiers pro appliqués côté serveur
+  theme                String         @default("light")
+  weekStartsOn         Int            @default(1)
+  timezone             String         @default("Africa/Tunis")
+  boardSkin            String         @default("classic") // cosmétique — voir BOARD_SKINS (config.ts), tiers pro appliqués côté serveur
   // Parrainage (B-referral) — code généré paresseusement dans lib/user.ts
   // (l'adapter Auth.js crée les users sans ce champ, donc pas de défaut requis en base)
-  referralCode         String?  @unique
+  referralCode         String?        @unique
   referredById         String?
-  referredBy           User?    @relation("Referrals", fields: [referredById], references: [id])
-  referrals            User[]   @relation("Referrals")
-  referralCreditMonths Int      @default(0) // mois gratuits accumulés grâce à ses filleuls, consommés au prochain checkout
-  referralCredited     Boolean  @default(false) // ce user (en tant que filleul) a-t-il déjà déclenché le crédit de son parrain ?
-  habits           Habit[]
-  moods            MoodLog[]
-  shields          StreakShield[]
-  accounts         Account[]
-  sessions         Session[]
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  referredBy           User?          @relation("Referrals", fields: [referredById], references: [id])
+  referrals            User[]         @relation("Referrals")
+  referralCreditMonths Int            @default(0) // mois gratuits accumulés grâce à ses filleuls, consommés au prochain checkout
+  referralCredited     Boolean        @default(false) // ce user (en tant que filleul) a-t-il déjà déclenché le crédit de son parrain ?
+  habits               Habit[]
+  moods                MoodLog[]
+  shields              StreakShield[]
+  journalEntries       JournalEntry[]
+  tasks                Task[]
+  accounts             Account[]
+  sessions             Session[]
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
 }
 
 // ─── Habitudes & logs ─────────────────────────────────────────────────────────
@@ -56,21 +58,45 @@ enum HabitType {
   QUIT
 }
 
+/// Phase 1 roadmap (socle quantifié). TIMES = ancien comportement case à
+/// cocher (rétrocompatible, @default) ; les autres stockent une valeur par
+/// jour dans HabitLog.value plutôt qu'un simple booléen.
+enum HabitUnit {
+  TIMES
+  MINUTES
+  HOURS
+  COUNT
+  STEPS
+  KM
+  CALORIES
+}
+
 model Habit {
-  id         String       @id @default(cuid())
-  userId     String
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name       String
-  emoji      String?
-  type       HabitType    @default(BUILD)
-  goal       Int?
-  position   Int          @default(0)
-  tags       String[]     @default([]) // libre, pro-only côté UI (voir actions/habits.ts)
-  archivedAt DateTime?
-  logs       HabitLog[]
-  pauses     HabitPause[]
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  id             String         @id @default(cuid())
+  userId         String
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  emoji          String?
+  type           HabitType      @default(BUILD)
+  goal           Int?
+  position       Int            @default(0)
+  tags           String[]       @default([]) // libre, pro-only côté UI (voir actions/habits.ts)
+  // Phase 1 roadmap : unité + cible PAR JOUR (ex. 10000 steps/jour). Distinct
+  // de `goal`, qui reste la cible en NOMBRE DE JOURS sur le mois — les deux
+  // coexistent (ex. "10000 pas, 20 jours ce mois-ci").
+  unit           HabitUnit      @default(TIMES)
+  targetValue    Float?
+  unitLabel      String? // libellé libre pour COUNT : « verres », « pages »…
+  // QUIT uniquement : début de la période d'abstinence en cours (dernière
+  // rechute, ou création si aucune) — voir lib/actions/quit.ts.
+  quitStartedAt  DateTime?
+  archivedAt     DateTime?
+  logs           HabitLog[]
+  pauses         HabitPause[]
+  relapses       HabitRelapse[]
+  journalEntries JournalEntry[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
   @@index([userId, archivedAt])
 }
@@ -80,7 +106,11 @@ model HabitLog {
   habitId   String
   habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
   date      String // "YYYY-MM-DD" dans le fuseau du user
-  completed Boolean  @default(true)
+  // Phase 1 roadmap : remplace `completed Boolean`. TIMES : toujours 1 (un log
+  // = un jour fait, comme l'ancien `completed: true`) ; autres unités : valeur
+  // du jour (ex. 6250 pas). "Le jour compte" ⇔ value >= habit.targetValue,
+  // calculé UNIQUEMENT dans lib/stats.ts (deriveLoggedDates) — jamais dupliqué.
+  value     Float    @default(1)
   note      String? // pro-only côté UI, max 280 caractères (zod)
   createdAt DateTime @default(now())
 
@@ -98,6 +128,59 @@ model HabitPause {
   to      String // "YYYY-MM-DD", inclusif
 
   @@index([habitId])
+}
+
+/// Historique des rechutes d'une habitude QUIT (Phase 2 roadmap) : chaque ligne
+/// remet `Habit.quitStartedAt` à zéro. Sert au record d'abstinence (le plus
+/// long intervalle entre deux rechutes) sans jamais recalculer depuis les logs
+/// — QUIT ne produit plus de HabitLog.
+model HabitRelapse {
+  id         String   @id @default(cuid())
+  habitId    String
+  habit      Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  occurredAt DateTime @default(now())
+  note       String? // pro-only côté UI, max 280 caractères (même règle que HabitLog.note)
+
+  @@index([habitId, occurredAt])
+}
+
+/// Phase 3 roadmap : entrée de journal. `content` est un arbre STRUCTURÉ (pas
+/// du HTML) — un éditeur riche qui écrirait du HTML en base ouvrirait une
+/// porte XSS permanente (le contenu est réaffiché à l'auteur, et pourrait
+/// l'être dans un futur récap public). `searchText` est le texte brut extrait
+/// de `content`, indexé en tsvector (voir migration) pour la recherche plein
+/// texte — jamais réaffiché tel quel, seulement interrogé.
+model JournalEntry {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habitId    String?
+  habit      Habit?   @relation(fields: [habitId], references: [id], onDelete: SetNull)
+  date       String // "YYYY-MM-DD" dans le fuseau du user
+  title      String?
+  content    Json // JournalBlock[] (lib/journal.ts) — rendu via allowlist, jamais dangerouslySetInnerHTML
+  searchText String // texte brut extrait de `content`, pour l'index tsvector
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId, date])
+  @@index([habitId])
+}
+
+/// Phase 4 roadmap (minimal, option B du doc) : tâches simples rattachées à
+/// une journée — pas de projets, sous-tâches ni récurrence.
+model Task {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  dueDate     String? // "YYYY-MM-DD"
+  priority    Boolean   @default(false) // drapeau simple (vu/pas vu dans les captures concurrentes) — pas d'échelle à trancher sans plus de contexte produit
+  completedAt DateTime?
+  position    Int       @default(0)
+  createdAt   DateTime  @default(now())
+
+  @@index([userId, dueDate])
 }
 
 /// Streak Shield (Sprint 7) : un jour manqué absorbé pour TOUTES les habitudes

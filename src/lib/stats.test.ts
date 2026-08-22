@@ -4,11 +4,15 @@ import {
   computeBadges,
   computeLifetimeProgress,
   computeMonthStats,
+  computeQuitStreak,
   computeWeeklyRecap,
   currentStreak,
+  deriveLoggedDates,
   rankForLevel,
   type HabitWithLogs,
 } from "./stats";
+
+const DAY_MS = 86_400_000;
 
 function habit(id: string, dates: string[], overrides: Partial<HabitWithLogs> = {}): HabitWithLogs {
   return {
@@ -311,6 +315,74 @@ describe("computeWeeklyRecap (Sprint 5 — récap email)", () => {
     const recap = computeWeeklyRecap([h], "2026-07-03");
     expect(recap.bestStreakHabit).toBeNull();
     expect(recap.completed).toBe(0);
+  });
+});
+
+describe("deriveLoggedDates — Phase 1 roadmap (socle quantifié)", () => {
+  it("targetValue null (TIMES) : tout log (value=1) compte, rétrocompatible", () => {
+    const dates = deriveLoggedDates(
+      [
+        { date: "2026-07-01", value: 1 },
+        { date: "2026-07-02", value: 1 },
+      ],
+      null,
+    );
+    expect(dates).toEqual(new Set(["2026-07-01", "2026-07-02"]));
+  });
+
+  it("un jour sous la cible ne compte pas (progression partielle)", () => {
+    const dates = deriveLoggedDates(
+      [
+        { date: "2026-07-01", value: 6250 },
+        { date: "2026-07-02", value: 10000 },
+      ],
+      10000,
+    );
+    expect(dates.has("2026-07-01")).toBe(false);
+    expect(dates.has("2026-07-02")).toBe(true);
+  });
+
+  it("valeur exactement égale à la cible compte (>=, pas >)", () => {
+    const dates = deriveLoggedDates([{ date: "2026-07-01", value: 30 }], 30);
+    expect(dates.has("2026-07-01")).toBe(true);
+  });
+});
+
+describe("computeQuitStreak — Phase 2 roadmap (compteur d'arrêt)", () => {
+  const now = new Date("2026-07-15T00:00:00Z");
+
+  it("aucune rechute : la série en cours est aussi le record", () => {
+    const createdAt = new Date(now.getTime() - 10 * DAY_MS);
+    const result = computeQuitStreak(createdAt, [], now);
+    expect(result.currentMs).toBe(10 * DAY_MS);
+    expect(result.bestMs).toBe(10 * DAY_MS);
+    expect(result.relapseCount).toBe(0);
+  });
+
+  it("le record est un intervalle passé plus long que la série en cours", () => {
+    const createdAt = new Date(now.getTime() - 40 * DAY_MS);
+    const relapse = new Date(now.getTime() - 8 * DAY_MS); // 32j tenus, puis rechute, 8j en cours
+    const result = computeQuitStreak(createdAt, [relapse], now);
+    expect(result.currentMs).toBe(8 * DAY_MS);
+    expect(result.bestMs).toBe(32 * DAY_MS);
+    expect(result.relapseCount).toBe(1);
+  });
+
+  it("la série en cours dépasse déjà tous les intervalles passés : elle devient le record", () => {
+    const createdAt = new Date(now.getTime() - 40 * DAY_MS);
+    const relapse = new Date(now.getTime() - 35 * DAY_MS); // 5j tenus, puis 35j en cours
+    const result = computeQuitStreak(createdAt, [relapse], now);
+    expect(result.currentMs).toBe(35 * DAY_MS);
+    expect(result.bestMs).toBe(35 * DAY_MS);
+  });
+
+  it("l'ordre des rechutes en entrée n'a pas d'importance (triées en interne)", () => {
+    const createdAt = new Date(now.getTime() - 30 * DAY_MS);
+    const r1 = new Date(now.getTime() - 20 * DAY_MS);
+    const r2 = new Date(now.getTime() - 25 * DAY_MS);
+    const sorted = computeQuitStreak(createdAt, [r1, r2], now);
+    const reversed = computeQuitStreak(createdAt, [r2, r1], now);
+    expect(reversed).toEqual(sorted);
   });
 });
 

@@ -90,7 +90,9 @@ export async function GET(req: Request) {
 
   const [habits, logs] = await Promise.all([
     prisma.habit.findMany({
-      where: { userId: user.id },
+      // QUIT ne produit plus de HabitLog (Phase 2 roadmap) : une colonne à 0
+      // partout n'apporterait rien à cet export.
+      where: { userId: user.id, type: "BUILD" },
       select: { id: true, name: true, emoji: true, position: true },
       orderBy: { position: "asc" },
     }),

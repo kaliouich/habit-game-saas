@@ -1,6 +1,7 @@
-import type { MonthStats } from "@/lib/stats";
+import type { HabitUnit, MonthStats } from "@/lib/stats";
 import type { ISODate } from "@/lib/dates";
 import { DayCheckbox } from "./DayCheckbox";
+import { DayValueCell } from "./DayValueCell";
 import { MoodCell } from "./MoodCell";
 import { ScrollToToday } from "./ScrollToToday";
 
@@ -9,6 +10,11 @@ interface GridHabit {
   name: string;
   emoji: string | null;
   loggedDates: Set<ISODate>;
+  /** Phase 1 roadmap — absent/"TIMES" = case à cocher classique (DayCheckbox). */
+  unit?: HabitUnit;
+  targetValue?: number | null;
+  unitLabel?: string | null;
+  logValues?: Map<ISODate, number>;
 }
 
 interface MonthGridProps {
@@ -69,7 +75,18 @@ export function MonthGrid({ stats, habits, today }: MonthGridProps) {
               </th>
               {days.map((d) => (
                 <td key={d.date} className={d.date === today ? "grid__cell grid__cell--today" : "grid__cell"}>
-                  <DayCheckbox habitId={h.id} date={d.date} checked={h.loggedDates.has(d.date)} disabled={d.date > today} />
+                  {!h.unit || h.unit === "TIMES" ? (
+                    <DayCheckbox habitId={h.id} date={d.date} checked={h.loggedDates.has(d.date)} disabled={d.date > today} />
+                  ) : (
+                    <DayValueCell
+                      habitId={h.id}
+                      date={d.date}
+                      value={h.logValues?.get(d.date) ?? 0}
+                      target={h.targetValue ?? 1}
+                      unit={h.unit}
+                      disabled={d.date > today}
+                    />
+                  )}
                 </td>
               ))}
             </tr>

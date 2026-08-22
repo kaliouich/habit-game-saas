@@ -14,6 +14,8 @@ import {
 } from "./dates";
 import { RANKS } from "./config";
 
+export type HabitUnit = "TIMES" | "MINUTES" | "HOURS" | "COUNT" | "STEPS" | "KM" | "CALORIES";
+
 export interface HabitWithLogs {
   id: string;
   name: string;
@@ -21,12 +23,23 @@ export interface HabitWithLogs {
   type: "BUILD" | "QUIT";
   goal: number | null; // null = auto (nb de jours du mois)
   position: number;
-  /** Dates cochées — peut contenir des dates hors mois (utilisées pour les streaks). */
+  /** Jours dont la valeur atteint la cible — peut contenir des dates hors mois
+   *  (utilisées pour les streaks). Dérivé via `deriveLoggedDates`, jamais
+   *  recalculé ailleurs. */
   loggedDates: Set<ISODate>;
   /** Jours en pause / vacation mode (Pro) — n'entrent ni ne cassent un streak. */
   pausedDates?: Set<ISODate>;
   /** Tags libres (Pro) — non utilisés par les formules ci-dessous, portés pour l'UI. */
   tags?: string[];
+  /** QUIT uniquement (Phase 2 roadmap) — début de l'abstinence en cours. */
+  quitStartedAt?: Date | null;
+  /** Phase 1 roadmap — non utilisés par les formules ci-dessous, portés pour l'UI. */
+  unit?: HabitUnit;
+  targetValue?: number | null;
+  unitLabel?: string | null;
+  /** Valeur brute par jour (même hors `loggedDates`, ex. 6250/10000 pas — un
+   *  jour incomplet reste affiché avec sa progression). */
+  logValues?: Map<ISODate, number>;
 }
 
 export interface HabitAnalysis {
@@ -62,6 +75,19 @@ export interface MonthStats {
   streaks: Map<string, HabitStreak>; // B1
   perfectDays: Set<ISODate>; // B5
   moodByDate: Map<ISODate, number>; // V10
+}
+
+/**
+ * Phase 1 roadmap (socle quantifié). `HabitLog.value` remplace l'ancien
+ * `completed: Boolean` — TIMES vaut toujours 1 (comme `completed: true`),
+ * les autres unités stockent la valeur du jour (ex. 6250 pas). Un jour
+ * "compte" (rejoint `loggedDates`, donc les streaks/analysis/badges) dès que
+ * sa valeur atteint la cible. Règle écrite ICI UNIQUEMENT (convention n°4) :
+ * ni data.ts ni un composant ne doivent réimplémenter ce seuil.
+ */
+export function deriveLoggedDates(logs: { date: ISODate; value: number }[], targetValue: number | null): Set<ISODate> {
+  const target = targetValue ?? 1; // défaut TIMES : un log = un jour fait
+  return new Set(logs.filter((l) => l.value >= target).map((l) => l.date));
 }
 
 /**
@@ -197,6 +223,37 @@ export function computeMonthStats(params: {
     streaks,
     perfectDays,
     moodByDate,
+  };
+}
+
+export interface QuitStreak {
+  /** ms écoulées depuis `quitStartedAt` — le client fait ensuite ticker localement. */
+  currentMs: number;
+  /** ms du plus long intervalle jamais tenu, rechute en cours comprise si elle
+   *  dépasse déjà les intervalles passés (motivant, et cohérent avec la façon
+   *  dont currentStreak/bestStreak traitent déjà la série en cours ailleurs). */
+  bestMs: number;
+  relapseCount: number;
+}
+
+/**
+ * Phase 2 roadmap — QUIT n'est plus une case à cocher mais un chronomètre
+ * depuis la dernière rechute. `relapses` = dates de rechute triées ou non
+ * (triées ici), bornées par la création de l'habitude et l'instant présent.
+ */
+export function computeQuitStreak(habitCreatedAt: Date, relapses: Date[], now: Date): QuitStreak {
+  const sorted = [...relapses].sort((a, b) => a.getTime() - b.getTime());
+  const boundaries = [habitCreatedAt, ...sorted, now];
+  let bestMs = 0;
+  for (let i = 1; i < boundaries.length; i++) {
+    const gap = boundaries[i].getTime() - boundaries[i - 1].getTime();
+    if (gap > bestMs) bestMs = gap;
+  }
+  const lastBoundary = sorted.length > 0 ? sorted[sorted.length - 1] : habitCreatedAt;
+  return {
+    currentMs: now.getTime() - lastBoundary.getTime(),
+    bestMs,
+    relapseCount: sorted.length,
   };
 }
 

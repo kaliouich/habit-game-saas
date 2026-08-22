@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { APP_NAME, type BoardSkinKey } from "@/lib/config";
 import { addMonths, monthLabel, type MonthKey, type ISODate } from "@/lib/dates";
-import type { MonthStats } from "@/lib/stats";
+import type { HabitUnit, MonthStats } from "@/lib/stats";
 import { LineChart } from "@/components/charts/LineChart";
 import { AddHabitForm } from "./AddHabitForm";
 import { HabitMenu } from "./HabitMenu";
@@ -13,8 +13,12 @@ interface SidebarHabit {
   id: string;
   name: string;
   emoji: string | null;
+  type: "BUILD" | "QUIT";
   goal: number | null;
   tags?: string[];
+  unit?: HabitUnit;
+  targetValue?: number | null;
+  unitLabel?: string | null;
 }
 
 interface SidebarProps {
@@ -78,10 +82,14 @@ export function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan, 
                   habitId={h.id}
                   name={h.name}
                   emoji={h.emoji}
+                  type={h.type}
                   goal={h.goal}
                   tags={h.tags ?? []}
                   plan={plan}
                   today={today}
+                  unit={h.unit}
+                  targetValue={h.targetValue}
+                  unitLabel={h.unitLabel}
                 />
               </li>
             );
@@ -103,6 +111,9 @@ export function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan, 
           ))}
         </p>
         <div className="sidebar__account">
+          <Link href="/app/journal" className="sidebar__report">
+            📓 Journal
+          </Link>
           <Link href={`/app/report?month=${month}`} className="sidebar__report">
             ⬇ Download progress report
           </Link>

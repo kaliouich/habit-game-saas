@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { computeWeeklyRecap, type HabitWithLogs } from "@/lib/stats";
+import { computeWeeklyRecap, deriveLoggedDates, type HabitWithLogs } from "@/lib/stats";
 import { expandDateRange, prevDay, todayInTz } from "@/lib/dates";
 import { sendEmail } from "@/lib/email";
 import { renderWeeklyRecapEmail } from "@/lib/weeklyRecapEmail";
@@ -28,9 +28,12 @@ export async function POST(req: Request) {
     where: { plan: "PRO" },
     include: {
       habits: {
-        where: { archivedAt: null },
+        // QUIT ne produit plus de HabitLog (Phase 2 roadmap) : mélangée aux
+        // formules BUILD, elle gonflerait le dénominateur du récap sans jamais
+        // contribuer au numérateur.
+        where: { archivedAt: null, type: "BUILD" },
         include: {
-          logs: { where: { date: { gte: cutoff } }, select: { date: true } },
+          logs: { where: { date: { gte: cutoff } }, select: { date: true, value: true } },
           pauses: { select: { from: true, to: true } },
         },
       },
@@ -54,7 +57,7 @@ export async function POST(req: Request) {
       type: h.type,
       goal: h.goal,
       position: h.position,
-      loggedDates: new Set(h.logs.map((l) => l.date)),
+      loggedDates: deriveLoggedDates(h.logs, h.targetValue),
       pausedDates: new Set(h.pauses.flatMap((p) => expandDateRange(p.from, p.to))),
     }));
 

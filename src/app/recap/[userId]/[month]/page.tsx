@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { isValidMonthKey, daysInMonth, pad2, monthLabel } from "@/lib/dates";
-import { computeMonthStats } from "@/lib/stats";
+import { computeMonthStats, deriveLoggedDates } from "@/lib/stats";
 import { APP_NAME } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
@@ -36,9 +36,12 @@ export default async function RecapPage({ params }: Props) {
     prisma.habit.findMany({
       where: {
         userId,
+        // QUIT ne produit plus de HabitLog (Phase 2 roadmap) : mélangée aux
+        // formules BUILD, elle afficherait un 0% permanent dans ce récap.
+        type: "BUILD",
         OR: [{ archivedAt: null }, { archivedAt: { gt: new Date(`${monthEnd}T23:59:59Z`) } }],
       },
-      include: { logs: { where: { date: { gte: `${month}-01`, lte: monthEnd } }, select: { date: true } } },
+      include: { logs: { where: { date: { gte: `${month}-01`, lte: monthEnd } }, select: { date: true, value: true } } },
       orderBy: { position: "asc" },
     }),
     prisma.moodLog.findMany({
@@ -54,7 +57,7 @@ export default async function RecapPage({ params }: Props) {
     type: h.type as "BUILD" | "QUIT",
     goal: h.goal,
     position: h.position,
-    loggedDates: new Set(h.logs.map((l) => l.date)),
+    loggedDates: deriveLoggedDates(h.logs, h.targetValue),
   }));
 
   const today = monthEnd; // treat last day as "today" for a past month

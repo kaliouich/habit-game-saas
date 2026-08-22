@@ -8,11 +8,17 @@ import { canAddHabit, maxHabits } from "@/lib/quotas";
 
 const NameSchema = z.string().trim().min(1).max(40);
 const EmojiSchema = z.string().trim().max(8).optional();
+const HabitUnitSchema = z.enum(["TIMES", "MINUTES", "HOURS", "COUNT", "STEPS", "KM", "CALORIES"]);
+const UnitLabelSchema = z.string().trim().max(20).optional();
 
 const CreateHabitSchema = z.object({
   name: NameSchema,
   emoji: EmojiSchema,
   type: z.enum(["BUILD", "QUIT"]).default("BUILD"),
+  // Phase 1 roadmap — socle quantifié. TIMES = ancienne case à cocher.
+  unit: HabitUnitSchema.default("TIMES"),
+  targetValue: z.number().positive().max(1_000_000).nullable().optional(),
+  unitLabel: UnitLabelSchema,
 });
 
 export async function createHabit(input: unknown): Promise<{ ok: boolean; error?: string }> {
@@ -39,6 +45,11 @@ export async function createHabit(input: unknown): Promise<{ ok: boolean; error?
       emoji: data.emoji || null,
       type: data.type,
       position: (last?.position ?? -1) + 1,
+      // QUIT démarre son compteur d'abstinence dès la création.
+      quitStartedAt: data.type === "QUIT" ? new Date() : null,
+      unit: data.unit,
+      targetValue: data.unit === "TIMES" ? null : data.targetValue ?? null,
+      unitLabel: data.unit === "COUNT" ? data.unitLabel || null : null,
     },
   });
 
@@ -54,6 +65,8 @@ const UpdateHabitSchema = z.object({
   emoji: EmojiSchema,
   goal: z.number().int().min(1).max(31).nullable().optional(),
   tags: z.array(TagSchema).max(5).optional(),
+  targetValue: z.number().positive().max(1_000_000).nullable().optional(),
+  unitLabel: UnitLabelSchema,
 });
 
 export async function updateHabit(input: unknown): Promise<{ ok: boolean; error?: string }> {
@@ -78,6 +91,8 @@ export async function updateHabit(input: unknown): Promise<{ ok: boolean; error?
       ...(data.emoji !== undefined && { emoji: data.emoji || null }),
       ...(data.goal !== undefined && { goal: data.goal }),
       ...(data.tags !== undefined && { tags: data.tags }),
+      ...(data.targetValue !== undefined && { targetValue: data.targetValue }),
+      ...(data.unitLabel !== undefined && { unitLabel: data.unitLabel || null }),
     },
   });
 

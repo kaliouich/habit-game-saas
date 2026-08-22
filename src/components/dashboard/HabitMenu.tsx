@@ -6,23 +6,37 @@ import { archiveHabit, updateHabit } from "@/lib/actions/habits";
 import { getLogNote, setLogNote } from "@/lib/actions/logs";
 import { createHabitPause } from "@/lib/actions/pause";
 import type { ISODate } from "@/lib/dates";
+import { habitUnitConfig, type HabitUnitKey } from "@/lib/config";
 
 interface HabitMenuProps {
   habitId: string;
   name: string;
   emoji: string | null;
+  type: "BUILD" | "QUIT";
   goal: number | null;
   tags: string[];
   plan: "FREE" | "PRO";
   today: ISODate;
+  /** Phase 1 roadmap — absent/"TIMES" = case à cocher classique (rien à éditer ici). */
+  unit?: HabitUnitKey;
+  targetValue?: number | null;
+  unitLabel?: string | null;
 }
 
 /** V2 : édition d'une habitude (nom, emoji, goal) + archivage, dans un popover.
- *  Sprint 6 (Pro) : tags, note du jour, pause / vacation mode. */
-export function HabitMenu({ habitId, name, emoji, goal, tags, plan, today }: HabitMenuProps) {
+ *  Sprint 6 (Pro) : tags, note du jour, pause / vacation mode.
+ *  Phase 2 roadmap : goal (jours cochés) et note du jour n'ont plus de sens
+ *  pour QUIT, qui ne produit plus de HabitLog — masqués pour ce type.
+ *  Phase 1 roadmap : l'unité n'est pas éditable après création (des logs
+ *  existants perdraient leur sens — ex. "1" en TIMES vs "1" en STEPS) ; seule
+ *  la cible/jour et le libellé libre (COUNT) le sont. */
+export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today, unit, targetValue, unitLabel }: HabitMenuProps) {
   const ref = useRef<HTMLDetailsElement>(null);
   const [isPending, startTransition] = useTransition();
   const isPro = plan === "PRO";
+  const isBuild = type === "BUILD";
+  const isQuantified = isBuild && !!unit && unit !== "TIMES";
+  const unitConfig = unit ? habitUnitConfig(unit) : null;
 
   const [note, setNote] = useState<string | null>(null);
   const [noteLoaded, setNoteLoaded] = useState(false);
@@ -32,12 +46,12 @@ export function HabitMenu({ habitId, name, emoji, goal, tags, plan, today }: Hab
   const [pauseOk, setPauseOk] = useState(false);
 
   useEffect(() => {
-    if (!isPro || noteLoaded) return;
+    if (!isPro || !isBuild || noteLoaded) return;
     getLogNote({ habitId, date: today }).then((res) => {
       setNote(res.note ?? "");
       setNoteLoaded(true);
     });
-  }, [isPro, noteLoaded, habitId, today]);
+  }, [isPro, isBuild, noteLoaded, habitId, today]);
 
   return (
     <details className="habitmenu" ref={ref}>
@@ -59,6 +73,8 @@ export function HabitMenu({ habitId, name, emoji, goal, tags, plan, today }: Hab
                 .filter(Boolean)
                 .slice(0, 5)
             : undefined;
+          const targetRaw = String(formData.get("targetValue") ?? "").trim();
+          const newUnitLabel = String(formData.get("unitLabel") ?? "").trim();
           startTransition(async () => {
             await updateHabit({
               habitId,
@@ -66,6 +82,8 @@ export function HabitMenu({ habitId, name, emoji, goal, tags, plan, today }: Hab
               emoji: newEmoji,
               goal: newGoal,
               ...(newTags !== undefined && { tags: newTags }),
+              ...(isQuantified && { targetValue: targetRaw === "" ? null : Number(targetRaw) }),
+              ...(isQuantified && unit === "COUNT" && { unitLabel: newUnitLabel }),
             });
             ref.current?.removeAttribute("open");
           });
@@ -79,10 +97,24 @@ export function HabitMenu({ habitId, name, emoji, goal, tags, plan, today }: Hab
           Emoji
           <input name="emoji" defaultValue={emoji ?? ""} maxLength={8} />
         </label>
-        <label>
-          Goal <span className="habitmenu__hint">(vide = auto)</span>
-          <input name="goal" type="number" min={1} max={31} defaultValue={goal ?? ""} />
-        </label>
+        {isBuild && (
+          <label>
+            Goal <span className="habitmenu__hint">(vide = auto)</span>
+            <input name="goal" type="number" min={1} max={31} defaultValue={goal ?? ""} />
+          </label>
+        )}
+        {isQuantified && (
+          <label>
+            Target/day {unitConfig?.suffix && <span className="habitmenu__hint">({unitConfig.suffix})</span>}
+            <input name="targetValue" type="number" step="any" min={0} defaultValue={targetValue ?? ""} />
+          </label>
+        )}
+        {isQuantified && unit === "COUNT" && (
+          <label>
+            Unit label <span className="habitmenu__hint">(ex. verres, pages)</span>
+            <input name="unitLabel" defaultValue={unitLabel ?? ""} maxLength={20} />
+          </label>
+        )}
 
         <label className={isPro ? "" : "habitmenu__locked"}>
           Tags {!isPro && <span className="habitmenu__hint">(Pro)</span>}
@@ -100,7 +132,7 @@ export function HabitMenu({ habitId, name, emoji, goal, tags, plan, today }: Hab
           </Link>
         )}
 
-        {isPro && (
+        {isPro && isBuild && (
           <div className="habitmenu__note">
             <label>
               Note for today

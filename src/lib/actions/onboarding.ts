@@ -36,6 +36,8 @@ export async function seedStarterHabits(): Promise<{ ok: boolean; error?: string
       emoji: h.emoji,
       type: h.type,
       position: i,
+      // QUIT démarre son compteur d'abstinence dès la création (voir actions/habits.ts).
+      quitStartedAt: h.type === "QUIT" ? new Date() : null,
     })),
   });
 

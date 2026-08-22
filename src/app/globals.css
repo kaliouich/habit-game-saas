@@ -516,6 +516,21 @@ select {
   font-size: 11px;
 }
 
+/* Phase 1 roadmap : unité + cible/jour, sur sa propre ligne pleine largeur —
+   ne perturbe pas la grille 4 colonnes emoji/nom/type/submit ci-dessus. */
+.addhabit__extra {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.addhabit__extra select,
+.addhabit__extra input {
+  flex: 1;
+  min-width: 0;
+}
+
 .sidebar__limit {
   font-size: 11px;
   color: var(--panel-muted);
@@ -910,6 +925,22 @@ select {
   transition: stroke-dashoffset 140ms ease-out;
 }
 
+/* ─── Habitudes quantifiées (Phase 1 roadmap) ───────────────────────────── */
+.cell--value {
+  overflow: hidden;
+}
+
+.cell__fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--check);
+  opacity: 0.55;
+  pointer-events: none;
+  transition: height 150ms ease-out;
+}
+
 .cell--future {
   display: inline-block;
   width: 18px;
@@ -1139,6 +1170,73 @@ select {
 .tophabits__pct {
   color: var(--muted);
   font-variant-numeric: tabular-nums;
+}
+
+/* ─── Quit Habits (Phase 2 roadmap) ──────────────────────────────────────── */
+.panel--quit {
+  margin: 14px 0;
+}
+
+.quitpanel {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  padding: 12px;
+}
+
+.quitcard {
+  background: var(--bg);
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius-panel);
+  padding: 12px 14px;
+  text-align: center;
+}
+
+.quitcard__head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.quitcard__name {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.quitcard__relapses {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.quitcard__timer {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 16px;
+  margin: 8px 0 2px;
+}
+
+.quitcard__best {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.quitcard__relapse {
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  background: transparent;
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.quitcard__relapse:hover {
+  background: var(--danger);
+  color: var(--cell);
 }
 
 /* ─── Badges (Sprint 5) ───────────────────────────────────────────────────── */
@@ -3402,4 +3500,422 @@ select {
   font-size: 11px;
   margin-top: 14px;
   font-variant-numeric: tabular-nums;
+}
+
+/* ─── Journal (Phase 3 roadmap) ──────────────────────────────────────────── */
+.journalpage {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+.journalpage__back {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.journalpage__title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 12px 0 16px;
+}
+
+.journalpage__locked {
+  background: var(--cell);
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius-panel);
+  padding: 32px;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.journalpage__upsell {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.journalpage__filters {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 18px 0 14px;
+  font-size: 13px;
+}
+
+.journalpage__filters select,
+.journalpage__filters input {
+  border: 1px solid var(--grid-line);
+  background: var(--cell);
+  border-radius: 5px;
+  padding: 5px 8px;
+  font-size: 13px;
+}
+
+.journalpage__empty {
+  color: var(--muted);
+  font-size: 14px;
+  padding: 20px 0;
+}
+
+.journalpage__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.journalform {
+  background: var(--cell);
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius-panel);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.journalform__row {
+  display: flex;
+  gap: 8px;
+}
+
+.journalform input,
+.journalform select,
+.journalform textarea {
+  border: 1px solid var(--grid-line);
+  background: var(--bg);
+  border-radius: 5px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.journalform textarea {
+  resize: vertical;
+}
+
+.journalform button {
+  align-self: flex-start;
+  background: var(--panel);
+  color: var(--panel-fg);
+  border-radius: 5px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.journalform__error,
+.journalentry__error {
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.journalentry {
+  background: var(--cell);
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius-panel);
+  padding: 12px 14px;
+}
+
+.journalentry__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.journalentry__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.journalentry__title {
+  font-weight: 700;
+}
+
+.journalentry__date {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.journalentry__habit {
+  display: inline-block;
+  width: fit-content;
+  background: var(--bg);
+  border: 1px solid var(--grid-line);
+  border-radius: 12px;
+  padding: 1px 8px;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.journalentry__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.journalentry__actions button {
+  font-size: 11px;
+  color: var(--muted);
+  border: 1px solid var(--grid-line);
+  border-radius: 5px;
+  padding: 3px 8px;
+}
+
+.journalentry__delete {
+  color: var(--danger) !important;
+}
+
+.journalentry__body {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.journalentry__body p {
+  margin: 2px 0;
+}
+
+.journalentry__bullet {
+  padding-left: 14px;
+  position: relative;
+}
+
+.journalentry__bullet::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--muted);
+}
+
+.journalentry__checklist {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.journalentry__checklist input {
+  margin: 0;
+}
+
+.journalentry__editform {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.journalentry__editform input,
+.journalentry__editform textarea {
+  border: 1px solid var(--grid-line);
+  background: var(--bg);
+  border-radius: 5px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.journalentry__editform button {
+  align-self: flex-start;
+  background: var(--panel);
+  color: var(--panel-fg);
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+/* ─── Tasks (Phase 4 roadmap, minimal) ───────────────────────────────────── */
+.panel--tasks {
+  margin: 14px 0;
+}
+
+.taskpanel {
+  padding: 10px 12px 12px;
+}
+
+.taskform {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.taskform input[type="text"],
+.taskform input:not([type]) {
+  flex: 1;
+}
+
+.taskform input,
+.taskform button {
+  border: 1px solid var(--grid-line);
+  background: var(--bg);
+  border-radius: 5px;
+  padding: 5px 8px;
+  font-size: 13px;
+}
+
+.taskform__flag {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.taskform button[type="submit"] {
+  background: var(--panel);
+  color: var(--panel-fg);
+  font-weight: 700;
+  padding: 5px 12px;
+}
+
+.taskpanel__empty {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 6px 2px;
+}
+
+.tasklist {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.taskitem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 2px;
+  border-bottom: 1px solid var(--grid-line);
+  font-size: 13px;
+}
+
+.taskitem:last-child {
+  border-bottom: none;
+}
+
+.taskitem__check {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border: 1.5px solid var(--check);
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.taskitem--done .taskitem__check {
+  background: var(--check);
+  border-color: var(--check);
+}
+
+.taskitem__checkicon {
+  width: 11px;
+  height: 11px;
+  stroke: var(--panel-fg);
+}
+
+.taskitem__title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.taskitem--done .taskitem__title {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.taskitem__flag {
+  margin-right: 4px;
+}
+
+.taskitem__due {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.taskitem__due--overdue {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.taskitem__delete {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.taskitem__delete:hover {
+  color: var(--danger);
+}
+
+/* ─── Timer (Phase 7 roadmap) ────────────────────────────────────────────── */
+.panel--timer {
+  margin: 14px 0;
+}
+
+.timerpanel {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.timerpanel select {
+  align-self: stretch;
+  border: 1px solid var(--grid-line);
+  background: var(--bg);
+  border-radius: 5px;
+  padding: 5px 8px;
+  font-size: 13px;
+}
+
+.timerpanel__presets {
+  display: flex;
+  gap: 6px;
+}
+
+.timerpanel__presets button {
+  border: 1px solid var(--grid-line);
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 12px;
+}
+
+.timerpanel__clock {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 32px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin: 4px 0;
+}
+
+.timerpanel__controls {
+  display: flex;
+  gap: 6px;
+}
+
+.timerpanel__controls button {
+  border-radius: 5px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--panel);
+  color: var(--panel-fg);
+}
+
+.timerpanel__log {
+  background: var(--accent) !important;
+  color: #111 !important;
 }

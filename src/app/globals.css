@@ -20,7 +20,7 @@
   --panel: #35322c; /* charbon doux, jamais #000 */
   --panel-fg: #f2efe7;
   --panel-muted: #a8a298;
-  --grid-line: #d5d0c5; /* filet */
+  --grid-line: #beb4a0; /* filet — assez soutenu pour se voir sur --bg, pas juste deviné */
   --fg: #2e2b26; /* encre */
   --ink-2: #55514a; /* texte secondaire */
   --muted: #7c766d;
@@ -852,7 +852,7 @@ select {
   justify-content: center;
   width: 18px;
   height: 18px;
-  border: 1.5px solid var(--check);
+  border: 2px solid var(--check);
   border-radius: var(--radius-cell);
   background: transparent;
   vertical-align: middle;
@@ -954,7 +954,7 @@ select {
   display: inline-block;
   width: 18px;
   height: 18px;
-  border: 1.5px solid var(--grid-line);
+  border: 2px solid var(--grid-line);
   border-radius: var(--radius-cell);
   opacity: 0.5;
 }

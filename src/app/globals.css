@@ -498,6 +498,15 @@ select {
   appearance: none;
 }
 
+/* Le popup natif d'un <select> ignore souvent le color/background du parent
+   et se rend sur un fond clair quel que soit le thème — le texte clair pensé
+   pour la sidebar sombre devient alors illisible. Les <option> reçoivent donc
+   leur propre paire sombre-sur-clair, indépendante du contrôle fermé. */
+.addhabit option {
+  color: var(--fg);
+  background: var(--cell);
+}
+
 .addhabit__submit {
   background: var(--accent);
   color: #111;

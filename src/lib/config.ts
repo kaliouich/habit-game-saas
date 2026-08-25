@@ -26,7 +26,10 @@ export const BOARD_SKINS = [
   { key: "ember", label: "Ember", check: "#f5b93d", accent: "#e5544b", tier: "pro" },
   { key: "orchid", label: "Orchid", check: "#b47ce8", accent: "#e85ca0", tier: "pro" },
   { key: "lime", label: "Lime", check: "#6bcb4b", accent: "#21c5a8", tier: "pro" },
-  { key: "crimson", label: "Crimson", check: "#e5544b", accent: "#f5b93d", tier: "pro" },
+  // "Crimson & gold" — accent volontairement distinct de l'ambre d'Ember
+  // (#f5b93d) : même paire de couleurs juste inversée, ça n'aurait pas fait
+  // deux thèmes, juste un swap déguisé en choix.
+  { key: "crimson", label: "Crimson", check: "#e5544b", accent: "#d4a017", tier: "pro" },
 ] as const;
 
 export type BoardSkinKey = (typeof BOARD_SKINS)[number]["key"];

@@ -165,12 +165,17 @@ select {
 
 /* ─── Layout 3 zones ─────────────────────────────────────────────────────── */
 .dashboard {
-  /* `body` reste sur le --bg du site (:root, hors thème dashboard) : sans ce
-     background explicite, les 14px de gap/padding ci-dessous laissaient
-     transparaître le papier clair derrière la grille sombre — repéré au
-     premier déploiement Midnight. .dashboard porte son propre --bg, donc son
-     propre fond doit s'appliquer ici, pas seulement à ses descendants. */
+  /* `body` reste sur --bg/--fg du site (:root, hors thème dashboard) : sans
+     ces deux déclarations explicites, (a) les 14px de gap/padding laissaient
+     transparaître le papier clair derrière la grille sombre, ET (b) tout
+     texte qui ne fixe pas SA PROPRE couleur héritait le --fg sombre calculé
+     sur `body` (résolu avec le --fg de :root, pas celui, clair, de
+     .dashboard) — repéré au premier déploiement Midnight (nombres des
+     statcards illisibles). .dashboard porte ses propres tokens, donc son
+     propre fond ET sa propre couleur de texte doivent s'appliquer ici, pas
+     seulement être visibles par ses descendants via var(). */
   background: var(--bg);
+  color: var(--fg);
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr) 300px;
   gap: 14px;
@@ -1015,7 +1020,10 @@ select {
 
 /* ─── Charts ─────────────────────────────────────────────────────────────── */
 .chart__bar {
-  fill: var(--panel);
+  /* --panel (charbon très sombre) contrastait sur l'ancien --cell clair —
+     sur le --cell sombre du dashboard Midnight, les deux se confondaient
+     presque. --check reste visible sur fond sombre pour les 6 thèmes. */
+  fill: var(--check);
   transform-origin: bottom;
   animation: bar-grow 300ms ease-out;
 }
@@ -1050,7 +1058,8 @@ select {
 }
 
 .donut__value {
-  stroke: var(--panel);
+  /* Même raison que .chart__bar ci-dessus : --panel ne contraste plus sur --cell sombre. */
+  stroke: var(--check);
   transition: stroke-dasharray 400ms ease-out;
 }
 

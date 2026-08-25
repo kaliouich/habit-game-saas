@@ -165,6 +165,12 @@ select {
 
 /* ─── Layout 3 zones ─────────────────────────────────────────────────────── */
 .dashboard {
+  /* `body` reste sur le --bg du site (:root, hors thème dashboard) : sans ce
+     background explicite, les 14px de gap/padding ci-dessous laissaient
+     transparaître le papier clair derrière la grille sombre — repéré au
+     premier déploiement Midnight. .dashboard porte son propre --bg, donc son
+     propre fond doit s'appliquer ici, pas seulement à ses descendants. */
+  background: var(--bg);
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr) 300px;
   gap: 14px;

@@ -99,6 +99,16 @@ export const MOODS = [
   { value: 5, emoji: "😄", label: "Great" },
 ] as const;
 
+/** Seconde métrique de bien-être, parallèle à MOODS — même forme, échelle
+ *  1..5, mais un jeu d'icônes distinct pour rester lisible côte à côte. */
+export const MOTIVATIONS = [
+  { value: 1, emoji: "😴", label: "Drained" },
+  { value: 2, emoji: "😐", label: "Low" },
+  { value: 3, emoji: "🙂", label: "Okay" },
+  { value: 4, emoji: "💪", label: "Motivated" },
+  { value: 5, emoji: "🔥", label: "Fired up" },
+] as const;
+
 /**
  * Phase 1 roadmap (socle quantifié). TIMES reste la case à cocher classique
  * (pas d'input supplémentaire) ; les autres unités affichent un stepper dans

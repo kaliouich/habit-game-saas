@@ -99,7 +99,7 @@ export function computeReport(params: {
   habits: ReportHabit[];
   from: ISODate;
   to: ISODate;
-  moods: { date: ISODate; value: number }[];
+  moods: { date: ISODate; value: number | null }[];
 }): ReportStats {
   const { habits, from, to, moods } = params;
   const dates = expandDateRange(from, to);
@@ -150,9 +150,12 @@ export function computeReport(params: {
   const perfectDays = nHabits === 0 ? 0 : days.filter((d) => d.done === nHabits).length;
   const bestStreak = byHabit.reduce((m, h) => Math.max(m, h.bestStreak), 0);
 
-  const inRange = moods.filter((m) => m.date >= from && m.date <= to);
-  const avgMood =
-    inRange.length === 0 ? null : inRange.reduce((s, m) => s + m.value, 0) / inRange.length;
+  // value est nullable depuis l'ajout de motivation (une entrée peut ne
+  // renseigner que l'une des deux) — exclu ici, pas juste absent de la range.
+  const inRange = moods.filter(
+    (m): m is { date: ISODate; value: number } => m.value !== null && m.date >= from && m.date <= to,
+  );
+  const avgMood = inRange.length === 0 ? null : inRange.reduce((s, m) => s + m.value, 0) / inRange.length;
 
   return {
     from,

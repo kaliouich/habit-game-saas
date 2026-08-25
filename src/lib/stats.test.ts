@@ -418,4 +418,34 @@ describe("mood (V10)", () => {
     expect(stats.moodByDate.get("2026-07-01")).toBe(4);
     expect(stats.moodByDate.has("2026-06-30")).toBe(false);
   });
+
+  it("motivation suit la même règle, en parallèle de mood", () => {
+    const stats = computeMonthStats({
+      month: MONTH,
+      habits: [],
+      moods: [
+        { date: "2026-07-01", value: 4, motivation: 2 },
+        { date: "2026-06-30", value: 1, motivation: 5 },
+      ],
+      today: "2026-07-03",
+    });
+    expect(stats.motivationByDate.get("2026-07-01")).toBe(2);
+    expect(stats.motivationByDate.has("2026-06-30")).toBe(false);
+  });
+
+  it("une entrée peut ne renseigner que l'une des deux métriques", () => {
+    const stats = computeMonthStats({
+      month: MONTH,
+      habits: [],
+      moods: [
+        { date: "2026-07-01", value: null, motivation: 3 }, // motivation seule
+        { date: "2026-07-02", value: 5, motivation: null }, // mood seule
+      ],
+      today: "2026-07-03",
+    });
+    expect(stats.moodByDate.has("2026-07-01")).toBe(false);
+    expect(stats.motivationByDate.get("2026-07-01")).toBe(3);
+    expect(stats.moodByDate.get("2026-07-02")).toBe(5);
+    expect(stats.motivationByDate.has("2026-07-02")).toBe(false);
+  });
 });

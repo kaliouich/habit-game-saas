@@ -98,15 +98,19 @@ export default async function RecapPage({ params }: Props) {
         })}
       </section>
 
-      {moods.length > 0 && (
-        <p className="recap__mood">
-          Avg mood:{" "}
-          <strong>
-            {(moods.reduce((s, m) => s + m.value, 0) / moods.length).toFixed(1)} / 5
-          </strong>{" "}
-          over {moods.length} days tracked
-        </p>
-      )}
+      {(() => {
+        // value est nullable depuis l'ajout de motivation (une entrée peut ne
+        // renseigner que l'une des deux) — exclu ici, pas juste absent de moods.
+        const withMood = moods.filter((m): m is { date: string; value: number } => m.value !== null);
+        if (withMood.length === 0) return null;
+        return (
+          <p className="recap__mood">
+            Avg mood:{" "}
+            <strong>{(withMood.reduce((s, m) => s + m.value, 0) / withMood.length).toFixed(1)} / 5</strong>{" "}
+            over {withMood.length} days tracked
+          </p>
+        );
+      })()}
 
       <footer className="recap__footer">
         <p>

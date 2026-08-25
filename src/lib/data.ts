@@ -69,7 +69,7 @@ export async function getDashboardData(
     }),
     prisma.moodLog.findMany({
       where: { userId, date: { gte: `${month}-01`, lte: monthEnd } },
-      select: { date: true, value: true },
+      select: { date: true, value: true, motivation: true },
     }),
     // Tous les boucliers, pas seulement ceux du mois : les streaks remontent
     // au-delà du mois affiché, donc un bouclier plus ancien doit rester pris

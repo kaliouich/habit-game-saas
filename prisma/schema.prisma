@@ -199,11 +199,16 @@ model StreakShield {
 }
 
 model MoodLog {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date   String // "YYYY-MM-DD"
-  value  Int // 1..5
+  id         String @id @default(cuid())
+  userId     String
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date       String // "YYYY-MM-DD"
+  // value devient nullable en même temps que motivation est ajouté : une
+  // entrée peut désormais ne renseigner que l'une des deux métriques (ex.
+  // motivation cochée un jour sans humeur saisie). Aucune ligne existante
+  // n'est affectée — toutes ont déjà une vraie valeur 1..5.
+  value      Int? // humeur, 1..5
+  motivation Int? // motivation, 1..5
 
   @@unique([userId, date])
 }

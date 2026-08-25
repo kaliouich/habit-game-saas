@@ -175,9 +175,14 @@ async function main() {
     ],
   });
 
-  const moods: { userId: string; date: string; value: number }[] = [];
+  const moods: { userId: string; date: string; value: number; motivation: number }[] = [];
   for (let day = 1; day <= today; day++) {
-    moods.push({ userId: user.id, date: ymd(year, month, day), value: 2 + Math.round(rand() * 3) });
+    moods.push({
+      userId: user.id,
+      date: ymd(year, month, day),
+      value: 2 + Math.round(rand() * 3),
+      motivation: 2 + Math.round(rand() * 3),
+    });
   }
   await prisma.moodLog.createMany({ data: moods });
 

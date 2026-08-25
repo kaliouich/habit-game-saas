@@ -580,8 +580,20 @@ select {
   padding-top: 10px;
 }
 
+.sidebar__moodlegend {
+  display: flex;
+  gap: 10px;
+}
+
 .sidebar__moodlabel {
   font-size: 11px;
+}
+
+.sidebar__moodlabel--mood {
+  color: var(--check);
+}
+
+.sidebar__moodlabel--motivation {
   color: var(--accent);
 }
 

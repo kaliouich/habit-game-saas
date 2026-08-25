@@ -38,6 +38,7 @@ interface SidebarProps {
 /** V1 + V2 : colonne noire — titre, mois, My Habits, mood chart, logo. */
 export function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan, boardSkin, today, shieldsUsed, missedDates }: SidebarProps) {
   const moodValues = stats.days.map((d) => stats.moodByDate.get(d.date) ?? null);
+  const motivationValues = stats.days.map((d) => stats.motivationByDate.get(d.date) ?? null);
 
   return (
     <aside className="sidebar">
@@ -100,8 +101,16 @@ export function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan, 
 
       <div className="sidebar__bottom">
         <div className="sidebar__mood">
-          <span className="sidebar__moodlabel">● Mood</span>
-          <LineChart values={moodValues} />
+          <div className="sidebar__moodlegend">
+            <span className="sidebar__moodlabel sidebar__moodlabel--mood">● Mood</span>
+            <span className="sidebar__moodlabel sidebar__moodlabel--motivation">● Motivation</span>
+          </div>
+          <LineChart
+            series={[
+              { values: moodValues, color: "var(--check)" },
+              { values: motivationValues, color: "var(--accent)" },
+            ]}
+          />
         </div>
         <ShieldPanel plan={plan} shieldsUsed={shieldsUsed} missedDates={missedDates} />
         <BoardSkinPicker current={boardSkin} plan={plan} />

@@ -75,6 +75,7 @@ export interface MonthStats {
   streaks: Map<string, HabitStreak>; // B1
   perfectDays: Set<ISODate>; // B5
   moodByDate: Map<ISODate, number>; // V10
+  motivationByDate: Map<ISODate, number>; // second métrique, parallèle à mood
 }
 
 /**
@@ -133,7 +134,7 @@ export function bestStreak(logged: Set<ISODate>, paused: Set<ISODate> = new Set(
 export function computeMonthStats(params: {
   month: MonthKey;
   habits: HabitWithLogs[];
-  moods: { date: ISODate; value: number }[];
+  moods: { date: ISODate; value: number | null; motivation?: number | null }[];
   today: ISODate;
   weekStartsOn?: 0 | 1;
 }): MonthStats {
@@ -204,9 +205,14 @@ export function computeMonthStats(params: {
     if (dailyProgress[i] === 1) perfectDays.add(day.date);
   });
 
-  // V10 — Mood
+  // V10 — Mood (+ motivation, seconde métrique parallèle)
   const moodByDate = new Map<ISODate, number>();
-  for (const m of moods) if (inMonth(m.date)) moodByDate.set(m.date, m.value);
+  const motivationByDate = new Map<ISODate, number>();
+  for (const m of moods) {
+    if (!inMonth(m.date)) continue;
+    if (m.value !== null) moodByDate.set(m.date, m.value);
+    if (m.motivation != null) motivationByDate.set(m.date, m.motivation);
+  }
 
   return {
     month,
@@ -223,6 +229,7 @@ export function computeMonthStats(params: {
     streaks,
     perfectDays,
     moodByDate,
+    motivationByDate,
   };
 }
 

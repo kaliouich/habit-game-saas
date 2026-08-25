@@ -108,6 +108,21 @@ export function MonthGrid({ stats, habits, today }: MonthGridProps) {
               </td>
             ))}
           </tr>
+          <tr>
+            <th scope="row" className="grid__habit grid__habit--mood">
+              Motivation
+            </th>
+            {days.map((d) => (
+              <td key={d.date} className="grid__cell grid__cell--mood">
+                <MoodCell
+                  date={d.date}
+                  value={stats.motivationByDate.get(d.date) ?? null}
+                  disabled={d.date > today}
+                  field="motivation"
+                />
+              </td>
+            ))}
+          </tr>
         </tfoot>
       </table>
     </div>

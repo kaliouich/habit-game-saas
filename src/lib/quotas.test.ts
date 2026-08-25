@@ -64,14 +64,14 @@ describe("maxHabits", () => {
 
 describe("resolveBoardSkin (Sprint 7)", () => {
   it("le plan Free est forcé sur le thème gratuit, quel que soit le choix stocké", () => {
-    expect(resolveBoardSkin("violet", "FREE")).toBe("classic");
-    expect(resolveBoardSkin("royal", "FREE")).toBe("classic");
-    expect(resolveBoardSkin("classic", "FREE")).toBe("classic");
+    expect(resolveBoardSkin("violet", "FREE")).toBe("midnight");
+    expect(resolveBoardSkin("aurora", "FREE")).toBe("midnight");
+    expect(resolveBoardSkin("midnight", "FREE")).toBe("midnight");
   });
 
   it("le plan Pro garde son thème", () => {
-    expect(resolveBoardSkin("plum", "PRO")).toBe("plum");
-    expect(resolveBoardSkin("oxblood", "PRO")).toBe("oxblood");
+    expect(resolveBoardSkin("crimson", "PRO")).toBe("crimson");
+    expect(resolveBoardSkin("ember", "PRO")).toBe("ember");
   });
 
   // Garde-fou : renommer une clé dans BOARD_SKINS sans mettre à jour le reste
@@ -85,9 +85,9 @@ describe("resolveBoardSkin (Sprint 7)", () => {
   // Un Pro qui repasse en Free ne perd pas sa préférence en base : elle est
   // seulement ignorée au rendu, et revient telle quelle s'il se réabonne.
   it("une clé héritée d'une ancienne version retombe sur le thème gratuit", () => {
-    expect(resolveBoardSkin("arcade", "PRO")).toBe("classic");
-    expect(resolveBoardSkin("riso", "FREE")).toBe("classic");
-    expect(resolveBoardSkin("violet", "PRO")).toBe("classic"); // clé renommée en "plum"
-    expect(resolveBoardSkin("", "PRO")).toBe("classic");
+    expect(resolveBoardSkin("arcade", "PRO")).toBe("midnight");
+    expect(resolveBoardSkin("riso", "FREE")).toBe("midnight");
+    expect(resolveBoardSkin("classic", "PRO")).toBe("midnight"); // ancienne famille "encre", retirée au Midnight rebuild
+    expect(resolveBoardSkin("", "PRO")).toBe("midnight");
   });
 });

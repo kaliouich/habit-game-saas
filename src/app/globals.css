@@ -49,43 +49,53 @@
   --muted: #8f8f8c;
 }
 
-/* ─── Thèmes e-ink — scoped à .dashboard ──────────────────────────────────────
-   Toutes les teintes sont désaturées au même niveau : une couleur vive à côté
-   d'une palette e-ink casserait l'illusion de papier. Seuls --check (l'encre
-   des coches) et --accent (le crayon rouge) changent — le papier reste commun,
-   comme sur une liseuse dont on ne change pas l'écran.
-   Doit rester synchro avec BOARD_SKINS (src/lib/config.ts). */
-.dashboard[data-skin="classic"] {
-  --check: #37547f;
-  --accent: #a4453c;
+/* ─── Midnight — base sombre partagée, scoped à .dashboard ──────────────────
+   Remplace l'ancienne famille "encre" (papier clair désaturé, 8 skins). Une
+   seule base sombre commune à tous les thèmes ; seuls --check et --accent
+   changent par thème (même mécanique qu'avant, juste redéfinie sur fond
+   sombre) — voir les blocs [data-skin=…] plus bas.
+   --tone-danger/warning/success sont volontairement HORS thème : le sens
+   (mauvais/moyen/bon score) ne doit jamais dépendre du thème décoratif choisi. */
+.dashboard {
+  --bg: #0f1420;
+  --cell: #171e2e;
+  --panel: #0b0f18;
+  --panel-fg: #e8ecf4;
+  --panel-muted: #8a94a8;
+  --grid-line: #2a3547;
+  --fg: #e8ecf4;
+  --ink-2: #b9c4d6;
+  --muted: #7d879c;
+  --danger: #e5544b;
+  --tone-danger: #e5544b;
+  --tone-warning: #f5b93d;
+  --tone-success: #6bcb4b;
 }
-.dashboard[data-skin="graphite"] {
-  --check: #4a4740;
-  --accent: #7c766d;
+
+/* Doit rester synchro avec BOARD_SKINS (src/lib/config.ts). */
+.dashboard[data-skin="midnight"] {
+  --check: #4a9edb;
+  --accent: #7c6cf0;
 }
-.dashboard[data-skin="sepia"] {
-  --check: #7a5a3c;
-  --accent: #a4453c;
+.dashboard[data-skin="aurora"] {
+  --check: #21c5a8;
+  --accent: #4a9edb;
 }
-.dashboard[data-skin="forest"] {
-  --check: #3d5c48;
-  --accent: #7a5a3c;
+.dashboard[data-skin="ember"] {
+  --check: #f5b93d;
+  --accent: #e5544b;
 }
-.dashboard[data-skin="royal"] {
-  --check: #3b3f6b;
-  --accent: #8c6a3f;
+.dashboard[data-skin="orchid"] {
+  --check: #b47ce8;
+  --accent: #e85ca0;
 }
-.dashboard[data-skin="oxblood"] {
-  --check: #7a3a38;
-  --accent: #37547f;
+.dashboard[data-skin="lime"] {
+  --check: #6bcb4b;
+  --accent: #21c5a8;
 }
-.dashboard[data-skin="teal"] {
-  --check: #356b6b;
-  --accent: #a4453c;
-}
-.dashboard[data-skin="plum"] {
-  --check: #5e3f5c;
-  --accent: #7a5a3c;
+.dashboard[data-skin="crimson"] {
+  --check: #e5544b;
+  --accent: #f5b93d;
 }
 
 /* ─── Reset & base ───────────────────────────────────────────────────────── */
@@ -1142,8 +1152,14 @@ select {
   background: var(--panel);
   border-radius: 2px;
   min-width: 2px;
-  transition: width 300ms ease-out;
+  transition: width 300ms ease-out, background-color 200ms ease-out;
 }
+
+/* Midnight rebuild : la couleur EST l'information (pctTone, stats.ts) — un
+   score se lit d'un coup d'œil, plus besoin de comparer des largeurs. */
+.analysis__bar[data-tone="danger"] { background: var(--tone-danger); }
+.analysis__bar[data-tone="warning"] { background: var(--tone-warning); }
+.analysis__bar[data-tone="success"] { background: var(--tone-success); }
 
 .tophabits {
   padding: 6px 10px 10px;

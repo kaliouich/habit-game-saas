@@ -403,6 +403,20 @@ export function computeBadges(stats: MonthStats, habits: { loggedDates: Set<ISOD
   return badges;
 }
 
+export type PctTone = "danger" | "warning" | "success";
+
+/**
+ * Midnight rebuild (plan design, phase 1) — mappe un pourcentage vers une
+ * couleur sémantique (rouge/ambre/vert) au lieu d'une barre neutre. C'est
+ * cette règle, écrite une seule fois ici, que consomment l'Analysis table et
+ * les futurs anneaux par jour — jamais recalculée côté composant.
+ */
+export function pctTone(pct: number): PctTone {
+  if (pct < 0.4) return "danger";
+  if (pct < 0.75) return "warning";
+  return "success";
+}
+
 export interface Rank {
   key: string;
   label: string;

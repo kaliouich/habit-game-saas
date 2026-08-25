@@ -8,6 +8,7 @@ import {
   computeWeeklyRecap,
   currentStreak,
   deriveLoggedDates,
+  pctTone,
   rankForLevel,
   type HabitWithLogs,
 } from "./stats";
@@ -246,6 +247,23 @@ describe("badges (Sprint 5)", () => {
     const habits = [habit("a", ["2026-07-01", "2026-07-02"])];
     const stats = computeMonthStats({ month: MONTH, habits, moods: [], today: "2026-07-02" });
     expect(computeBadges(stats, habits).some((x) => x.id === "century")).toBe(false);
+  });
+});
+
+describe("pctTone — Midnight rebuild (couleur sémantique par score)", () => {
+  it("sous 40% : danger", () => {
+    expect(pctTone(0)).toBe("danger");
+    expect(pctTone(0.39)).toBe("danger");
+  });
+
+  it("entre 40% et 75% (exclu) : warning", () => {
+    expect(pctTone(0.4)).toBe("warning");
+    expect(pctTone(0.74)).toBe("warning");
+  });
+
+  it("75% et plus : success", () => {
+    expect(pctTone(0.75)).toBe("success");
+    expect(pctTone(1)).toBe("success");
   });
 });
 

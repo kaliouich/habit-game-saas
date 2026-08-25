@@ -7,44 +7,32 @@ export const PLAN_LIMITS = {
 } as const;
 
 /**
- * Skins cosmétiques du board (couleur de coche + accent) — Sprint 6. Zéro coût
- * marginal (CSS pur), 2 gratuits + 6 pro, tiers appliqués côté serveur dans
- * lib/actions/settings.ts. Les 6 pro reprennent les palettes des 5 directions
- * explorées pour la landing page (voir PRO-PLAN.md).
- */
-/**
- * Thèmes d'encre (Sprint 7). L'encre de base — #1f2530 — est échantillonnée
- * directement sur la vidéo de spec : un noir biaisé bleu (B > V > R à chaque
- * palier), pas le #111111 neutre utilisé jusqu'ici.
- *
- * Deux familles : « ink » garde cette encre et ne change que l'accent ;
- * « stamp » colore l'encre elle-même, comme un vrai tampon encreur.
+ * Thèmes du board (Midnight rebuild). L'ancienne famille "encre" (papier
+ * clair désaturé, 8 skins) est retirée — remplacée par une seule base sombre
+ * partagée (navy profond, voir .dashboard dans globals.css) déclinée en 6
+ * paires check/accent. "midnight" reste la clé gratuite pour ne pas casser
+ * les valeurs déjà stockées côté user (resolveBoardSkin retombe dessus de
+ * toute façon pour toute clé inconnue, donc aucune migration n'est requise).
  *
  * Les valeurs doivent rester synchro avec les blocs .dashboard[data-skin=…]
  * de globals.css — ici ce sont les pastilles du picker, là-bas le rendu réel.
- * La clé du thème gratuit reste "classic" : c'est le @default du schéma, donc
- * aucune migration n'est nécessaire.
  */
 export const BOARD_SKINS = [
   // ── Gratuit : imposé à tout le monde sur le plan Free ──
-  // Bleu encre + rouge crayon sur papier : le carnet annoté.
-  { key: "classic", label: "E-Ink Blue", check: "#37547f", accent: "#a4453c", tier: "free" },
+  { key: "midnight", label: "Midnight", check: "#4a9edb", accent: "#7c6cf0", tier: "free" },
 
-  // ── Pro — toutes désaturées au même niveau que le thème gratuit.
-  // Une teinte vive à côté d'une palette e-ink casserait l'illusion de papier.
-  { key: "graphite", label: "Graphite", check: "#4a4740", accent: "#7c766d", tier: "pro" },
-  { key: "sepia", label: "Sepia", check: "#7a5a3c", accent: "#a4453c", tier: "pro" },
-  { key: "forest", label: "Pine", check: "#3d5c48", accent: "#7a5a3c", tier: "pro" },
-  { key: "royal", label: "Indigo", check: "#3b3f6b", accent: "#8c6a3f", tier: "pro" },
-  { key: "oxblood", label: "Oxblood", check: "#7a3a38", accent: "#37547f", tier: "pro" },
-  { key: "teal", label: "Slate Teal", check: "#356b6b", accent: "#a4453c", tier: "pro" },
-  { key: "plum", label: "Plum", check: "#5e3f5c", accent: "#7a5a3c", tier: "pro" },
+  // ── Pro ──
+  { key: "aurora", label: "Aurora", check: "#21c5a8", accent: "#4a9edb", tier: "pro" },
+  { key: "ember", label: "Ember", check: "#f5b93d", accent: "#e5544b", tier: "pro" },
+  { key: "orchid", label: "Orchid", check: "#b47ce8", accent: "#e85ca0", tier: "pro" },
+  { key: "lime", label: "Lime", check: "#6bcb4b", accent: "#21c5a8", tier: "pro" },
+  { key: "crimson", label: "Crimson", check: "#e5544b", accent: "#f5b93d", tier: "pro" },
 ] as const;
 
 export type BoardSkinKey = (typeof BOARD_SKINS)[number]["key"];
 
 /** Thème imposé au plan Free (et repli pour toute valeur inconnue en base). */
-export const DEFAULT_BOARD_SKIN: BoardSkinKey = "classic";
+export const DEFAULT_BOARD_SKIN: BoardSkinKey = "midnight";
 
 /**
  * Thème réellement appliqué au rendu. Couvre deux cas que la valeur brute en

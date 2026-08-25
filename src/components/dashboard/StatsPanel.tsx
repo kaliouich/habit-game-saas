@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { computeBadges, computeLifetimeProgress, type MonthStats } from "@/lib/stats";
+import { computeBadges, computeLifetimeProgress, pctTone, type MonthStats } from "@/lib/stats";
 import type { ISODate } from "@/lib/dates";
 import { BarChart } from "@/components/charts/BarChart";
 import { DonutChart } from "@/components/charts/DonutChart";
@@ -109,7 +109,7 @@ export function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
                 <td>{a.actual}</td>
                 <td>{a.left}</td>
                 <td className="analysis__progress">
-                  <span className="analysis__bar" style={{ width: `${Math.round(a.pct * 100)}%` }} />
+                  <span className="analysis__bar" data-tone={pctTone(a.pct)} style={{ width: `${Math.round(a.pct * 100)}%` }} />
                 </td>
                 <td>{Math.round(a.pct * 100)}%</td>
               </tr>

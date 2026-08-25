@@ -11,9 +11,9 @@ interface BoardSkinPickerProps {
 }
 
 /**
- * Sélecteur de thème d'encre — 1 seul gratuit (imposé sur le plan Free),
- * 7 réservés au Pro. Le verrou est décoratif : `setBoardSkin` revalide le
- * tier côté serveur, et `resolveBoardSkin` force le thème gratuit au rendu.
+ * Sélecteur de thème (Midnight rebuild) — 1 seul gratuit (imposé sur le plan
+ * Free), 5 réservés au Pro. Le verrou est décoratif : `setBoardSkin` revalide
+ * le tier côté serveur, et `resolveBoardSkin` force le thème gratuit au rendu.
  */
 export function BoardSkinPicker({ current, plan }: BoardSkinPickerProps) {
   const [, startTransition] = useTransition();
@@ -22,7 +22,7 @@ export function BoardSkinPicker({ current, plan }: BoardSkinPickerProps) {
   return (
     <div className="skinpicker">
       <p className="skinpicker__label">
-        Ink theme
+        Theme
         {plan !== "PRO" && <span className="skinpicker__badge">Free</span>}
       </p>
       <div className="skinpicker__row">
@@ -52,7 +52,7 @@ export function BoardSkinPicker({ current, plan }: BoardSkinPickerProps) {
       </div>
       {plan !== "PRO" && (
         <Link href="/pricing" className="skinpicker__upsell">
-          Unlock {lockedCount} more ink themes →
+          Unlock {lockedCount} more themes →
         </Link>
       )}
     </div>

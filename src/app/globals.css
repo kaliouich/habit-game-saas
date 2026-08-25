@@ -176,6 +176,12 @@ select {
      seulement être visibles par ses descendants via var(). */
   background: var(--bg);
   color: var(--fg);
+  /* Sans ceci, les widgets natifs (le picker de <input type="date"> du
+     To-Do, les boutons de spin, la scrollbar) se rendent avec le rendu
+     CLAIR par défaut du navigateur — le texte de la date devenait illisible
+     sur le fond sombre tant que le champ n'était pas focus (le surlignage
+     de sélection le rendait visible par accident). */
+  color-scheme: dark;
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr) 300px;
   gap: 14px;

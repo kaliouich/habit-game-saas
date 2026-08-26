@@ -44,5 +44,23 @@ public class MainActivity extends BridgeActivity {
             webView.getSettings().setSupportMultipleWindows(false);
             webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(false);
         }
+
+        // ── User-Agent ───────────────────────────────────────────────────────
+        // Android WebView ajoute systématiquement "; wv" à son user-agent pour
+        // se distinguer de Chrome — et les serveurs OAuth de Google détectent
+        // CE marqueur précis pour bloquer ou dégrader le login (politique
+        // "disallowed_useragent"/embedded webview restreint, documentée par
+        // Google). C'est vraisemblablement la vraie cause des échecs 400 sur
+        // l'écran de consentement malgré les correctifs déjà en place
+        // ci-dessus (cookies tiers, fenêtres multiples) : ceux-ci évitent que
+        // le flux ne s'échappe vers Chrome externe, mais ne changent rien au
+        // fait que Google voit une WebView et se comporte différemment avec.
+        // Retirer "; wv" fait passer le user-agent pour du Chrome standard.
+        if (webView != null) {
+            String ua = webView.getSettings().getUserAgentString();
+            if (ua != null && ua.contains("wv")) {
+                webView.getSettings().setUserAgentString(ua.replace("; wv", ""));
+            }
+        }
     }
 }

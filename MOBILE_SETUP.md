@@ -24,11 +24,20 @@ n'est nécessaire pour un changement de code** (les déploiements web normaux
 suffisent), seuls les changements natifs (icône, splash, plugins, permissions)
 demandent un nouveau build/submit sur les stores.
 
-## Google Sign-In dans l'app native — résolu
+## Google Sign-In dans l'app native — résolu (deux chemins)
 
-État : le bouton "Continue with Google" fait un POST normal (Server Action
-Auth.js) **y compris dans l'app**. Aucune interception native, aucune
-passerelle de session à maintenir.
+Web : le bouton "Continue with Google" fait un POST normal (Server Action
+Auth.js) **y compris dans la WebView embarquée**. Aucune interception
+native, aucune passerelle de session — voir la section WebView ci-dessous.
+
+Natif (app installée) : depuis le 2026-08-27, **tout login Google natif passe
+par un Custom Tab + pont de session par deep link** (voir plus bas) — pas
+seulement les comptes qui en ont besoin. La WebView embarquée reste
+fonctionnelle pour Google (les trois réglages ci-dessous n'ont pas été
+retirés, Stripe Checkout en dépend toujours), mais `GoogleSignInButton.tsx`
+ne l'exerce plus jamais pour Google : un bug de login natif Google se
+diagnostique désormais côté `src/app/api/auth/mobile/*` et
+`MobileAuthBridgeListener.tsx`, pas côté `MainActivity.java`.
 
 ### ⚠️ Le piège n°1 : `server.allowNavigation`
 
@@ -59,9 +68,9 @@ retour de Checkout doit atterrir là où vit la session.
 | `SameSite=None` sur pkce/state | `src/lib/auth.ts` | autorise l'envoi du cookie en contexte tiers |
 | `setAcceptThirdPartyCookies` | `MainActivity.java` | autorise la WebView à accepter ces cookies |
 
-En retirer un suffit à recasser le login mobile.
+En retirer un suffit à recasser le login mobile (web, et Stripe en natif).
 
-### Vérifié : Google n'interdit pas la WebView Capacitor
+### Vérifié : Google n'interdit pas la WebView Capacitor (mais pas pour tout)
 
 La crainte du `disallowed_useragent` a été testée empiriquement (2026-08-08)
 en rejouant le flux OAuth réel avec l'user-agent d'une WebView Android
@@ -73,35 +82,68 @@ en rejouant le flux OAuth réel avec l'user-agent d'une WebView Android
 | Chrome standard | 302 → **exactement la même** destination |
 
 Aucun `disallowed_useragent`, aucun écran « ce navigateur n'est peut-être pas
-sécurisé ». Le blocage historique de Google ne s'applique pas à ce client
-OAuth. Conclusion : **ne pas construire de passerelle de session par deep
-link** — ce serait de l'authentification maison, donc du risque de
-compromission de compte, pour résoudre un problème qui n'existe pas.
+sécurisé ». Ce test-là reste vrai, mais il ne couvrait que la redirection
+initiale — pas l'étape de validation en deux facteurs. **2026-08-27** : les
+comptes utilisant la validation "Google prompt" (appui "Oui" sur un autre
+appareil — un flux proche de WebAuthn) échouaient systématiquement juste
+après le mot de passe, avec un 400 "malformed" dans un onglet qui s'était
+échappé vers le navigateur externe. Deux correctifs natifs vérifiés corrects
+(retrait du marqueur `; wv`, interception explicite de `onCreateWindow` via
+`WebView.WebViewTransport` pour empêcher tout `window.open()` de quitter la
+WebView) n'ont **ni l'un ni l'autre** arrêté cette fuite — ce qui écarte les
+deux comme mécanisme réel. Conclusion retenue : Google force délibérément un
+vrai contexte de navigation top-level pour ce challenge précis (exigence
+proche de WebAuthn qu'une WebView embarquée générique ne peut pas satisfaire)
+— pas un bug de cette app, une politique de sécurité Google.
 
-Si Google durcissait sa politique un jour, la réponse la moins risquée reste
-d'activer Resend (magic link) : ce flux se déroule entièrement dans la
-WebView, sans écran de consentement tiers. Il suffit de renseigner
-`AUTH_RESEND_KEY` dans le Secret k8s, le code est déjà en place et le
-provider s'enregistre tout seul (voir `src/lib/auth.ts`).
+D'où la passerelle Custom Tabs + deep link ci-dessous, construite pour ce cas
+précis — l'alternative Resend (magic link, `AUTH_RESEND_KEY` dans le Secret
+k8s, code déjà en place dans `src/lib/auth.ts`) reste une option plus simple
+si un jour cette passerelle devient trop coûteuse à maintenir.
 
-### Piste écartée : ouvrir le flow dans le navigateur système
+### Pont de session Custom Tabs + deep link (natif, 2026-08-27)
 
-Une première version routait le clic vers Custom Tabs via `Browser.open()`
-sur `/api/auth/signin/google`. **Ça ne marche pas** : Auth.js v5 exige un
-POST avec token CSRF pour se connecter — un GET sur cette route n'est pas
-une action valide et redirige vers `/api/auth/error?error=Configuration`
-(`UnknownAction` côté logs serveur). Piège : un `curl` sur cette URL
-renvoie bien `302`, mais le `Location` pointe vers la page d'erreur, pas
-vers Google — vérifier le header, pas juste le code HTTP.
+Une première tentative routait le clic vers Custom Tabs via `Browser.open()`
+sur `/api/auth/signin/google` — la route **intégrée** d'Auth.js. Ça ne
+marche pas : elle exige un POST avec token CSRF, un GET redirige vers
+`/api/auth/error?error=Configuration` (`UnknownAction` côté logs). Piège :
+un `curl` sur cette URL renvoie bien `302`, mais le `Location` pointe vers la
+page d'erreur, pas vers Google — vérifier le header, pas juste le code HTTP.
 
-Et même en corrigeant l'URL, le navigateur système a un **cookie jar séparé**
-de la WebView : la session obtenue dans Custom Tabs n'est pas visible par
-l'app. L'approche est donc structurellement sans issue sans pont de session.
+Appeler `signIn()` directement depuis une route custom sans passer par un
+vrai formulaire de Server Action a le même problème sous une autre forme :
+vérifié empiriquement (2026-08-27, Playwright headless) que `signIn()` invoqué
+depuis un Route Handler `GET` ordinaire redirige vers la page de connexion
+générique d'Auth.js au lieu d'aller direct chez Google — seule une vraie
+soumission de Server Action produit la redirection OAuth attendue. D'où
+`src/app/auth/mobile/start/page.tsx` : une page qui soumet automatiquement
+(au montage, via `requestSubmit()`) un formulaire lié à `signInWithGoogleMobile`
+— structurellement identique au `signInWithGoogle` du flux web qui marche
+déjà, seul `redirectTo` change.
 
-Le pont de session par deep link (`habitgame://auth-callback?code=…` + table
-de codes à usage unique) reste techniquement possible, mais n'a **aucune
-raison d'être construit** tant que le test ci-dessus reste vert : ce serait
-de l'authentification maison en pure perte.
+Et même avec ça, le navigateur système a un **cookie jar séparé** de la
+WebView : la session obtenue dans le Custom Tab n'est pas visible par l'app.
+D'où le pont de session par deep link, maintenant construit :
+
+```
+1. GoogleSignInButton.tsx (natif) → Browser.open(/auth/mobile/start)
+2. auto-submit → signInWithGoogleMobile() → Google (Custom Tab)
+3. callback OAuth → /api/auth/mobile/bridge (session déjà posée dans
+   le jar du Custom Tab, comme redirectTo:"/app" pour le flux web)
+4. mintMobileAuthCode(userId) → redirige vers habitgame://auth-callback?code=…
+5. MobileAuthBridgeListener.tsx (WebView) reçoit le deep link,
+   POST /api/auth/mobile/exchange { code } DEPUIS LA WEBVIEW
+6. le Set-Cookie de la réponse atterrit dans le bon jar → window.location = "/app"
+```
+
+Code à usage unique (`MobileAuthCode`, `src/lib/mobileAuthCode.ts`) : 256
+bits d'entropie, TTL 2 minutes, consommation atomique (ferme la course entre
+deux échanges simultanés), erreur non différenciée entre "jamais existé" /
+"expiré" / "déjà utilisé" (empêche un sondage de codes). Schéma d'URL custom
+(`habitgame://`) plutôt qu'Android App Links : pas de keystore de signature
+release pour l'instant, donc pas de fingerprint stable pour
+`assetlinks.json` — voir le commentaire dans `mobileAuthCode.ts` pour la
+migration si ce keystore existe un jour.
 
 ## Build de l'APK — via GitHub Actions (recommandé)
 

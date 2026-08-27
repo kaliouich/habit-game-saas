@@ -3,6 +3,7 @@ import { Literata } from "next/font/google";
 import { APP_NAME } from "@/lib/config";
 import { Analytics } from "@/components/Analytics";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+import { MobileAuthBridgeListener } from "@/components/MobileAuthBridgeListener";
 import "./globals.css";
 
 // Literata est dessinée pour les liseuses (c'est la police par défaut de Google
@@ -55,6 +56,7 @@ export default function RootLayout({
         {children}
         <Analytics />
         <ServiceWorkerRegister />
+        <MobileAuthBridgeListener />
       </body>
     </html>
   );

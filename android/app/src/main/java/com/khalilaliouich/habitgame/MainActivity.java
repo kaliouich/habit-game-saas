@@ -1,10 +1,12 @@
 package com.khalilaliouich.habitgame;
 
 import android.os.Bundle;
+import android.os.Message;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 
 import com.getcapacitor.BridgeActivity;
+import com.getcapacitor.BridgeWebChromeClient;
 
 public class MainActivity extends BridgeActivity {
 
@@ -27,22 +29,31 @@ public class MainActivity extends BridgeActivity {
         }
 
         // ── Fenêtres multiples ───────────────────────────────────────────────
-        // Le flux de consentement Google s'ouvre via window.open() après la
-        // validation en deux étapes. Avec le support des fenêtres multiples,
-        // Android délègue à onCreateWindow, que Capacitor route vers le
-        // NAVIGATEUR EXTERNE — un chemin distinct de shouldOverrideUrlLoading,
-        // donc totalement hors de portée de `server.allowNavigation`.
+        // Le flux de consentement Google s'ouvre via window.open(). Le couple
+        // setSupportMultipleWindows(false) + setJavaScriptCanOpenWindowsAutomatically(false)
+        // ne suffit PAS à garder ça dans la WebView : à false, certaines
+        // implémentations WebView (selon le fournisseur/OEM) n'appellent jamais
+        // onCreateWindow et laissent le système gérer l'intent — d'où
+        // l'échappement observé vers le navigateur externe malgré ce réglage,
+        // avec un 400 côté consentement (cookies de session restés dans la
+        // WebView d'origine) et un callback qui n'atteint jamais notre serveur.
         //
-        // Conséquence observée : Chrome recevait l'URL de consentement sans les
-        // cookies de session Google (restés dans la WebView) et répondait 400
-        // « malformed », pendant que l'app attendait un retour qui n'arrivait
-        // jamais — le callback n'atteignait jamais notre serveur.
-        //
-        // À false, window.open() charge dans la MÊME WebView : un seul contexte,
-        // un seul jar de cookies, le flux va au bout.
+        // Fix explicite : autoriser les fenêtres multiples mais intercepter
+        // onCreateWindow pour forcer le rendu dans la MÊME WebView via
+        // WebView.WebViewTransport, au lieu de compter sur un comportement de
+        // repli implicite et non garanti entre versions/OEM.
         if (webView != null) {
-            webView.getSettings().setSupportMultipleWindows(false);
-            webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(false);
+            webView.getSettings().setSupportMultipleWindows(true);
+            webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+            webView.setWebChromeClient(new BridgeWebChromeClient(this.getBridge()) {
+                @Override
+                public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+                    WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+                    transport.setWebView(view);
+                    resultMsg.sendToTarget();
+                    return true;
+                }
+            });
         }
 
         // ── User-Agent ───────────────────────────────────────────────────────

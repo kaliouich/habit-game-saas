@@ -3,11 +3,11 @@ interface BarChartProps {
   values: (number | null)[]; // 0..1, null = pas de barre (futur)
   labels: string[]; // même longueur
   height?: number;
-  labelEvery?: number; // n'afficher qu'un label sur n
+  labelEvery?: number; // n'afficher qu'un label sur n — auto-calculé si omis (voir minLabelSpacing)
   highlightIndex?: number; // ex. aujourd'hui
 }
 
-export function BarChart({ values, labels, height = 110, labelEvery = 1, highlightIndex }: BarChartProps) {
+export function BarChart({ values, labels, height = 110, labelEvery, highlightIndex }: BarChartProps) {
   const n = values.length;
   const axisW = 30;
   const labelH = 26;
@@ -30,6 +30,15 @@ export function BarChart({ values, labels, height = 110, labelEvery = 1, highlig
   const chartBottom = topPad + chartH;
 
   const yTicks = [0, 0.25, 0.5, 0.75, 1];
+
+  // Espacement minimal (unités viewBox) entre deux labels affichés pour
+  // rester lisibles à -55°/8px sans se chevaucher — un caller n'a pas à
+  // calculer ça lui-même (ni à s'en souvenir : l'hebdo n'en a pas besoin,
+  // n=6 tient déjà large ; le quotidien, n≈30, s'écrasait en bouillie
+  // illisible sans ce filtre une fois le viewBox recalé sur la largeur
+  // réelle du panneau).
+  const minLabelSpacing = 40;
+  const effectiveLabelEvery = labelEvery ?? Math.max(1, Math.ceil(minLabelSpacing / (barW + gap)));
 
   return (
     <svg
@@ -74,7 +83,7 @@ export function BarChart({ values, labels, height = 110, labelEvery = 1, highlig
         );
       })}
       {labels.map((label, i) =>
-        i % labelEvery === 0 ? (
+        i % effectiveLabelEvery === 0 ? (
           <text
             key={i}
             x={axisW + i * (barW + gap) + barW / 2}

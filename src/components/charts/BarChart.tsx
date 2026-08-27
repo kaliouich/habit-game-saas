@@ -12,12 +12,20 @@ export function BarChart({ values, labels, height = 110, labelEvery = 1, highlig
   const axisW = 30;
   const labelH = 26;
   // Room above the chart for the "100%" tick label's ascent — at chart__tick's
-  // 7px font-size, a baseline flush with y=0 clips the glyph against the
+  // font-size, a baseline flush with y=0 clips the glyph against the
   // viewBox top edge. Without this the top tick is invisible, not just tight.
   const topPad = 8;
-  const gap = 2;
-  const barW = 12;
-  const width = axisW + n * (barW + gap);
+  // Largeur de canevas FIXE, indépendante de n : avec une largeur dérivée de
+  // n*(barW+gap) (l'ancien calcul), un viewBox étroit (6 barres hebdo) étiré
+  // par le CSS à 100% de la largeur réelle du panneau (~350-380px) gonflait
+  // tout le texte SVG d'un facteur ~3x — les tick/label 7px/6.5px du CSS
+  // rendaient à ~21-23px effectifs. En gardant le viewBox proche de la
+  // largeur réelle quel que soit n (6 barres hebdo, ~30 quotidien), le
+  // facteur d'étirement reste proche de 1:1 et les tailles du CSS
+  // s'appliquent presque telles quelles.
+  const width = 340;
+  const gap = Math.max(1.5, Math.min(8, ((width - axisW) / n) * 0.15));
+  const barW = (width - axisW) / n - gap;
   const chartH = height - labelH - topPad;
   const chartBottom = topPad + chartH;
 
@@ -30,6 +38,12 @@ export function BarChart({ values, labels, height = 110, labelEvery = 1, highlig
       role="img"
       aria-label="Bar chart"
       preserveAspectRatio="none"
+      // Hauteur explicite : sans elle, un <svg> avec viewBox mais sans
+      // width/height CSS retombe sur le ratio intrinsèque du viewBox pour
+      // calculer sa boîte (indépendamment de preserveAspectRatio, qui ne
+      // régit que le contenu DANS la boîte) — un ratio ~114:90 étiré à la
+      // largeur du panneau donnait un graphique ~3x plus haut que prévu.
+      style={{ height }}
     >
       {yTicks.map((t) => {
         const y = chartBottom - t * chartH;

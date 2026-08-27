@@ -1069,12 +1069,15 @@ select {
 }
 
 .chart__tick {
-  font-size: 7px;
+  /* Le viewBox du BarChart est désormais proche de sa largeur CSS réelle
+     (voir BarChart.tsx) : ces tailles s'appliquent presque 1:1 au lieu
+     d'être gonflées ~3x par l'étirement. */
+  font-size: 9px;
   fill: var(--muted);
 }
 
 .chart__label {
-  font-size: 6.5px;
+  font-size: 8px;
   fill: var(--muted);
 }
 
@@ -1090,7 +1093,7 @@ select {
 
 .donut__pct {
   font-family: var(--font-display), Georgia, serif;
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 700;
   fill: var(--fg);
 }
@@ -1151,7 +1154,7 @@ select {
 .statcard__value {
   display: block;
   font-family: var(--font-display), Georgia, serif;
-  font-size: 24px;
+  font-size: 19px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   padding: 11px 0 10px;
@@ -1478,7 +1481,7 @@ select {
   }
 
   .statcard__value {
-    font-size: 20px;
+    font-size: 17px;
   }
 
   /* Le mois et « My Habits » vivent dans la sidebar, sous la grille : sans

@@ -66,6 +66,15 @@ export const RATE_LIMITS = {
   portal: { limit: 20, windowMs: 60 * 60 * 1000 },
   /** Export CSV : requête lourde (tout l'historique du compte). */
   export: { limit: 20, windowMs: 60 * 60 * 1000 },
+  /**
+   * Échange du code du pont de session mobile (voir mobileAuthCode.ts).
+   * Route non authentifiée par nature (elle établit la session) : clé par IP
+   * plutôt que userId, seule exception à la préférence userId ci-dessus —
+   * l'identité de l'appelant n'est justement pas encore connue à ce stade.
+   * Large volontairement : l'entropie/TTL/usage unique du code fait le
+   * vrai travail, cette limite ne freine que le bourrinage scripté.
+   */
+  mobileAuthExchange: { limit: 10, windowMs: 10 * 60 * 1000 },
 } as const;
 
 /** Remise à zéro — tests uniquement. */

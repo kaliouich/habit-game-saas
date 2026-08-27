@@ -18,6 +18,23 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!--
+              Pont de session Google natif (Custom Tabs → WebView) — voir
+              MOBILE_SETUP.md et src/app/api/auth/mobile/*. Schéma custom, pas
+              App Links : pas de keystore de signature release pour l'instant,
+              donc pas de fingerprint stable pour assetlinks.json. Le risque
+              (une autre app enregistrant le même schéma) est déjà couvert par
+              le code lui-même (256 bits, usage unique, TTL 2 min) — migration
+              vers App Links documentée dans mobileAuthCode.ts si un keystore
+              release existe un jour.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="habitgame" android:host="auth-callback" />
+            </intent-filter>
         </activity>
 
         <provider

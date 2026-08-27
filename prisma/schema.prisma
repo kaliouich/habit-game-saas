@@ -47,6 +47,7 @@ model User {
   tasks                Task[]
   accounts             Account[]
   sessions             Session[]
+  mobileAuthCodes      MobileAuthCode[]
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
 }
@@ -255,4 +256,21 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+/// Pont de session pour le login Google natif (Custom Tabs → WebView) — voir
+/// MOBILE_SETUP.md. Code à usage unique, forte entropie, TTL court : le
+/// Custom Tab (jar de cookies séparé de la WebView) l'échange contre une
+/// vraie Session via /api/auth/mobile/exchange.
+model MobileAuthCode {
+  id        String    @id @default(cuid())
+  code      String    @unique
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Habit Game</string>
-    <string name="title_activity_main">Habit Game</string>
+    <string name="app_name">Habitcade</string>
+    <string name="title_activity_main">Habitcade</string>
     <string name="package_name">com.khalilaliouich.habitgame</string>
     <string name="custom_url_scheme">com.khalilaliouich.habitgame</string>
 </resources>

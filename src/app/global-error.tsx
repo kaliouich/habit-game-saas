@@ -30,7 +30,7 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
         }}
       >
         <div style={{ maxWidth: "420px", textAlign: "center" }}>
-          <h1 style={{ fontSize: "20px", marginBottom: "8px" }}>Habit Game is temporarily down</h1>
+          <h1 style={{ fontSize: "20px", marginBottom: "8px" }}>Habitcade is temporarily down</h1>
           <p style={{ fontSize: "14px", lineHeight: 1.6, color: "#555" }}>
             We hit an unexpected error. Your data is safe — please try again in a moment.
           </p>

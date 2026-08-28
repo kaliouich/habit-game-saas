@@ -11,7 +11,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
  */
 const config: CapacitorConfig = {
   appId: "com.khalilaliouich.habitgame",
-  appName: "Habit Game",
+  appName: "Habitcade",
   webDir: "public", // requis par le schema Capacitor mais inutilisé en mode server.url
   server: {
     url: "https://habitcade.com",

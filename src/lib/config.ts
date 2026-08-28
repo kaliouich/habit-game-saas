@@ -1,5 +1,5 @@
 /** Nom produit — jamais hardcodé ailleurs (AGENTS.md règle 8). */
-export const APP_NAME = "Habit Game";
+export const APP_NAME = "Habitcade";
 
 export const PLAN_LIMITS = {
   FREE: { maxHabits: 5, historyMonths: 0 }, // 0 = mois courant uniquement

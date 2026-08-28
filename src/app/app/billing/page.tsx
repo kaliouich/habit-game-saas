@@ -91,7 +91,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
       <div className="billingcard donate">
         <h2 className="donate__title">Support this project</h2>
         <p className="donate__text">
-          Habit Game is built and run by a small team. Every donation goes straight back into
+          Habitcade is built and run by a small team. Every donation goes straight back into
           keeping the servers running and shipping the features on the roadmap — no ads, no
           data selling, just a tool we want to keep making better. If it&apos;s helped you build a
           habit, anything you give helps us keep it going.

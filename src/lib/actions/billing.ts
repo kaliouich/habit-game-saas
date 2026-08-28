@@ -59,7 +59,7 @@ export async function createDonationCheckoutSession(formData: FormData): Promise
           currency: "eur",
           unit_amount: unitAmount,
           product_data: {
-            name: "Support Habit Game",
+            name: "Support Habitcade",
             description: "One-time donation to support development — thank you!",
           },
         },

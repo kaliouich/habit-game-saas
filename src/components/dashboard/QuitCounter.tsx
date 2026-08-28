@@ -27,15 +27,27 @@ function formatDuration(ms: number): string {
  *  rechute pour repartir d'un état frais sans logique de reset manuelle. */
 export function QuitCounter({ habitId, name, emoji, quitStartedAt, bestMs, relapseCount }: QuitCounterProps) {
   const startMs = new Date(quitStartedAt).getTime();
-  const [elapsedMs, setElapsedMs] = useState(() => Date.now() - startMs);
+  // null jusqu'au montage client : Date.now() calculé dans l'initializer de
+  // useState tournait aussi côté serveur (SSR d'un composant "use client"),
+  // donnant un texte différent de l'hydratation quelques centaines de ms
+  // plus tard — mismatch d'hydratation React intermittent (visible quand
+  // l'écart franchit une frontière de seconde/minute affichée). Un état
+  // initial identique des deux côtés, peuplé par effet après montage,
+  // l'élimine complètement.
+  const [elapsedMs, setElapsedMs] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
+    // Exception légitime à la règle : ce setState synchrone est justement le
+    // point de la garde `null` ci-dessus — peupler la valeur réelle une fois
+    // le montage client garanti, pas un effet en cascade évitable.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setElapsedMs(Date.now() - startMs);
     const id = setInterval(() => setElapsedMs(Date.now() - startMs), 1000);
     return () => clearInterval(id);
   }, [startMs]);
 
-  const isRecord = elapsedMs >= bestMs;
+  const isRecord = elapsedMs !== null && elapsedMs >= bestMs;
 
   return (
     <div className="quitcard">
@@ -47,7 +59,7 @@ export function QuitCounter({ habitId, name, emoji, quitStartedAt, bestMs, relap
           <span className="quitcard__relapses">{relapseCount} relapse{relapseCount > 1 ? "s" : ""}</span>
         )}
       </div>
-      <p className="quitcard__timer">{formatDuration(elapsedMs)}</p>
+      <p className="quitcard__timer">{formatDuration(elapsedMs ?? 0)}</p>
       <p className="quitcard__best">{isRecord ? "🏆 personal best" : `Best: ${formatDuration(bestMs)}`}</p>
       <button
         type="button"

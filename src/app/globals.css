@@ -451,10 +451,18 @@ select {
   background: rgb(255 255 255 / 0.12);
 }
 
+/* Fixe et centré, pas ancré au déclencheur (position:absolute; right:0) :
+   .habitmenu vit dans une colonne latérale étroite (~230-260px) à TOUTE
+   largeur d'écran, pas seulement sur mobile — un panneau de 220px ancré à
+   droite d'un déclencheur proche du bord de cette colonne débordait donc
+   aussi bien en desktop qu'en mobile (texte tronqué à mi-largeur, scroll
+   horizontal parasite). Centré en fixed, il reste toujours dans l'écran
+   quel que soit l'endroit cliqué ou la largeur de la fenêtre. */
 .habitmenu__panel {
-  position: absolute;
-  right: 0;
-  top: 22px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 30;
   background: var(--cell);
   color: var(--fg);
@@ -462,8 +470,8 @@ select {
   border-radius: 8px;
   box-shadow: var(--shadow);
   padding: 10px;
-  width: 220px;
-  max-height: 70vh;
+  width: min(300px, calc(100vw - 32px));
+  max-height: 80vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -1529,22 +1537,6 @@ select {
   .panel__title {
     font-size: 12px;
     padding: 7px 10px;
-  }
-
-  /* .habitmenu__panel s'ancre normalement à droite de son déclencheur
-     (right:0, position:absolute) — sur mobile, un déclencheur proche du
-     bord gauche de l'écran fait déborder ses 220px hors viewport (texte
-     tronqué, scroll horizontal de toute la page). En position fixe et
-     centrée, il reste toujours dans l'écran quel que soit l'habitude
-     cliquée. */
-  .habitmenu__panel {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    right: auto;
-    transform: translate(-50%, -50%);
-    width: min(300px, calc(100vw - 32px));
-    max-height: 80vh;
   }
 
   .statcard__value {

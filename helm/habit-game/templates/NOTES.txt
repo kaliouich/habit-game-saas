@@ -6,7 +6,9 @@ Vérifier le rollout :
 {{- if .Values.route.enabled }}
 
 App accessible sur :
-  https://{{ .Values.route.hostname }}
+{{- range .Values.route.hostnames }}
+  https://{{ . }}
+{{- end }}
 {{- end }}
 
 Secrets utilisés : {{ include "habit-game.secretName" . }}

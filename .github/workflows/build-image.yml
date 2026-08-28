@@ -67,7 +67,7 @@ jobs:
           # NEXT_PUBLIC_* est figé par le compilateur au build (voir Dockerfile) :
           # ces valeurs ne peuvent pas être injectées au runtime par k8s.
           build-args: |
-            NEXT_PUBLIC_APP_URL=https://habits.khalilaliouich.com
+            NEXT_PUBLIC_APP_URL=https://habitcade.com
             NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT=${{ vars.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT }}
             NEXT_PUBLIC_ADMOB_ANDROID_BANNER_ID=${{ vars.NEXT_PUBLIC_ADMOB_ANDROID_BANNER_ID }}
             NEXT_PUBLIC_ADMOB_IOS_BANNER_ID=${{ vars.NEXT_PUBLIC_ADMOB_IOS_BANNER_ID }}

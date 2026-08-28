@@ -45,7 +45,8 @@ service:
 
 route:
   enabled: true
-  hostname: habits.khalilaliouich.com
+  hostnames:
+    - habits.khalilaliouich.com
   gatewayName: main-gateway
   gatewayNamespace: default
 

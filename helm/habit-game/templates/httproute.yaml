@@ -13,7 +13,9 @@ spec:
   # OutOfSync et la resynchronisait en boucle (selfHeal). On préfère aligner
   # le manifeste sur la réalité plutôt que masquer la différence.
   hostnames:
-    - {{ .Values.route.hostname | quote }}
+    {{- range .Values.route.hostnames }}
+    - {{ . | quote }}
+    {{- end }}
   parentRefs:
     - group: gateway.networking.k8s.io
       kind: Gateway

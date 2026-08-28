@@ -10,7 +10,7 @@ WORKDIR /app
 # NEXT_PUBLIC_* est figé PAR LE COMPILATEUR au build (pas au runtime, même pour
 # une Server Action) : injecter la vraie URL ici est la SEULE façon de la
 # changer. Un Secret k8s au runtime n'y changera jamais rien.
-ARG NEXT_PUBLIC_APP_URL=https://habits.khalilaliouich.com
+ARG NEXT_PUBLIC_APP_URL=https://habitcade.com
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 # Même contrainte que NEXT_PUBLIC_APP_URL ci-dessus : figé au build. Vide par
 # défaut = AdBanner/AdSidebar ne chargent pas le script AdSense (no-op propre,

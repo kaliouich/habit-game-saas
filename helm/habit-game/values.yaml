@@ -49,6 +49,13 @@ route:
     - habits.khalilaliouich.com
   gatewayName: main-gateway
   gatewayNamespace: default
+  # Redirection 301 d'un ancien host vers le nouveau, le temps d'une migration
+  # de domaine. Route Gateway API séparée par nécessité — voir le commentaire
+  # dans templates/httproute-redirect.yaml.
+  legacyRedirect:
+    enabled: false
+    hostname: ""
+    target: ""
 
 # ── PostgreSQL (Deployment simple, pas de chart tiers — 1 replica, PVC Longhorn) ──
 postgres:

@@ -1,0 +1,26 @@
+{{- if .Values.route.legacyRedirect.enabled }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "habit-game.name" . }}-redirect
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    {{- include "habit-game.labels" . | nindent 4 }}
+spec:
+  # Route séparée : un HTTPRoute applique les mêmes rules à tous ses hostnames,
+  # donc on ne peut pas mélanger "sert l'app" et "redirige" dans le même objet
+  # que templates/httproute.yaml — celui-ci ne fait que rediriger l'ancien host.
+  hostnames:
+    - {{ .Values.route.legacyRedirect.hostname | quote }}
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: {{ .Values.route.gatewayName }}
+      namespace: {{ .Values.route.gatewayNamespace }}
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            hostname: {{ .Values.route.legacyRedirect.target }}
+            statusCode: 301
+{{- end }}

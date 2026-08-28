@@ -1,5 +1,5 @@
 # Overrides pour la prod k3s (habitcade.com, migré depuis habits.khalilaliouich.com
-# le 2026-08-28 — l'ancien host reste listé le temps de basculer le redirect 301).
+# le 2026-08-28 — l'ancien host redirige désormais en 301, voir route.legacyRedirect).
 #
 # ⚠️ Fichier piloté par la CI : le workflow build-image.yml réécrit `app.image.tag`
 # à chaque build et committe le changement. C'est CE commit qu'ArgoCD observe
@@ -21,7 +21,10 @@ route:
   hostnames:
     - habitcade.com
     - www.habitcade.com
-    - habits.khalilaliouich.com
+  legacyRedirect:
+    enabled: true
+    hostname: habits.khalilaliouich.com
+    target: habitcade.com
 
 postgres:
   enabled: true

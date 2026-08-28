@@ -1531,6 +1531,22 @@ select {
     padding: 7px 10px;
   }
 
+  /* .habitmenu__panel s'ancre normalement à droite de son déclencheur
+     (right:0, position:absolute) — sur mobile, un déclencheur proche du
+     bord gauche de l'écran fait déborder ses 220px hors viewport (texte
+     tronqué, scroll horizontal de toute la page). En position fixe et
+     centrée, il reste toujours dans l'écran quel que soit l'habitude
+     cliquée. */
+  .habitmenu__panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%);
+    width: min(300px, calc(100vw - 32px));
+    max-height: 80vh;
+  }
+
   .statcard__value {
     font-size: 17px;
   }

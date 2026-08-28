@@ -59,3 +59,62 @@ jobs:
           name: habit-game-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
+
+  build-release-aab:
+    # Déclenchement manuel uniquement : contrairement à l'APK debug (utile à
+    # chaque commit pour tester), un build signé pour le Play Store est un
+    # événement délibéré — pas de bruit de versionCode à chaque push trivial.
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Sync Capacitor (copie web assets + plugins natifs)
+        run: npx cap sync android
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('android/**/*.gradle*', 'android/gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Decode release keystore
+        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/habitcade-release.jks"
+
+      - name: Build signed release AAB
+        working-directory: android
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/habitcade-release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          # run_number croît à chaque run de CE workflow — jamais réutilisé,
+          # ce qui satisfait l'exigence Play Store de versionCode strictement
+          # croissant à chaque upload.
+          ANDROID_VERSION_CODE: ${{ github.run_number }}
+          ANDROID_VERSION_NAME: "1.0.${{ github.run_number }}"
+        run: ./gradlew bundleRelease --no-daemon
+
+      - name: Remove decoded keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/habitcade-release.jks"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: habitcade-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 90

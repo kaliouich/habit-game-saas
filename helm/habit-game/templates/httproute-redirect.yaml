@@ -23,4 +23,8 @@ spec:
           requestRedirect:
             hostname: {{ .Values.route.legacyRedirect.target }}
             statusCode: 301
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
 {{- end }}

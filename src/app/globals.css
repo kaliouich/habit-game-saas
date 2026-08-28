@@ -2318,6 +2318,17 @@ select {
   color: var(--m-gold);
 }
 
+/* En dessous de ~480px, logo + "Features" + "Pricing" + bouton CTA ne
+   tiennent plus sur une ligne (débordement horizontal découvert en capturant
+   des screenshots Play Store à 412px, largeur téléphone réelle) — on garde
+   le CTA (l'action qui compte) et on masque les liens texte plutôt que
+   d'ajouter un menu hamburger pour deux liens. */
+@media (max-width: 480px) {
+  .marketingheader__nav a:not(.btn) {
+    display: none;
+  }
+}
+
 .btn--nav {
   width: auto;
   padding: 8px 16px;

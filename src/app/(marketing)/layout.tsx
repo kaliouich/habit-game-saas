@@ -9,6 +9,7 @@ export default async function MarketingLayout({ children }: { children: React.Re
     <div className="marketing">
       <header className="marketingheader">
         <Link href="/" className="marketingheader__logo">
+          <img src="/icon-512.png" alt="" width={32} height={32} className="marketingheader__mark" />
           {APP_NAME}
         </Link>
         <nav className="marketingheader__nav">

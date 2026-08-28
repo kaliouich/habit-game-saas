@@ -56,7 +56,12 @@
    sombre) — voir les blocs [data-skin=…] plus bas.
    --tone-danger/warning/success sont volontairement HORS thème : le sens
    (mauvais/moyen/bon score) ne doit jamais dépendre du thème décoratif choisi. */
-.dashboard {
+.dashboard,
+.authpage,
+.recap,
+.billingpage,
+.journalpage,
+.report {
   --bg: #0f1420;
   --cell: #171e2e;
   --panel: #0b0f18;
@@ -72,8 +77,16 @@
   --tone-success: #6bcb4b;
 }
 
-/* Doit rester synchro avec BOARD_SKINS (src/lib/config.ts). */
-.dashboard[data-skin="midnight"] {
+/* Doit rester synchro avec BOARD_SKINS (src/lib/config.ts).
+   Les pages hors du dashboard principal (auth, recap, billing, journal,
+   report) n'ont pas de sélecteur de skin — elles adoptent toujours
+   Midnight par défaut, pour ne jamais retomber sur le thème clair de :root. */
+.dashboard[data-skin="midnight"],
+.authpage,
+.recap,
+.billingpage,
+.journalpage,
+.report {
   --check: #4a9edb;
   --accent: #7c6cf0;
 }
@@ -1682,6 +1695,14 @@ select {
   text-align: center;
 }
 
+.authcard__mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  margin: 0 auto 10px;
+  display: block;
+}
+
 .authcard__title {
   font-family: var(--font-display), Georgia, serif;
   font-size: 18px;
@@ -1994,6 +2015,13 @@ select {
 
 /* ─── Billing page ────────────────────────────────────────────────────────── */
 .billingpage {
+  min-height: 100vh;
+  background: var(--bg);
+  /* max-width/margin:auto centrent la colonne — le fond de page doit quand
+     même couvrir tout le viewport, d'où ce halo qui déborde sans toucher au
+     layout (pas de scrollbar horizontale, contrairement à une largeur réelle). */
+  box-shadow: 0 0 0 100vmax var(--bg);
+  color: var(--fg);
   max-width: 480px;
   margin: 0 auto;
   padding: 40px 20px;
@@ -2256,11 +2284,21 @@ select {
 }
 
 .marketingheader__logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
   font-family: var(--font-display), Georgia, serif;
   font-weight: 800;
   font-size: 18px;
   letter-spacing: -0.01em;
   color: var(--m-paper);
+}
+
+.marketingheader__mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
 }
 
 .marketingheader__nav {
@@ -2852,11 +2890,14 @@ select {
 
 /* ── Shareable monthly recap ─────────────────────────────────────────────── */
 .recap {
+  min-height: 100vh;
+  background: var(--bg);
+  box-shadow: 0 0 0 100vmax var(--bg);
   max-width: 520px;
   margin: 0 auto;
   padding: 40px 24px 64px;
   font-family: var(--font-body);
-  color: var(--text-primary);
+  color: var(--fg);
 }
 
 .recap__brand {
@@ -2864,7 +2905,7 @@ select {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--muted);
   margin: 0 0 24px;
 }
 
@@ -2890,7 +2931,7 @@ select {
 
 .recap__sub {
   font-size: 14px;
-  color: var(--text-secondary);
+  color: var(--muted);
   margin: 0;
 }
 
@@ -2923,7 +2964,7 @@ select {
 
 .recaphabit__bar {
   height: 6px;
-  background: var(--border);
+  background: var(--grid-line);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -2938,7 +2979,7 @@ select {
 .recaphabit__pct {
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--muted);
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
@@ -2946,15 +2987,15 @@ select {
 .recap__mood {
   text-align: center;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: var(--muted);
   margin: 0 0 40px;
 }
 
 .recap__footer {
   text-align: center;
   font-size: 13px;
-  color: var(--text-secondary);
-  border-top: 1px solid var(--border);
+  color: var(--muted);
+  border-top: 1px solid var(--grid-line);
   padding-top: 24px;
 }
 
@@ -2966,8 +3007,8 @@ select {
 
 /* ── Billing: export & share section ────────────────────────────────────── */
 .billingexport {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
+  background: var(--cell);
+  border: 1px solid var(--grid-line);
   border-radius: 10px;
   padding: 20px 24px;
   margin-top: 24px;
@@ -2977,7 +3018,7 @@ select {
   font-size: 14px;
   font-weight: 700;
   margin: 0 0 16px;
-  color: var(--text-primary);
+  color: var(--fg);
 }
 
 .billingexport__row {
@@ -2990,17 +3031,17 @@ select {
 
 .billingexport__label {
   font-size: 13px;
-  color: var(--text-secondary);
+  color: var(--muted);
 }
 
 .billingexport__copy {
   font-size: 11px;
   font-family: monospace;
   background: var(--bg);
-  border: 1px solid var(--border);
+  border: 1px solid var(--grid-line);
   border-radius: 6px;
   padding: 4px 8px;
-  color: var(--text-secondary);
+  color: var(--muted);
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3013,6 +3054,10 @@ select {
    mobile. Les règles @media print retirent le chrome et forcent noir sur blanc
    pour ne pas gaspiller d'encre / dépendre des couleurs d'arrière-plan. */
 .report {
+  min-height: 100vh;
+  background: var(--bg);
+  box-shadow: 0 0 0 100vmax var(--bg);
+  color: var(--fg);
   max-width: 900px;
   margin: 0 auto;
   padding: 24px 20px 60px;
@@ -3640,6 +3685,10 @@ select {
 
 /* ─── Journal (Phase 3 roadmap) ──────────────────────────────────────────── */
 .journalpage {
+  min-height: 100vh;
+  background: var(--bg);
+  box-shadow: 0 0 0 100vmax var(--bg);
+  color: var(--fg);
   max-width: 720px;
   margin: 0 auto;
   padding: 24px 20px 60px;

@@ -21,6 +21,7 @@ export default function LoginPage() {
     <div className="authpage">
       <div className="authcard">
         <div className="authcard__head">
+          <img src="/icon-512.png" alt="" width={48} height={48} className="authcard__mark" />
           <h1 className="authcard__title">{APP_NAME}</h1>
           <p className="authcard__subtitle">Rebuild your consistency</p>
           <div className="authcard__strip" aria-hidden>

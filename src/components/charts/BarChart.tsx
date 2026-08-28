@@ -1,4 +1,4 @@
-/** Bar chart SVG serveur — style N&B de la vidéo (V4 Daily / V5 Weekly). */
+/** Bar chart serveur — style N&B de la vidéo (V4 Daily / V5 Weekly). */
 interface BarChartProps {
   values: (number | null)[]; // 0..1, null = pas de barre (futur)
   labels: string[]; // même longueur
@@ -7,95 +7,90 @@ interface BarChartProps {
   highlightIndex?: number; // ex. aujourd'hui
 }
 
+const AXIS_W = 34; // px réels, colonne des labels % à gauche
+const X_AXIS_H = 28; // px réels, bande des labels jour/semaine en bas
+// Marge en haut : le tick "100%" est centré sur sa ligne (translateY(50%)) —
+// sans cette marge, sa moitié supérieure déborde au-dessus du graphique et
+// se fait rogner par le titre du panneau.
+const TOP_PAD = 9;
+
 export function BarChart({ values, labels, height = 110, labelEvery, highlightIndex }: BarChartProps) {
   const n = values.length;
-  const axisW = 30;
-  const labelH = 26;
-  // Room above the chart for the "100%" tick label's ascent — at chart__tick's
-  // font-size, a baseline flush with y=0 clips the glyph against the
-  // viewBox top edge. Without this the top tick is invisible, not just tight.
-  const topPad = 8;
-  // Largeur de canevas FIXE, indépendante de n : avec une largeur dérivée de
-  // n*(barW+gap) (l'ancien calcul), un viewBox étroit (6 barres hebdo) étiré
-  // par le CSS à 100% de la largeur réelle du panneau (~350-380px) gonflait
-  // tout le texte SVG d'un facteur ~3x — les tick/label 7px/6.5px du CSS
-  // rendaient à ~21-23px effectifs. En gardant le viewBox proche de la
-  // largeur réelle quel que soit n (6 barres hebdo, ~30 quotidien), le
-  // facteur d'étirement reste proche de 1:1 et les tailles du CSS
-  // s'appliquent presque telles quelles.
-  const width = 340;
-  const gap = Math.max(1.5, Math.min(8, ((width - axisW) / n) * 0.15));
-  const barW = (width - axisW) / n - gap;
-  const chartH = height - labelH - topPad;
-  const chartBottom = topPad + chartH;
-
   const yTicks = [0, 0.25, 0.5, 0.75, 1];
 
-  // Espacement minimal (unités viewBox) entre deux labels affichés pour
-  // rester lisibles à -55°/8px sans se chevaucher — un caller n'a pas à
-  // calculer ça lui-même (ni à s'en souvenir : l'hebdo n'en a pas besoin,
-  // n=6 tient déjà large ; le quotidien, n≈30, s'écrasait en bouillie
-  // illisible sans ce filtre une fois le viewBox recalé sur la largeur
-  // réelle du panneau).
-  const minLabelSpacing = 40;
-  const effectiveLabelEvery = labelEvery ?? Math.max(1, Math.ceil(minLabelSpacing / (barW + gap)));
+  // Tout vit désormais en pourcentages d'un repère 0..100 — la géométrie
+  // (barres, quadrillage) peut s'étirer librement à la largeur réelle du
+  // panneau (mobile étroit ou .dashboard__main large sur desktop), c'est
+  // voulu. Le texte, lui, ne vit plus dans ce SVG : historiquement, un
+  // viewBox à échelle fixe étiré par le CSS gonflait tout le texte SVG
+  // (jusqu'à ~4x sur un panneau large) — ou, plafonné à une largeur fixe,
+  // laissait un vide disgracieux sur grand écran. Labels et ticks sont
+  // maintenant des <span> HTML positionnés en %, à taille de police réelle
+  // et fixe, immunisés contre l'étirement du graphique.
+  const gapPct = Math.max(1.5, Math.min(6, (100 / n) * 0.12));
+  const barWPct = 100 / n - gapPct;
+
+  // Espacement minimal (px, approximatif) entre deux labels affichés pour
+  // rester lisibles à -55°/10px sans se chevaucher — l'hebdo (n=6) n'en a
+  // pas besoin (barres déjà larges), le quotidien (n≈30) s'écrase en
+  // bouillie illisible sans ce filtre. Le caller n'a pas à le calculer.
+  const minLabelSpacingPx = 40;
+  const assumedWidthPx = 340; // approximation raisonnable, juste pour choisir combien de labels sauter
+  const effectiveLabelEvery = labelEvery ?? Math.max(1, Math.ceil(minLabelSpacingPx / ((assumedWidthPx / n))));
 
   return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      className="chart chart--bar"
-      role="img"
-      aria-label="Bar chart"
-      preserveAspectRatio="none"
-      // Hauteur explicite : sans elle, un <svg> avec viewBox mais sans
-      // width/height CSS retombe sur le ratio intrinsèque du viewBox pour
-      // calculer sa boîte (indépendamment de preserveAspectRatio, qui ne
-      // régit que le contenu DANS la boîte) — un ratio ~114:90 étiré à la
-      // largeur du panneau donnait un graphique ~3x plus haut que prévu.
-      style={{ height }}
-    >
-      {yTicks.map((t) => {
-        const y = chartBottom - t * chartH;
-        return (
-          <g key={t}>
-            <text x={axisW - 4} y={y + 3} textAnchor="end" className="chart__tick">
-              {Math.round(t * 100)}%
-            </text>
-            <line x1={axisW} x2={width} y1={y} y2={y} className="chart__gridline" />
-          </g>
-        );
-      })}
-      {values.map((v, i) => {
-        const x = axisW + i * (barW + gap);
-        if (v === null) return null;
-        const h = Math.max(v * chartH, v > 0 ? 2 : 0);
-        return (
-          <rect
-            key={i}
-            x={x}
-            y={chartBottom - h}
-            width={barW}
-            height={h}
-            className={i === highlightIndex ? "chart__bar chart__bar--highlight" : "chart__bar"}
-          >
-            <title>{`${labels[i]} — ${Math.round(v * 100)}%`}</title>
-          </rect>
-        );
-      })}
-      {labels.map((label, i) =>
-        i % effectiveLabelEvery === 0 ? (
-          <text
-            key={i}
-            x={axisW + i * (barW + gap) + barW / 2}
-            y={height - 14}
-            textAnchor="middle"
-            className="chart__label"
-            transform={`rotate(-55 ${axisW + i * (barW + gap) + barW / 2} ${height - 14})`}
-          >
-            {label}
-          </text>
-        ) : null,
-      )}
-    </svg>
+    <div className="chart chart--bar" style={{ height }}>
+      <div className="chart__yaxis" style={{ width: AXIS_W, top: TOP_PAD, bottom: X_AXIS_H }}>
+        {yTicks.map((t) => (
+          <span key={t} className="chart__tick" style={{ bottom: `${t * 100}%` }}>
+            {Math.round(t * 100)}%
+          </span>
+        ))}
+      </div>
+
+      <div className="chart__plot" style={{ left: AXIS_W, top: TOP_PAD, bottom: X_AXIS_H }}>
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img" aria-label="Bar chart">
+          {yTicks.map((t) => (
+            <line key={t} x1="0" x2="100" y1={100 - t * 100} y2={100 - t * 100} className="chart__gridline" />
+          ))}
+          {values.map((v, i) => {
+            if (v === null) return null;
+            const x = i * (100 / n);
+            const h = Math.max(v * 100, v > 0 ? 2 : 0);
+            return (
+              <rect
+                key={i}
+                x={x}
+                y={100 - h}
+                width={barWPct}
+                height={h}
+                className={i === highlightIndex ? "chart__bar chart__bar--highlight" : "chart__bar"}
+              >
+                <title>{`${labels[i]} — ${Math.round(v * 100)}%`}</title>
+              </rect>
+            );
+          })}
+        </svg>
+      </div>
+
+      <div className="chart__xaxis" style={{ left: AXIS_W, height: X_AXIS_H }}>
+        {labels.map((label, i) =>
+          i % effectiveLabelEvery === 0 ? (
+            <span
+              key={i}
+              className="chart__label"
+              // Ancré par le coin haut-droit (pas de translateX : l'origine
+              // de la rotation est exactement le point positionné, sans
+              // ambiguïté sur la composition des transforms) — le label
+              // pend vers le bas-gauche depuis ce point, convention
+              // classique des labels d'axe tournés.
+              style={{ right: `${100 - (i + 0.5) * (100 / n)}%` }}
+            >
+              {label}
+            </span>
+          ) : null,
+        )}
+      </div>
+    </div>
   );
 }

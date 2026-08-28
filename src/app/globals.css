@@ -242,17 +242,68 @@ select {
   padding: 10px 10px 4px;
 }
 
+/* BarChart : la géométrie (barres, quadrillage) est un SVG à viewBox 0..100
+   qui s'étire librement à la largeur réelle du panneau (mobile étroit ou
+   .dashboard__main large sur desktop) — c'est voulu, un graphique doit
+   remplir son panneau. Le texte (ticks %, labels jour/semaine), lui, vit en
+   dehors du SVG, en <span> HTML positionnés en % mais à taille de police
+   FIXE : un viewBox étiré gonflait tout texte SVG embarqué avec lui (jusqu'à
+   ~4x sur un panneau large), et le plafonner laissait un vide disgracieux —
+   les deux symptômes viennent du même problème (texte couplé à l'étirement
+   de la géométrie), donc réglés en les découplant, pas en retrouvant le bon
+   nombre magique. */
 .chart--bar {
-  /* Le viewBox de BarChart vise ~340 unités ≈ 340px réels (voir
-     BarChart.tsx) : sur un panneau mobile étroit (~350-390px), width:100%
-     y correspond déjà à peu près. Mais .panel--daily vit dans
-     .dashboard__main, large sur desktop (~1300px) — sans plafond, le SVG
-     s'étire à cette largeur et regonfle tout le texte (tick/label) d'un
-     facteur ~4x, symétrique au bug d'origine. Le plafond garde le rendu
-     proche du 1:1 quelle que soit la largeur du panneau — au prix d'un
-     espace vide à droite sur les très grands écrans, préférable à un texte
-     illisible. */
-  max-width: 340px;
+  position: relative;
+  /* Marge de sécurité pour les labels tournés à -55° près des bords. */
+  padding: 0 18px;
+}
+
+.chart__yaxis {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.chart__tick {
+  position: absolute;
+  left: 0;
+  right: 4px;
+  text-align: right;
+  font-size: 11px;
+  color: var(--muted);
+  transform: translateY(50%);
+}
+
+.chart__plot {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.chart__plot svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.chart__xaxis {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.chart__label {
+  position: absolute;
+  top: 4px;
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  /* Ancré par le coin haut-droit (`right: X%` côté composant), rotation
+     autour de ce même point — évite l'ambiguïté d'un translateX + rotate
+     composés. Le label pend vers le bas-gauche depuis le point d'ancrage,
+     convention classique des labels d'axe tournés. */
+  transform: rotate(-55deg);
+  transform-origin: top right;
 }
 
 /* ─── Sidebar (V1 + V2) ──────────────────────────────────────────────────── */
@@ -1079,22 +1130,6 @@ select {
 .chart__gridline {
   stroke: var(--grid-line);
   stroke-width: 0.5;
-}
-
-.chart__tick {
-  /* Le viewBox du BarChart est désormais proche de sa largeur CSS réelle
-     et plafonné par .chart--bar's max-width (voir BarChart.tsx) : ces
-     tailles s'appliquent presque 1:1 au lieu d'être gonflées par
-     l'étirement. 9px/8px restaient illisibles même à 1:1 exact — remontées
-     à une taille de légende comparable au reste du design (11px muted, ex.
-     .herocard__lvl). */
-  font-size: 11px;
-  fill: var(--muted);
-}
-
-.chart__label {
-  font-size: 10px;
-  fill: var(--muted);
 }
 
 .donut__track {

@@ -13,7 +13,7 @@ export function AddHabitForm({ canAdd, limit }: { canAdd: boolean; limit: number
   const [unit, setUnit] = useState<string>("TIMES");
 
   if (!canAdd) {
-    return <p className="sidebar__limit">Limite de {limit} habitudes atteinte</p>;
+    return <p className="sidebar__limit">Limit of {limit} habits reached</p>;
   }
 
   // Phase 1 roadmap : QUIT n'a pas d'unité (chronomètre), et TIMES reste la
@@ -48,7 +48,7 @@ export function AddHabitForm({ canAdd, limit }: { canAdd: boolean; limit: number
             setUnit("TIMES");
             setError(null);
           } else {
-            setError(res.error ?? "Erreur");
+            setError(res.error ?? "Error");
           }
         });
       }}
@@ -60,7 +60,7 @@ export function AddHabitForm({ canAdd, limit }: { canAdd: boolean; limit: number
         className="addhabit__type"
         value={type}
         onChange={(e) => setType(e.target.value as "BUILD" | "QUIT")}
-        title="Build = à faire · Quit = à éviter"
+        title="Build = habit to do · Quit = habit to avoid"
       >
         <option value="BUILD">Build</option>
         <option value="QUIT">Quit</option>
@@ -75,7 +75,7 @@ export function AddHabitForm({ canAdd, limit }: { canAdd: boolean; limit: number
             className="addhabit__unit"
             value={unit}
             onChange={(e) => setUnit(e.target.value)}
-            title="Comment cette habitude se mesure-t-elle chaque jour ?"
+            title="How is this habit measured each day?"
           >
             {HABIT_UNITS.map((u) => (
               <option key={u.key} value={u.key}>

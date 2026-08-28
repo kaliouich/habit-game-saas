@@ -122,6 +122,12 @@ export function Dashboard({
         <StatsPanel stats={stats} habits={buildHabits} plan={plan} />
         <AdSidebar showAds={showAds} slot="0000000001" />
       </div>
+
+      {/* Cible du portail de HabitMenu (voir ce fichier) : un enfant direct de
+          .dashboard, pas de .sidebar — hérite le thème (--bg/--cell/…, posés
+          sur .dashboard[data-skin]) sans hériter la stacking context piégée
+          par le position:sticky de .sidebar. */}
+      <div id="habitmenu-portal" />
     </div>
   );
 }

@@ -2199,34 +2199,43 @@ select {
 /* ═══ Marketing — même encre que le produit ═══
    La landing avait sa propre palette « Arcade » gold-sur-espresso : arriver sur
    un site sombre puis atterrir dans une app claire donnait deux produits
-   différents. Les tokens --m-* sont désormais des ALIAS des tokens globaux, il
-   n'y a donc plus qu'une seule palette à maintenir — changer :root change les
-   deux. Les noms (--m-paper = texte) sont hérités de la version sombre ;
-   se fier au commentaire de rôle, pas au nom. */
+   différents. Un premier correctif avait fait des tokens --m-* des alias de
+   :root — correct à l'époque, mais :root est resté la palette claire
+   « Ink & Amber » pendant que le dashboard passait ensuite à sa base sombre
+   Midnight, définie uniquement dans .dashboard (pas dans :root) : la landing
+   s'est donc remise à diverger du produit sans qu'aucune ligne ne change ici.
+   Les valeurs ci-dessous sont recopiées de .dashboard / .dashboard[data-skin
+   ="midnight"] (globals.css, section Midnight) plutôt que var()-ées dessus :
+   .marketing n'est pas descendant de .dashboard, donc pas d'accès à ses
+   tokens scoped — copie documentée, à resynchroniser si la base Midnight
+   change. Les noms (--m-paper = texte) restent hérités de la version claire
+   d'origine ; se fier au commentaire de rôle, pas au nom. */
 .marketing {
-  --m-ground: var(--bg); /* fond de page (papier) */
-  --m-panel: var(--cell); /* surface des cartes */
-  --m-panel-2: var(--bg); /* surface enfoncée */
-  --m-sunk: var(--bg);
-  --m-edge: var(--grid-line); /* bordures */
-  --m-edge-hi: var(--muted);
-  --m-paper: var(--fg); /* texte principal (encre) */
-  --m-paper-2: var(--ink-2); /* texte secondaire */
-  --m-dim: var(--muted);
-  --m-gold: var(--check);
-  --m-coral: var(--accent);
-  --m-mint: var(--check);
-  --m-amber: var(--accent);
+  --m-ground: #0f1420; /* fond de page — .dashboard --bg */
+  --m-panel: #171e2e; /* surface des cartes — .dashboard --cell */
+  --m-panel-2: #0f1420; /* surface enfoncée — .dashboard --bg */
+  --m-sunk: #0f1420;
+  --m-edge: #2a3547; /* bordures — .dashboard --grid-line */
+  --m-edge-hi: #7d879c; /* .dashboard --muted */
+  --m-paper: #e8ecf4; /* texte principal — .dashboard --fg */
+  --m-paper-2: #b9c4d6; /* texte secondaire — .dashboard --ink-2 */
+  --m-dim: #7d879c; /* .dashboard --muted */
+  --m-gold: #4a9edb; /* .dashboard[data-skin="midnight"] --check */
+  --m-coral: #7c6cf0; /* .dashboard[data-skin="midnight"] --accent */
+  --m-mint: #4a9edb;
+  --m-amber: #7c6cf0;
 
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   background-color: var(--m-ground);
   color: var(--m-paper);
-  /* Papier quadrillé : la même trame que la grille du tracker et que /login. */
+  /* Papier quadrillé : même trame que la grille du tracker, sur --m-edge (pas
+     --grid-line brut, qui reste la valeur claire de :root et détonnerait
+     ici). */
   background-image:
-    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    linear-gradient(to right, var(--m-edge) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--m-edge) 1px, transparent 1px);
   background-size: 26px 26px;
 }
 
@@ -2342,7 +2351,7 @@ select {
 
 .hero__title em {
   font-style: normal;
-  color: var(--check);
+  color: var(--m-gold);
 }
 
 .hero__subtitle {
@@ -2428,7 +2437,7 @@ select {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 12px;
-  background: var(--check);
+  background: var(--m-gold);
   display: grid;
   place-items: center;
   font-weight: 900;
@@ -2598,7 +2607,7 @@ select {
 }
 
 .heroboard__badge[data-got="1"] {
-  background: var(--bg);
+  background: var(--m-ground);
   border-color: var(--m-gold);
   box-shadow: none;
 }

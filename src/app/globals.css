@@ -242,6 +242,19 @@ select {
   padding: 10px 10px 4px;
 }
 
+.chart--bar {
+  /* Le viewBox de BarChart vise ~340 unités ≈ 340px réels (voir
+     BarChart.tsx) : sur un panneau mobile étroit (~350-390px), width:100%
+     y correspond déjà à peu près. Mais .panel--daily vit dans
+     .dashboard__main, large sur desktop (~1300px) — sans plafond, le SVG
+     s'étire à cette largeur et regonfle tout le texte (tick/label) d'un
+     facteur ~4x, symétrique au bug d'origine. Le plafond garde le rendu
+     proche du 1:1 quelle que soit la largeur du panneau — au prix d'un
+     espace vide à droite sur les très grands écrans, préférable à un texte
+     illisible. */
+  max-width: 340px;
+}
+
 /* ─── Sidebar (V1 + V2) ──────────────────────────────────────────────────── */
 .sidebar {
   background: var(--panel);
@@ -1070,14 +1083,17 @@ select {
 
 .chart__tick {
   /* Le viewBox du BarChart est désormais proche de sa largeur CSS réelle
-     (voir BarChart.tsx) : ces tailles s'appliquent presque 1:1 au lieu
-     d'être gonflées ~3x par l'étirement. */
-  font-size: 9px;
+     et plafonné par .chart--bar's max-width (voir BarChart.tsx) : ces
+     tailles s'appliquent presque 1:1 au lieu d'être gonflées par
+     l'étirement. 9px/8px restaient illisibles même à 1:1 exact — remontées
+     à une taille de légende comparable au reste du design (11px muted, ex.
+     .herocard__lvl). */
+  font-size: 11px;
   fill: var(--muted);
 }
 
 .chart__label {
-  font-size: 8px;
+  font-size: 10px;
   fill: var(--muted);
 }
 

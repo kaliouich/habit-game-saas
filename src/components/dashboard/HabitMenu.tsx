@@ -70,7 +70,18 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
   }
 
   return (
-    <details className="habitmenu" ref={ref} onToggle={() => setIsOpen(!!ref.current?.open)}>
+    <details
+      className="habitmenu"
+      ref={ref}
+      // Même `name` sur tous les <details> HabitMenu : le navigateur les
+      // rend mutuellement exclusifs nativement (ferme les autres à
+      // l'ouverture d'un nouveau), et déclenche bien leur propre `onToggle`
+      // au passage — sans ça, chaque instance gère son isOpen en isolation
+      // et rien n'empêche plusieurs panneaux centrés de s'empiler au même
+      // endroit à l'écran.
+      name="habitmenu"
+      onToggle={() => setIsOpen(!!ref.current?.open)}
+    >
       <summary className="habitmenu__trigger" aria-label={`Edit ${name}`}>
         ⋯
       </summary>

@@ -1623,8 +1623,17 @@ select {
     max-height: none;
   }
 
-  .statspanel {
+  /* La cible réelle pour "stats en dernier" : .statspanel n'est pas un
+     enfant direct de la grille .dashboard (c'est .dashboard__right, qui
+     l'enveloppe, avec AdSidebar) — lui donner un order ici n'avait donc
+     jamais d'effet sur la position de toute la colonne stats. Bug trouvé en
+     vérifiant l'ordre RÉEL en prod (order calculé + position à l'écran),
+     pas en relisant juste la règle ci-dessous. */
+  .dashboard__right {
     order: 3;
+  }
+
+  .statspanel {
     grid-template-columns: 1fr;
   }
 

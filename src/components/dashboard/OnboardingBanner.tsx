@@ -10,9 +10,9 @@ export function OnboardingBanner() {
   return (
     <div className="onboarding">
       <div>
-        <p className="onboarding__title">Nouveau ici ?</p>
+        <p className="onboarding__title">New here?</p>
         <p className="onboarding__text">
-          Démarrez avec les habitudes classiques des self-improvers — vous pourrez tout modifier ensuite.
+          Start with the classic self-improver habits — you can change everything afterward.
         </p>
       </div>
       <button
@@ -25,7 +25,7 @@ export function OnboardingBanner() {
           })
         }
       >
-        {isPending ? "…" : "Ajouter les habitudes de démarrage"}
+        {isPending ? "…" : "Add starter habits"}
       </button>
     </div>
   );

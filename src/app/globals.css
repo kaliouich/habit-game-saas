@@ -1353,6 +1353,18 @@ select {
   font-variant-numeric: tabular-nums;
 }
 
+.analysis__namehead {
+  text-align: left;
+}
+
+.analysis__name {
+  text-align: left;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .analysis__progresshead {
   width: 40%;
 }

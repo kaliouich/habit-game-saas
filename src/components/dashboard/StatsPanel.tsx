@@ -95,6 +95,7 @@ export function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
         <table className="analysis">
           <thead>
             <tr>
+              <th className="analysis__namehead">Habit</th>
               <th>Goal</th>
               <th>Actual</th>
               <th>Left</th>
@@ -105,6 +106,9 @@ export function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
           <tbody>
             {stats.analysis.map((a) => (
               <tr key={a.habitId} title={`${a.name} ${a.emoji ?? ""}`}>
+                <td className="analysis__name">
+                  {a.emoji} {a.name}
+                </td>
                 <td>{a.goal}</td>
                 <td>{a.actual}</td>
                 <td>{a.left}</td>

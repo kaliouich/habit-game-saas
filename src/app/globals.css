@@ -447,12 +447,23 @@ select {
   position: relative;
 }
 
+/* Bouton toujours visible, pas seulement au survol — au clavier/tactile il
+   n'y a pas de :hover, or c'était la SEULE règle qui lui donnait un fond ou
+   un contraste correct. Trois points gris à peine visibles sur fond sombre,
+   sans aucun repère de bouton, étaient donc introuvables sur mobile en
+   permanence (retour direct d'usage), pas seulement dans un état transitoire. */
 .habitmenu__trigger {
   list-style: none;
   cursor: pointer;
-  color: var(--panel-muted);
-  padding: 0 4px;
-  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+  font-size: 16px;
+  color: var(--panel-fg);
+  background: rgb(255 255 255 / 0.08);
+  border-radius: 6px;
 }
 
 .habitmenu__trigger::-webkit-details-marker {
@@ -460,8 +471,7 @@ select {
 }
 
 .habitmenu__trigger:hover {
-  color: var(--panel-fg);
-  background: rgb(255 255 255 / 0.12);
+  background: rgb(255 255 255 / 0.16);
 }
 
 /* Fixe et centré, pas ancré au déclencheur (position:absolute; right:0) :

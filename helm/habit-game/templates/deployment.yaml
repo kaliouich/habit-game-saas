@@ -73,6 +73,12 @@ spec:
                   name: {{ include "habit-game.secretName" . }}
                   key: STRIPE_WEBHOOK_SECRET
                   optional: true
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "habit-game.secretName" . }}
+                  key: ANTHROPIC_API_KEY
+                  optional: true # absent tant que l'onboarding IA n'est pas configuré — client lazy dans lib/ai.ts
             - name: STRIPE_PRICE_PRO
               valueFrom:
                 secretKeyRef:

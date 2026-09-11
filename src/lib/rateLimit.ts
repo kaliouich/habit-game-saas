@@ -75,6 +75,10 @@ export const RATE_LIMITS = {
    * vrai travail, cette limite ne freine que le bourrinage scripté.
    */
   mobileAuthExchange: { limit: 10, windowMs: 10 * 60 * 1000 },
+  /** Génération d'habitudes par IA (onboarding) : chaque appel est une
+   *  requête Claude réellement facturée, contrairement aux autres entrées
+   *  ci-dessus qui ne protègent qu'un abus de service gratuit. */
+  aiHabitGeneration: { limit: 5, windowMs: 60 * 60 * 1000 },
 } as const;
 
 /** Remise à zéro — tests uniquement. */

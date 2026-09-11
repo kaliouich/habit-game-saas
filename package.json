@@ -15,6 +15,7 @@
     "cap:ios": "cap open ios"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0",
     "@auth/prisma-adapter": "^2.11.2",
     "@capacitor-community/admob": "^8.0.0",
     "@capacitor/android": "^8.5.0",

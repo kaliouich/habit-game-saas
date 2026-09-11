@@ -2036,6 +2036,19 @@ select {
   margin-top: 2px;
 }
 
+.onboarding__quicklink {
+  background: none;
+  color: var(--panel-muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.onboarding__quicklink:hover {
+  color: var(--panel-fg);
+}
+
 .onboarding .btn {
   width: auto;
   white-space: nowrap;
@@ -4240,6 +4253,314 @@ select {
   font-weight: 600;
   background: var(--panel);
   color: var(--panel-fg);
+}
+
+/* ─── Onboarding wizard (/app/onboarding) ────────────────────────────────────
+   Même papier quadrillé que .authpage, carte pleine largeur plutôt que le
+   format étroit de .authcard : les écrans (surtout q-pick, review) ont besoin
+   de plus de place que le formulaire de connexion. */
+.onboardwizard {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+.onboardwizard__card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background: var(--cell);
+  border: 1px solid var(--grid-line);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow);
+  padding: 40px 28px 28px;
+}
+
+.onboardwizard__back {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 8px;
+}
+
+.onboardwizard__back:hover {
+  color: var(--fg);
+}
+
+.onboardscreen {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.onboardscreen__title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--fg);
+  line-height: 1.3;
+}
+
+.onboardscreen__subtitle {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: -8px;
+}
+
+.onboardchoice {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.onboardchoice__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+  padding: 18px 18px;
+  border: 1.5px solid var(--grid-line);
+  border-radius: var(--radius-panel);
+  background: var(--panel-bg, transparent);
+  transition: border-color 120ms, transform 120ms;
+}
+
+.onboardchoice__card:hover {
+  border-color: var(--check);
+  transform: translateY(-1px);
+}
+
+.onboardchoice__emoji {
+  font-size: 24px;
+}
+
+.onboardchoice__label {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--fg);
+}
+
+.onboardchoice__desc {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.onboardoptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.onboardoptions__item {
+  text-align: left;
+  padding: 13px 16px;
+  border: 1.5px solid var(--grid-line);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  transition: border-color 120ms, background 120ms;
+}
+
+.onboardoptions__item:hover {
+  border-color: var(--check);
+  background: rgb(255 255 255 / 0.04);
+}
+
+.onboardpick {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.onboardpick__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  padding: 11px 14px;
+  border: 1.5px solid var(--grid-line);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--fg);
+  transition: border-color 120ms, background 120ms;
+}
+
+.onboardpick__item--on {
+  border-color: var(--check);
+  background: rgb(255 255 255 / 0.04);
+}
+
+.onboardpick__check {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border: 1.5px solid var(--grid-line);
+  border-radius: var(--radius-cell);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--check);
+}
+
+.onboardpick__item--on .onboardpick__check {
+  border-color: var(--check);
+  background: var(--check);
+  color: var(--panel);
+}
+
+.onboardpick__emoji {
+  font-size: 16px;
+}
+
+.onboardpick__name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.onboardpick__target {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.onboardprompt__textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--grid-line);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--fg);
+  background: transparent;
+  resize: vertical;
+}
+
+.onboardprompt__count {
+  text-align: right;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: -10px;
+}
+
+.onboardprompt__error {
+  color: var(--danger, #c0392b);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.onboardreview__disclaimer {
+  background: rgb(255 200 0 / 0.12);
+  border: 1px solid rgb(255 200 0 / 0.35);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--fg);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.onboardreview__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 44vh;
+  overflow-y: auto;
+}
+
+.onboardreview__empty {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.onboardreview__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--grid-line);
+  border-radius: 8px;
+}
+
+.onboardreview__emoji {
+  font-size: 18px;
+}
+
+.onboardreview__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.onboardreview__name {
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  padding: 2px 0;
+  width: 100%;
+}
+
+.onboardreview__rationale {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.onboardreview__remove {
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  padding: 4px 6px;
+}
+
+.onboardreview__remove:hover {
+  color: var(--danger, #c0392b);
+}
+
+.onboardreview__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.onboardreview__actions .btn {
+  width: auto;
+  flex: 1;
+}
+
+@media (max-width: 480px) {
+  .onboardwizard {
+    padding: 0;
+  }
+
+  .onboardwizard__card {
+    min-height: 100vh;
+    max-width: none;
+    border: none;
+    border-radius: 0;
+  }
 }
 
 .timerpanel__log {

@@ -27,7 +27,7 @@ export function AiPromptScreen({ onGenerated }: AiPromptScreenProps) {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const placeholder = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length) % EXAMPLES.length];
+  const [placeholder] = useState(() => EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)]);
 
   async function submit() {
     const trimmed = text.trim();

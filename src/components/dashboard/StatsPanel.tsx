@@ -92,6 +92,7 @@ export function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
 
       <div className="panel">
         <h2 className="panel__title">Analysis</h2>
+        <div className="analysiswrap">
         <table className="analysis">
           <thead>
             <tr>
@@ -120,6 +121,7 @@ export function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <div className="panel">

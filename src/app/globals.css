@@ -136,7 +136,7 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-body), Georgia, 'Times New Roman', serif;
-  font-size: 14px;
+  font-size: 15px;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -241,7 +241,7 @@ select {
   background: var(--panel);
   color: var(--panel-fg);
   font-family: var(--font-display), Georgia, serif;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-align: center;
@@ -282,7 +282,7 @@ select {
   left: 0;
   right: 4px;
   text-align: right;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   transform: translateY(50%);
 }
@@ -308,7 +308,7 @@ select {
 .chart__label {
   position: absolute;
   top: 4px;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
   white-space: nowrap;
   /* Ancré par le coin haut-droit (`right: X%` côté composant), rotation
@@ -337,7 +337,7 @@ select {
 
 .sidebar__title {
   font-family: var(--font-display), Georgia, serif;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-align: center;
@@ -356,14 +356,14 @@ select {
 
 .monthpicker__label {
   font-family: var(--font-display), Georgia, serif;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   min-width: 110px;
   text-align: center;
 }
 
 .monthpicker__arrow {
-  font-size: 18px;
+  font-size: 19px;
   line-height: 1;
   padding: 0 6px;
   border-radius: 4px;
@@ -376,7 +376,7 @@ select {
 
 .sidebar__heading {
   font-family: var(--font-display), Georgia, serif;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   text-align: center;
   border-bottom: 1px solid rgb(255 255 255 / 0.25);
@@ -390,7 +390,7 @@ select {
   gap: 6px;
   border-bottom: 1px solid rgb(255 255 255 / 0.12);
   padding: 7px 2px;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .habitlist__name {
@@ -401,7 +401,7 @@ select {
 }
 
 .habitlist__streak {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--accent);
   font-weight: 600;
   display: inline-block;
@@ -433,7 +433,7 @@ select {
 }
 
 .habitlist__tag {
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -460,7 +460,7 @@ select {
   justify-content: center;
   min-width: 28px;
   min-height: 28px;
-  font-size: 16px;
+  font-size: 17px;
   color: var(--panel-fg);
   background: rgb(255 255 255 / 0.08);
   border-radius: 6px;
@@ -499,7 +499,7 @@ select {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .habitmenu__panel label {
@@ -534,7 +534,7 @@ select {
   padding: 4px 10px;
   background: var(--panel);
   color: var(--panel-fg);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .habitmenu__archive {
@@ -548,7 +548,7 @@ select {
 }
 
 .habitmenu__upsell {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--accent);
   text-decoration: none;
@@ -572,7 +572,7 @@ select {
   border-radius: 5px;
   padding: 4px 6px;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 13px;
   background: var(--bg);
   color: var(--fg);
   resize: vertical;
@@ -587,7 +587,7 @@ select {
   padding: 4px 10px;
   background: var(--panel);
   color: var(--panel-fg);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .habitmenu__error {
@@ -632,7 +632,7 @@ select {
 }
 
 .valuecell__title {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
@@ -649,7 +649,7 @@ select {
   flex: 1;
   min-width: 0;
   text-align: center;
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 700;
   border: 1px solid var(--grid-line);
   border-radius: 6px;
@@ -666,12 +666,12 @@ select {
   border-radius: 6px;
   background: var(--bg);
   color: var(--fg);
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 700;
 }
 
 .valuecell__hint {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   text-align: center;
 }
@@ -685,7 +685,7 @@ select {
 .valuecell__actions button {
   border-radius: 5px;
   padding: 6px 12px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -715,7 +715,7 @@ select {
   border-radius: 5px;
   color: var(--panel-fg);
   padding: 4px 6px;
-  font-size: 12px;
+  font-size: 13px;
   min-width: 0;
 }
 
@@ -751,7 +751,7 @@ select {
 .addhabit__error {
   grid-column: 1 / -1;
   color: var(--accent);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 /* Phase 1 roadmap : unité + cible/jour, sur sa propre ligne pleine largeur —
@@ -770,7 +770,7 @@ select {
 }
 
 .sidebar__limit {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--panel-muted);
   text-align: center;
   margin-top: 8px;
@@ -794,7 +794,7 @@ select {
 }
 
 .sidebar__moodlabel {
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .sidebar__moodlabel--mood {
@@ -826,13 +826,13 @@ select {
 }
 
 .shieldpanel__label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.04em;
 }
 
 .shieldpanel__count {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--accent);
   font-variant-numeric: tabular-nums;
@@ -854,7 +854,7 @@ select {
 }
 
 .shieldpanel__hint {
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.45;
   color: var(--panel-muted);
 }
@@ -870,7 +870,7 @@ select {
   border: 1px solid var(--accent);
   background: color-mix(in srgb, var(--accent) 18%, transparent);
   color: var(--panel-fg);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   transition: background 140ms, transform 120ms;
 }
@@ -886,13 +886,13 @@ select {
 }
 
 .shieldpanel__error {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--danger);
 }
 
 .shieldpanel__upsell {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--panel-muted);
 }
 
@@ -906,13 +906,13 @@ select {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--panel-muted);
   margin-bottom: 6px;
 }
 
 .skinpicker__badge {
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -936,7 +936,7 @@ select {
   cursor: pointer;
   display: grid;
   place-items: center;
-  font-size: 9px;
+  font-size: 11px;
   transition: transform 120ms ease, border-color 120ms ease;
 }
 
@@ -960,7 +960,7 @@ select {
 .skinpicker__upsell {
   display: block;
   margin-top: 8px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--accent);
   text-decoration: none;
@@ -973,7 +973,7 @@ select {
 .sidebar__logo {
   font-family: var(--font-display), Georgia, serif;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 21px;
   line-height: 1.05;
   letter-spacing: 0.05em;
   display: flex;
@@ -992,7 +992,7 @@ select {
 .grid {
   border-collapse: collapse;
   width: 100%;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .grid th,
@@ -1014,7 +1014,7 @@ select {
   background: var(--panel);
   color: var(--panel-fg);
   font-family: var(--font-display), Georgia, serif;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   padding: 5px 0;
 }
@@ -1022,7 +1022,7 @@ select {
 
 .grid__dow {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
   padding: 3px 0;
   min-width: 26px;
@@ -1030,7 +1030,7 @@ select {
 
 .grid__num {
   font-weight: 600;
-  font-size: 11px;
+  font-size: 13px;
   padding: 3px 0;
 }
 
@@ -1059,7 +1059,7 @@ select {
 .grid__habit {
   background: var(--panel);
   color: var(--panel-fg);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   text-align: left;
   white-space: nowrap;
@@ -1132,7 +1132,7 @@ select {
   left: 50%;
   top: -2px;
   transform: translateX(-50%);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   color: var(--accent);
   text-shadow: none;
@@ -1205,7 +1205,7 @@ select {
   background: var(--panel);
   color: var(--panel-fg);
   font-family: var(--font-display), Georgia, serif;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   padding: 5px 0;
 }
@@ -1224,7 +1224,7 @@ select {
   border: none;
   background: transparent;
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   appearance: none;
   padding: 0;
@@ -1275,7 +1275,7 @@ select {
 
 .donut__pct {
   font-family: var(--font-display), Georgia, serif;
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 700;
   fill: var(--fg);
 }
@@ -1328,7 +1328,7 @@ select {
   background: var(--panel);
   color: var(--panel-fg);
   font-family: var(--font-display), Georgia, serif;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   padding: 5px 0;
 }
@@ -1336,30 +1336,34 @@ select {
 .statcard__value {
   display: block;
   font-family: var(--font-display), Georgia, serif;
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   padding: 11px 0 10px;
 }
 
+.analysiswrap {
+  overflow-x: auto;
+}
+
 .analysis {
   width: 100%;
   border-collapse: collapse;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .analysis th {
   font-family: var(--font-display), Georgia, serif;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   border-bottom: 1px solid var(--grid-line);
-  padding: 5px 4px;
+  padding: 5px 2px;
 }
 
 .analysis td {
   text-align: center;
   border-bottom: 1px solid var(--grid-line);
-  padding: 4px;
+  padding: 4px 2px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1369,7 +1373,7 @@ select {
 
 .analysis__name {
   text-align: left;
-  max-width: 90px;
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1408,7 +1412,7 @@ select {
   gap: 10px;
   border-bottom: 1px solid var(--grid-line);
   padding: 6px 2px;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .tophabits__row:last-child {
@@ -1465,24 +1469,24 @@ select {
 .quitcard__name {
   font-family: var(--font-display), Georgia, serif;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .quitcard__relapses {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .quitcard__timer {
   font-variant-numeric: tabular-nums;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 17px;
   margin: 8px 0 2px;
 }
 
 .quitcard__best {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   margin-bottom: 10px;
 }
 
@@ -1492,7 +1496,7 @@ select {
   background: transparent;
   border-radius: 5px;
   padding: 5px 12px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -1518,18 +1522,18 @@ select {
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
   border-radius: 20px;
   padding: 6px 12px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 
 .badgelist__emoji {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .badgelist__upsell {
   display: block;
   margin: 4px 10px 10px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--accent);
   text-decoration: none;
@@ -1559,14 +1563,14 @@ select {
 
 .herocard__rank {
   font-family: var(--font-display), Georgia, serif;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .herocard__lvl {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1594,7 +1598,7 @@ select {
   justify-content: space-between;
   gap: 10px;
   margin-top: 6px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--panel-muted);
   font-variant-numeric: tabular-nums;
 }
@@ -1653,7 +1657,7 @@ select {
   .grid__habit {
     min-width: 108px;
     max-width: 120px;
-    font-size: 11px;
+    font-size: 13px;
     padding: 0 8px;
   }
 
@@ -1679,12 +1683,12 @@ select {
   }
 
   .panel__title {
-    font-size: 12px;
+    font-size: 13px;
     padding: 7px 10px;
   }
 
   .statcard__value {
-    font-size: 17px;
+    font-size: 18px;
   }
 
   /* Le mois et « My Habits » vivent dans la sidebar, sous la grille : sans
@@ -2027,19 +2031,19 @@ select {
 .onboarding__title {
   font-family: var(--font-display), Georgia, serif;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .onboarding__text {
   color: var(--panel-muted);
-  font-size: 13px;
+  font-size: 14px;
   margin-top: 2px;
 }
 
 .onboarding__quicklink {
   background: none;
   color: var(--panel-muted);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   text-decoration: underline;
   padding: 0;
@@ -3851,7 +3855,7 @@ select {
 
 .journalpage__back {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .journalpage__title {
@@ -3882,7 +3886,7 @@ select {
   gap: 8px;
   align-items: center;
   margin: 18px 0 14px;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .journalpage__filters select,
@@ -3891,12 +3895,12 @@ select {
   background: var(--cell);
   border-radius: 5px;
   padding: 5px 8px;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .journalpage__empty {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 15px;
   padding: 20px 0;
 }
 
@@ -3928,7 +3932,7 @@ select {
   background: var(--bg);
   border-radius: 5px;
   padding: 6px 8px;
-  font-size: 13px;
+  font-size: 14px;
   font-family: inherit;
 }
 
@@ -3942,14 +3946,14 @@ select {
   color: var(--panel-fg);
   border-radius: 5px;
   padding: 6px 14px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
 }
 
 .journalform__error,
 .journalentry__error {
   color: var(--danger);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .journalentry {
@@ -3979,7 +3983,7 @@ select {
 
 .journalentry__date {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .journalentry__habit {
@@ -3989,7 +3993,7 @@ select {
   border: 1px solid var(--grid-line);
   border-radius: 12px;
   padding: 1px 8px;
-  font-size: 11px;
+  font-size: 13px;
   margin-top: 2px;
 }
 
@@ -3999,7 +4003,7 @@ select {
 }
 
 .journalentry__actions button {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   border: 1px solid var(--grid-line);
   border-radius: 5px;
@@ -4012,7 +4016,7 @@ select {
 
 .journalentry__body {
   margin-top: 8px;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.6;
 }
 
@@ -4055,7 +4059,7 @@ select {
   background: var(--bg);
   border-radius: 5px;
   padding: 6px 8px;
-  font-size: 13px;
+  font-size: 14px;
   font-family: inherit;
 }
 
@@ -4065,7 +4069,7 @@ select {
   color: var(--panel-fg);
   border-radius: 5px;
   padding: 5px 12px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 /* ─── Tasks (Phase 4 roadmap, minimal) ───────────────────────────────────── */
@@ -4087,6 +4091,7 @@ select {
 .taskform input[type="text"],
 .taskform input:not([type]) {
   flex: 1;
+  min-width: 0;
 }
 
 .taskform input,
@@ -4095,14 +4100,14 @@ select {
   background: var(--bg);
   border-radius: 5px;
   padding: 5px 8px;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .taskform__flag {
   display: flex;
   align-items: center;
   gap: 2px;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
 }
 
@@ -4115,7 +4120,7 @@ select {
 
 .taskpanel__empty {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   padding: 6px 2px;
 }
 
@@ -4131,7 +4136,7 @@ select {
   gap: 8px;
   padding: 5px 2px;
   border-bottom: 1px solid var(--grid-line);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .taskitem:last-child {
@@ -4178,7 +4183,7 @@ select {
 
 .taskitem__due {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   white-space: nowrap;
 }
 
@@ -4189,7 +4194,7 @@ select {
 
 .taskitem__delete {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1;
   padding: 0 2px;
 }
@@ -4217,7 +4222,7 @@ select {
   background: var(--bg);
   border-radius: 5px;
   padding: 5px 8px;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .timerpanel__presets {
@@ -4230,7 +4235,7 @@ select {
   background: var(--bg);
   border-radius: 12px;
   padding: 3px 10px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .timerpanel__clock {
@@ -4249,7 +4254,7 @@ select {
 .timerpanel__controls button {
   border-radius: 5px;
   padding: 6px 12px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   background: var(--panel);
   color: var(--panel-fg);

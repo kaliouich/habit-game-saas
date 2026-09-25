@@ -290,7 +290,8 @@ select {
   left: 0;
   right: 4px;
   text-align: right;
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 500;
   color: var(--muted);
   transform: translateY(50%);
 }

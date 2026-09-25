@@ -7,7 +7,7 @@ interface BarChartProps {
   highlightIndex?: number; // ex. aujourd'hui
 }
 
-const AXIS_W = 34; // px réels, colonne des labels % à gauche
+const AXIS_W = 40; // px réels, colonne des labels % à gauche
 const X_AXIS_H = 28; // px réels, bande des labels jour/semaine en bas
 // Marge en haut : le tick "100%" est centré sur sa ligne (translateY(50%)) —
 // sans cette marge, sa moitié supérieure déborde au-dessus du graphique et

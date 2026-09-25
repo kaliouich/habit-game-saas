@@ -120,7 +120,7 @@ export function Dashboard({
               values={stats.dailyProgress}
               labels={stats.days.map((d) => d.dow)}
               highlightIndex={todayIndex === -1 ? undefined : todayIndex}
-              height={120}
+              height={170}
             />
           </div>
         )}

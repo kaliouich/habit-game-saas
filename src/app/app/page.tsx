@@ -47,6 +47,7 @@ export default async function DashboardPage({
         shieldsUsed={shieldedDates.length}
         quitStreaks={quitStreaks}
         tasks={tasks}
+        referralCode={user.referralCode ?? ""}
       />
     </>
   );

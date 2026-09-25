@@ -12,6 +12,11 @@ const FEATURES: { emoji: string; title: string; text: string }[] = [
 ];
 
 export default function LandingPage() {
+  // Se remplit tout seul dès que la fiche Play Store existe — même mécanique
+  // que isStripeConfigured()/isAiOnboardingConfigured() : le badge n'apparaît
+  // jamais tant que le lien pointerait dans le vide.
+  const playStoreUrl = process.env.NEXT_PUBLIC_PLAY_STORE_URL;
+
   return (
     <>
       <section className="hero">
@@ -33,6 +38,17 @@ export default function LandingPage() {
               See pricing
             </Link>
           </div>
+          {playStoreUrl && (
+            <a href={playStoreUrl} className="hero__storebadge" target="_blank" rel="noopener noreferrer">
+              <span className="hero__storebadge-icon" aria-hidden>
+                ▶
+              </span>
+              <span>
+                <span className="hero__storebadge-eyebrow">GET IT ON</span>
+                <span className="hero__storebadge-name">Google Play</span>
+              </span>
+            </a>
+          )}
           <p className="hero__note">
             <span>3 habits free, forever</span>
             <span>14-day Pro trial</span>

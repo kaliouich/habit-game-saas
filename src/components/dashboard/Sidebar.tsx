@@ -8,6 +8,10 @@ import { HabitMenu } from "./HabitMenu";
 import { SignOutButton } from "./SignOutButton";
 import { BoardSkinPicker } from "./BoardSkinPicker";
 import { ShieldPanel } from "./ShieldPanel";
+import { ReminderSettings } from "./ReminderSettings";
+import { CopyReferralLink } from "@/components/CopyReferralLink";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 interface SidebarHabit {
   id: string;
@@ -33,10 +37,11 @@ interface SidebarProps {
   today: ISODate;
   shieldsUsed: number;
   missedDates: ISODate[];
+  referralCode: string;
 }
 
 /** V1 + V2 : colonne noire — titre, mois, My Habits, mood chart, logo. */
-export function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan, boardSkin, today, shieldsUsed, missedDates }: SidebarProps) {
+export function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan, boardSkin, today, shieldsUsed, missedDates, referralCode }: SidebarProps) {
   const moodValues = stats.days.map((d) => stats.moodByDate.get(d.date) ?? null);
   const motivationValues = stats.days.map((d) => stats.motivationByDate.get(d.date) ?? null);
 
@@ -113,6 +118,15 @@ export function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan, 
           />
         </div>
         <ShieldPanel plan={plan} shieldsUsed={shieldsUsed} missedDates={missedDates} />
+        <ReminderSettings />
+        {/* Le programme de parrainage existait déjà (page billing), mais
+            personne ne le voyait jamais — enterré 4 écrans plus bas. Ici, à
+            côté des séries, c'est le moment où l'utilisateur est le plus
+            susceptible d'avoir envie d'en parler à quelqu'un. */}
+        <div className="referralnudge">
+          <p className="referralnudge__text">🎁 Invite a friend, get a free month</p>
+          <CopyReferralLink link={`${APP_URL}/login?ref=${referralCode}`} />
+        </div>
         <BoardSkinPicker current={boardSkin} plan={plan} />
         <p className="sidebar__logo">
           {APP_NAME.split(" ").map((w) => (

@@ -214,6 +214,14 @@ select {
   align-content: start;
 }
 
+/* Compte sans habitude BUILD encore créée : pas de .dashboard__right rendu
+   (StatsPanel n'a rien à montrer) — sans ceci, la 3e colonne du grid reste
+   réservée et vide (grid-template-columns garde ses pistes même sans
+   contenu dedans). */
+.dashboard--lean {
+  grid-template-columns: 230px minmax(0, 1fr);
+}
+
 .dashboard__main {
   display: flex;
   flex-direction: column;
@@ -819,6 +827,74 @@ select {
   gap: 7px;
 }
 
+.referralnudge {
+  border-top: 1px solid rgb(255 255 255 / 0.14);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.referralnudge__text {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.referralnudge .referral__input {
+  font-size: 12px;
+  padding: 6px 8px;
+}
+
+.remindersettings {
+  border-top: 1px solid rgb(255 255 255 / 0.14);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.remindersettings__text {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.remindersettings__row {
+  display: flex;
+  gap: 8px;
+}
+
+.remindersettings__time {
+  flex: 1;
+  min-width: 0;
+  border: 1.5px solid var(--grid-line);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 13px;
+  background: transparent;
+  color: var(--panel-fg);
+}
+
+.remindersettings__row .btn {
+  width: auto;
+  white-space: nowrap;
+}
+
+.remindersettings__hint {
+  font-size: 12px;
+  color: var(--panel-muted);
+}
+
+.remindersettings__off {
+  color: var(--check);
+  text-decoration: underline;
+  font-size: 12px;
+}
+
+.remindersettings__error {
+  font-size: 12px;
+  color: var(--danger);
+}
+
 .shieldpanel__head {
   display: flex;
   align-items: center;
@@ -1175,6 +1251,54 @@ select {
   transition: stroke-dashoffset 140ms ease-out;
 }
 
+/* ─── Today panel — vue mobile-first (remplace la grille comme premier geste
+   du jour ; la grille .gridwrap reste en dessous comme vue "Board") ──────── */
+.todaypanel {
+  border-color: var(--check);
+}
+
+.todaypanel__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.todaypanel__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--grid-line);
+}
+
+.todaypanel__row:last-child {
+  border-bottom: none;
+}
+
+.todaypanel__name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  min-width: 0;
+}
+
+.todaypanel__target {
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.todaypanel .cell,
+.todaypanel .cell--future {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
 /* ─── Habitudes quantifiées (Phase 1 roadmap) ───────────────────────────── */
 .cell--value {
   overflow: hidden;
@@ -1215,16 +1339,17 @@ select {
 }
 
 .grid__cell--mood {
-  height: 26px;
+  height: 32px;
 }
 
 .mood {
-  width: 24px;
-  height: 22px;
+  width: 26px;
+  height: 28px;
   border: none;
   background: transparent;
   text-align: center;
-  font-size: 13px;
+  font-size: 20px;
+  line-height: 1;
   cursor: pointer;
   appearance: none;
   padding: 0;
@@ -1233,8 +1358,8 @@ select {
 
 .mood--future {
   display: inline-block;
-  width: 24px;
-  height: 22px;
+  width: 26px;
+  height: 28px;
   opacity: 0.3;
 }
 
@@ -2591,6 +2716,36 @@ select {
 
 .hero .btn--secondary.btn--hero:hover {
   border-color: var(--m-edge-hi);
+}
+
+.hero__storebadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 8px 18px 8px 14px;
+  background: #000;
+  color: #fff;
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.hero__storebadge-icon {
+  font-size: 22px;
+}
+
+.hero__storebadge-eyebrow {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+}
+
+.hero__storebadge-name {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  font-family: var(--font-display), Georgia, serif;
 }
 
 .hero__note {

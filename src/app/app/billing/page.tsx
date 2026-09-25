@@ -85,6 +85,14 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
             <CopyReferralLink link={recapUrl} />
           </div>
           <p className="billingexport__copy">{recapUrl}</p>
+          <div className="billingexport__row">
+            <span className="billingexport__label">
+              Same recap, as an image — for Instagram/WhatsApp stories, where a link won&apos;t unfurl
+            </span>
+            <a href={`${recapUrl}/opengraph-image`} className="btn btn--secondary" download>
+              Download image
+            </a>
+          </div>
         </div>
       )}
 
@@ -92,8 +100,8 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
         <h2 className="donate__title">Support this project</h2>
         <p className="donate__text">
           Habitcade is built and run by a small team. Every donation goes straight back into
-          keeping the servers running and shipping the features on the roadmap — no ads, no
-          data selling, just a tool we want to keep making better. If it&apos;s helped you build a
+          keeping the servers running and shipping the features on the roadmap — no data
+          selling, ever, just a tool we want to keep making better. If it&apos;s helped you build a
           habit, anything you give helps us keep it going.
         </p>
         {donated === "1" && <p className="donate__thanks">🎉 Thank you for your support!</p>}

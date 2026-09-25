@@ -4,6 +4,7 @@ import type { BoardSkinKey } from "@/lib/config";
 import type { TaskRow } from "@/lib/data";
 import { BarChart } from "@/components/charts/BarChart";
 import { Sidebar } from "./Sidebar";
+import { TodayPanel } from "./TodayPanel";
 import { MonthGrid } from "./MonthGrid";
 import { QuitPanel } from "./QuitPanel";
 import { TaskPanel } from "./TaskPanel";
@@ -45,6 +46,7 @@ interface DashboardProps {
   shieldsUsed: number;
   quitStreaks: Map<string, QuitStreak>;
   tasks: TaskRow[];
+  referralCode: string;
 }
 
 /** Assemblage 3 zones : sidebar noire / centre (daily + grille) / stats à droite. */
@@ -61,6 +63,7 @@ export function Dashboard({
   shieldsUsed,
   quitStreaks,
   tasks,
+  referralCode,
 }: DashboardProps) {
   const todayIndex = stats.days.findIndex((d) => d.date === today);
 
@@ -76,16 +79,21 @@ export function Dashboard({
 
   // Jour "manqué" = jour passé du mois sans une seule coche. Les jours déjà
   // couverts par un bouclier sont exclus : le calcul les traite comme des
-  // pauses, donc ils ne comptent plus comme des trous.
-  const missedDates = stats.days
-    .filter((d) => d.date < today)
-    .filter((d) => !buildHabits.some((h) => h.loggedDates.has(d.date) || h.pausedDates?.has(d.date)))
-    .map((d) => d.date);
+  // pauses, donc ils ne comptent plus comme des trous. Sans habitude BUILD,
+  // `.some()` sur un tableau vide est toujours faux : chaque jour se
+  // retrouvait "manqué" pour un compte qui n'a jamais rien pu cocher.
+  const missedDates =
+    buildHabits.length === 0
+      ? []
+      : stats.days
+          .filter((d) => d.date < today)
+          .filter((d) => !buildHabits.some((h) => h.loggedDates.has(d.date) || h.pausedDates?.has(d.date)))
+          .map((d) => d.date);
 
   const showAds = plan === "FREE";
 
   return (
-    <div className="dashboard" data-skin={boardSkin}>
+    <div className={buildHabits.length > 0 ? "dashboard" : "dashboard dashboard--lean"} data-skin={boardSkin}>
       <AdBanner showAds={showAds} slot="0000000000" />
 
       <Sidebar
@@ -100,28 +108,37 @@ export function Dashboard({
         today={today}
         shieldsUsed={shieldsUsed}
         missedDates={missedDates}
+        referralCode={referralCode}
       />
 
       <main className="dashboard__main">
-        <div className="panel panel--daily">
-          <h2 className="panel__title">Daily Progress</h2>
-          <BarChart
-            values={stats.dailyProgress}
-            labels={stats.days.map((d) => d.dow)}
-            highlightIndex={todayIndex === -1 ? undefined : todayIndex}
-            height={120}
-          />
-        </div>
+        {buildHabits.length > 0 && <TodayPanel habits={buildHabits} today={today} />}
+        {buildHabits.length > 0 && (
+          <div className="panel panel--daily">
+            <h2 className="panel__title">Daily Progress</h2>
+            <BarChart
+              values={stats.dailyProgress}
+              labels={stats.days.map((d) => d.dow)}
+              highlightIndex={todayIndex === -1 ? undefined : todayIndex}
+              height={120}
+            />
+          </div>
+        )}
         <TaskPanel tasks={tasks} today={today} />
         {timerHabits.length > 0 && <TimerPanel habits={timerHabits} today={today} />}
         {quitHabits.length > 0 && <QuitPanel habits={quitHabits} quitStreaks={quitStreaks} />}
-        <MonthGrid stats={stats} habits={buildHabits} today={today} />
+        {buildHabits.length > 0 && <MonthGrid stats={stats} habits={buildHabits} today={today} />}
       </main>
 
-      <div className="dashboard__right">
-        <StatsPanel stats={stats} habits={buildHabits} plan={plan} />
-        <AdSidebar showAds={showAds} slot="0000000001" />
-      </div>
+      {/* Sous 7 panneaux à zéro (graphique, XP, série, donut, analyse, top 10)
+          ne servent à rien pour un compte qui n'a encore rien coché — juste du
+          bruit avant la première habitude. */}
+      {buildHabits.length > 0 && (
+        <div className="dashboard__right">
+          <StatsPanel stats={stats} habits={buildHabits} plan={plan} />
+          <AdSidebar showAds={showAds} slot="0000000001" />
+        </div>
+      )}
 
       {/* Cible du portail de HabitMenu (voir ce fichier) : un enfant direct de
           .dashboard, pas de .sidebar — hérite le thème (--bg/--cell/…, posés

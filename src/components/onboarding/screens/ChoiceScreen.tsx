@@ -22,8 +22,8 @@ export function ChoiceScreen({ aiConfigured, onQuestionnaire, onAi }: ChoiceScre
         {aiConfigured && (
           <button type="button" className="onboardchoice__card" onClick={onAi}>
             <span className="onboardchoice__emoji">✨</span>
-            <span className="onboardchoice__label">Just tell me what you want</span>
-            <span className="onboardchoice__desc">Describe your goal in your own words — AI builds a starter list.</span>
+            <span className="onboardchoice__label">Let AI build my plan</span>
+            <span className="onboardchoice__desc">A short tap-through quiz — AI builds a personalized 30-day plan.</span>
           </button>
         )}
       </div>

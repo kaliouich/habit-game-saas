@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/user";
+import { prisma } from "@/lib/prisma";
 import { createCheckoutSession, createPortalSession, createDonationCheckoutSession } from "@/lib/actions/billing";
 import { CopyReferralLink } from "@/components/CopyReferralLink";
 import { DonateForm } from "@/components/DonateForm";
 import { SubscriptionComparison } from "@/components/SubscriptionComparison";
+import { StartOverPanel } from "@/components/StartOverPanel";
 import { isStripeConfigured, isCheckoutEnabled } from "@/lib/stripe";
 import { currentMonth } from "@/lib/dates";
 
@@ -23,6 +25,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
   const trialDays = 14 + user.referralCreditMonths * 30;
   const month = currentMonth(user.timezone);
   const recapUrl = `${APP_URL}/recap/${user.id}/${month}`;
+  const habitCount = await prisma.habit.count({ where: { userId: user.id } });
 
   return (
     <div className="billingpage">
@@ -130,6 +133,8 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
           )}
         </div>
       )}
+
+      <StartOverPanel habitCount={habitCount} />
     </div>
   );
 }

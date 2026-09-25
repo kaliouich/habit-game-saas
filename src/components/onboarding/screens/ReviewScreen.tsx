@@ -6,12 +6,13 @@ import type { HabitDraft } from "@/lib/onboardingCatalog";
 interface ReviewScreenProps {
   drafts: HabitDraft[];
   fromAi: boolean;
+  milestone?: string;
   isCreating: boolean;
   onBack: () => void;
   onCreate: (selected: HabitDraft[]) => Promise<{ ok: boolean; created: number; error?: string }>;
 }
 
-export function ReviewScreen({ drafts, fromAi, isCreating, onBack, onCreate }: ReviewScreenProps) {
+export function ReviewScreen({ drafts, fromAi, milestone, isCreating, onBack, onCreate }: ReviewScreenProps) {
   const [items, setItems] = useState(drafts);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,6 +36,13 @@ export function ReviewScreen({ drafts, fromAi, isCreating, onBack, onCreate }: R
     <div className="onboardscreen">
       <h1 className="onboardscreen__title">Here&apos;s your starting list</h1>
       <p className="onboardscreen__subtitle">Review, tweak the names, or remove anything that doesn&apos;t fit.</p>
+
+      {fromAi && milestone && (
+        <div className="onboardreview__quest">
+          <span className="onboardreview__questlabel">Your first quest</span>
+          <p className="onboardreview__questtext">{milestone}</p>
+        </div>
+      )}
 
       {fromAi && (
         <p className="onboardreview__disclaimer">

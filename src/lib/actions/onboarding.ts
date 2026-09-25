@@ -99,15 +99,25 @@ export async function createHabitsFromSelection(input: unknown): Promise<{ ok: b
   return { ok: true, created: toCreate.length };
 }
 
-/** Écran "Just tell me what you want" — wrapper server action autour de
- *  generateHabitsFromGoal (lib/ai.ts) : authentification + rate-limit ici,
- *  l'appel Claude lui-même reste isolé dans lib/ai.ts. */
-export async function generateHabitsAction(goalText: unknown): Promise<{ ok: boolean; habits?: HabitDraft[]; error?: string }> {
+const GoalSurveySchema = z.object({
+  goal: z.string().trim().min(1).max(60),
+  scope: z.string().trim().min(1).max(60),
+  obstacle: z.string().trim().min(1).max(60),
+  timeBudget: z.string().trim().min(1).max(60),
+});
+
+/** Écran-sondage IA (tap-only, voir GoalScreen/OnboardingWizard) — wrapper
+ *  server action autour de generateHabitsFromGoal (lib/ai.ts) :
+ *  authentification + rate-limit ici, l'appel Claude lui-même reste isolé
+ *  dans lib/ai.ts. */
+export async function generateHabitsAction(
+  surveyInput: unknown,
+): Promise<{ ok: boolean; milestone?: string; habits?: HabitDraft[]; error?: string }> {
   if (!isAiOnboardingConfigured()) {
     return { ok: false, error: "AI_NOT_CONFIGURED" };
   }
 
-  const text = z.string().trim().min(1).max(300).parse(goalText);
+  const input = GoalSurveySchema.parse(surveyInput);
   const user = await getCurrentUser();
 
   const limited = rateLimit(`ai-onboarding:${user.id}`, RATE_LIMITS.aiHabitGeneration.limit, RATE_LIMITS.aiHabitGeneration.windowMs);
@@ -116,9 +126,21 @@ export async function generateHabitsAction(goalText: unknown): Promise<{ ok: boo
   }
 
   try {
-    const habits = await generateHabitsFromGoal(text);
-    return { ok: true, habits };
+    const { milestone, habits } = await generateHabitsFromGoal(input);
+    return { ok: true, milestone, habits };
   } catch {
     return { ok: false, error: "AI_GENERATION_FAILED" };
   }
+}
+
+/** "Start over" (Billing page) — supprime TOUTES les habitudes du compte
+ *  (et, en cascade via le schema Prisma, leurs logs/pauses/rechutes) puis
+ *  renvoie vers l'onboarding pour reconstruire la liste depuis zéro.
+ *  Irréversible : la confirmation à deux temps vit côté client
+ *  (StartOverPanel), pas ici — cette action suppose déjà le consentement. */
+export async function resetHabitsAction(): Promise<{ ok: boolean; deleted: number }> {
+  const user = await getCurrentUser();
+  const { count } = await prisma.habit.deleteMany({ where: { userId: user.id } });
+  revalidatePath("/app");
+  return { ok: true, deleted: count };
 }

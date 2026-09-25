@@ -61,7 +61,8 @@
 .recap,
 .billingpage,
 .journalpage,
-.report {
+.report,
+.onboardwizard {
   --bg: #0f1420;
   --cell: #171e2e;
   --panel: #0b0f18;
@@ -86,7 +87,8 @@
 .recap,
 .billingpage,
 .journalpage,
-.report {
+.report,
+.onboardwizard {
   --check: #4a9edb;
   --accent: #7c6cf0;
 }
@@ -1757,20 +1759,18 @@ select {
     order: 1;
   }
 
-  .sidebar {
+  /* Stats (XP, badges, analysis) before the sidebar, not after — the sidebar
+     ends with the account footer (Journal / export / Sign out), and having
+     game stats appear BELOW "Sign out" reads as content past the end of the
+     page. Sign out should be the actual last thing on the screen. */
+  .dashboard__right {
     order: 2;
-    position: static;
-    max-height: none;
   }
 
-  /* La cible réelle pour "stats en dernier" : .statspanel n'est pas un
-     enfant direct de la grille .dashboard (c'est .dashboard__right, qui
-     l'enveloppe, avec AdSidebar) — lui donner un order ici n'avait donc
-     jamais d'effet sur la position de toute la colonne stats. Bug trouvé en
-     vérifiant l'ordre RÉEL en prod (order calculé + position à l'écran),
-     pas en relisant juste la règle ci-dessous. */
-  .dashboard__right {
+  .sidebar {
     order: 3;
+    position: static;
+    max-height: none;
   }
 
   .statspanel {
@@ -2495,6 +2495,55 @@ select {
   padding: 10px 12px;
   font-size: 13px;
   font-weight: 500;
+}
+
+/* Danger zone — seule carte de Billing avec un accent rouge permanent,
+   volontairement : c'est la seule action de la page qui est destructive et
+   irréversible. */
+.startover {
+  border-color: color-mix(in srgb, var(--tone-danger) 45%, var(--grid-line));
+}
+
+.startover__title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.startover__text {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.startover__trigger {
+  width: auto;
+  align-self: flex-start;
+  border-color: color-mix(in srgb, var(--tone-danger) 50%, var(--grid-line));
+  color: var(--tone-danger);
+}
+
+.startover__warning {
+  background: color-mix(in srgb, var(--tone-danger) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tone-danger) 35%, transparent);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.startover__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.startover__actions .btn {
+  width: auto;
+}
+
+.startover__confirm {
+  background: var(--tone-danger);
+  color: #fff;
 }
 
 /* ─── Marketing : header / footer ────────────────────────────────────────── */
@@ -4542,6 +4591,44 @@ select {
   background: rgb(255 255 255 / 0.04);
 }
 
+/* Volontairement plus discret que .onboardoptions__item : ce n'est pas un
+   7e objectif dans la liste, c'est la sortie pour qui n'en a besoin
+   d'aucun. */
+.goalscreen__skip {
+  align-self: center;
+  margin-top: 4px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: underline;
+}
+
+.goalscreen__skip:hover {
+  color: var(--fg);
+}
+
+.onboardscreen--center {
+  align-items: center;
+  text-align: center;
+  padding: 40px 0;
+}
+
+.generating__spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--grid-line);
+  border-top-color: var(--check);
+  border-radius: 50%;
+  animation: generating-spin 800ms linear infinite;
+}
+
+@keyframes generating-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .onboardpick {
   display: flex;
   flex-direction: column;
@@ -4626,6 +4713,28 @@ select {
   color: var(--danger, #c0392b);
   font-size: 13px;
   line-height: 1.4;
+}
+
+.onboardreview__quest {
+  background: color-mix(in srgb, var(--check) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--check) 35%, transparent);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.onboardreview__questlabel {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--check);
+}
+
+.onboardreview__questtext {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 2px;
 }
 
 .onboardreview__disclaimer {

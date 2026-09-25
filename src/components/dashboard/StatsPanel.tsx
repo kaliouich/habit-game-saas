@@ -47,7 +47,7 @@ export function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
         <BarChart
           values={stats.weeklyProgress.map((w) => w.pct)}
           labels={stats.weeklyProgress.map((w) => w.label.toLowerCase())}
-          height={90}
+          height={170}
         />
       </div>
 

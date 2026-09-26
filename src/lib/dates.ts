@@ -6,12 +6,26 @@
 export type ISODate = string; // "YYYY-MM-DD"
 export type MonthKey = string; // "YYYY-MM"
 
-const DOW_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] as const;
+/** Abréviations courtes (2 lettres) pour les colonnes serrées de la grille —
+ *  volontairement pas Intl.DateTimeFormat({weekday:"short"}) : ça rendrait
+ *  "dim."/"jue." selon la langue, plus large et de longueur variable, alors
+ *  que la grille (voir MonthGrid.tsx) dépend de colonnes étroites et régulières. */
+const DOW_LABELS: Record<string, readonly string[]> = {
+  en: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+  fr: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"],
+  es: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+};
+
+const WEEK_WORD: Record<string, string> = {
+  en: "Week",
+  fr: "Semaine",
+  es: "Semana",
+};
 
 export interface DayInfo {
   date: ISODate;
   dayNum: number; // 1..31
-  dow: (typeof DOW_LABELS)[number]; // "We"
+  dow: string; // "We" (localisé)
 }
 
 export interface WeekGroup {
@@ -36,14 +50,15 @@ export function daysInMonth(month: MonthKey): number {
   return new Date(Date.UTC(y, m, 0)).getUTCDate();
 }
 
-export function monthDays(month: MonthKey): DayInfo[] {
+export function monthDays(month: MonthKey, locale: string = "en"): DayInfo[] {
   const y = Number(month.slice(0, 4));
   const m = Number(month.slice(5, 7));
   const count = daysInMonth(month);
+  const labels = DOW_LABELS[locale] ?? DOW_LABELS.en;
   const days: DayInfo[] = [];
   for (let d = 1; d <= count; d++) {
     const dow = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
-    days.push({ date: `${month}-${pad2(d)}`, dayNum: d, dow: DOW_LABELS[dow] });
+    days.push({ date: `${month}-${pad2(d)}`, dayNum: d, dow: labels[dow] });
   }
   return days;
 }
@@ -52,8 +67,9 @@ export function monthDays(month: MonthKey): DayInfo[] {
  * Groupes "Week 1..Week N" comme dans la vidéo : semaines calendaires du mois.
  * `weekStartsOn` : 0 = dimanche, 1 = lundi. Un mois peut produire jusqu'à 6 groupes.
  */
-export function weeksOf(month: MonthKey, weekStartsOn: 0 | 1 = 1): WeekGroup[] {
-  const days = monthDays(month);
+export function weeksOf(month: MonthKey, weekStartsOn: 0 | 1 = 1, locale: string = "en"): WeekGroup[] {
+  const days = monthDays(month, locale);
+  const word = WEEK_WORD[locale] ?? WEEK_WORD.en;
   const groups: WeekGroup[] = [];
   let current: DayInfo[] = [];
   const y = Number(month.slice(0, 4));
@@ -61,13 +77,13 @@ export function weeksOf(month: MonthKey, weekStartsOn: 0 | 1 = 1): WeekGroup[] {
   for (const day of days) {
     const dow = new Date(Date.UTC(y, m - 1, day.dayNum)).getUTCDay();
     if (dow === weekStartsOn && current.length > 0) {
-      groups.push({ label: `Week ${groups.length + 1}`, index: groups.length, days: current });
+      groups.push({ label: `${word} ${groups.length + 1}`, index: groups.length, days: current });
       current = [];
     }
     current.push(day);
   }
   if (current.length > 0) {
-    groups.push({ label: `Week ${groups.length + 1}`, index: groups.length, days: current });
+    groups.push({ label: `${word} ${groups.length + 1}`, index: groups.length, days: current });
   }
   return groups;
 }

@@ -43,6 +43,7 @@ export async function getDashboardData(
   month: MonthKey,
   timezone: string,
   weekStartsOn: 0 | 1,
+  locale: string = "en",
 ): Promise<DashboardData> {
   const monthEnd = `${month}-${pad2(daysInMonth(month))}`;
   const monthEndDate = new Date(`${monthEnd}T23:59:59Z`);
@@ -106,7 +107,7 @@ export async function getDashboardData(
   // BUILD, elle y compterait comme un 0 permanent (progrès quotidien, badges,
   // "perfect day"…). Ces formules ne concernent donc que BUILD.
   const buildHabits = habits.filter((h) => h.type === "BUILD");
-  const stats = computeMonthStats({ month, habits: buildHabits, moods, today, weekStartsOn });
+  const stats = computeMonthStats({ month, habits: buildHabits, moods, today, weekStartsOn, locale });
   const activeCount = habitRows.filter((h) => h.archivedAt === null).length;
 
   const shieldedDates = shieldedAll.filter((d) => d >= `${month}-01` && d <= monthEnd);

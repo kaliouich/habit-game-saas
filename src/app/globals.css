@@ -2623,6 +2623,10 @@ select {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  /* Plancher : empêche le logo et le CTA de se retrouver collés (sans espace
+     visible) si une traduction plus longue fait déborder le contenu au lieu
+     de laisser space-between respirer normalement. */
+  gap: 12px;
   padding: 18px 32px;
   max-width: 1100px;
   margin: 0 auto;
@@ -2670,13 +2674,21 @@ select {
   color: var(--m-gold);
 }
 
-/* En dessous de ~480px, logo + "Features" + "Pricing" + bouton CTA ne
-   tiennent plus sur une ligne (débordement horizontal découvert en capturant
-   des screenshots Play Store à 412px, largeur téléphone réelle) — on garde
-   le CTA (l'action qui compte) et on masque les liens texte plutôt que
-   d'ajouter un menu hamburger pour deux liens. */
-@media (max-width: 480px) {
-  .marketingheader__nav a:not(.btn) {
+/* En dessous de ~700px, logo + "Features" + "Pricing" + sélecteur de langue +
+   bouton CTA ne tiennent plus sur une ligne (pas de flex-wrap ici, donc ça
+   déborde du viewport au lieu de passer à la ligne). Seuil relevé de 480px à
+   700px, et sélecteur de langue ajouté au masquage : au départ ce calcul ne
+   tenait compte que du texte anglais ("Dashboard") sans sélecteur de langue —
+   avec le FR/ES ("Tableau de bord" est ~2x plus large que "Dashboard") et le
+   nouveau <select> de langue, le seuil de 480px laissait le bloc déborder à
+   l'affichage (logo collé à "Fonctionnalités", bouton CTA coupé à droite du
+   téléphone — signalé par captures d'écran réelles en FR). On garde le CTA
+   (l'action qui compte) et on masque le reste plutôt que d'ajouter un menu
+   hamburger ; le sélecteur de langue reste disponible sur /login et dans la
+   sidebar du dashboard. */
+@media (max-width: 700px) {
+  .marketingheader__nav a:not(.btn),
+  .marketingheader__nav .langswitcher--nav {
     display: none;
   }
 }

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
 import { getCurrentUser } from "@/lib/user";
 import { getDashboardData, getTasksForDashboard } from "@/lib/data";
 import { currentMonth, isValidMonthKey } from "@/lib/dates";
@@ -22,12 +23,14 @@ export default async function DashboardPage({
     redirect(`/app?month=${current}`);
   }
   const weekStartsOn = user.weekStartsOn === 0 ? 0 : 1;
+  const locale = await getLocale();
 
   const { stats, habits, today, activeCount, shieldedDates, quitStreaks } = await getDashboardData(
     user.id,
     month,
     user.timezone,
     weekStartsOn,
+    locale,
   );
   const tasks = await getTasksForDashboard(user.id, today);
 

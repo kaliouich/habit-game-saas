@@ -137,10 +137,11 @@ export function computeMonthStats(params: {
   moods: { date: ISODate; value: number | null; motivation?: number | null }[];
   today: ISODate;
   weekStartsOn?: 0 | 1;
+  locale?: string;
 }): MonthStats {
-  const { month, habits, moods, today, weekStartsOn = 1 } = params;
-  const days = monthDays(month);
-  const weeks = weeksOf(month, weekStartsOn);
+  const { month, habits, moods, today, weekStartsOn = 1, locale = "en" } = params;
+  const days = monthDays(month, locale);
+  const weeks = weeksOf(month, weekStartsOn, locale);
   const nDays = daysInMonth(month);
   const habitCount = habits.length;
 

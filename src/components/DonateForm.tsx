@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { DONATION_PRESETS, DONATION_MIN, DONATION_MAX } from "@/lib/config";
 
 interface DonateFormProps {
@@ -13,6 +14,7 @@ interface DonateFormProps {
  * toujours la valeur du champ qui part au serveur (revalidée là-bas).
  */
 export function DonateForm({ action }: DonateFormProps) {
+  const t = useTranslations("Billing.donate");
   const [amount, setAmount] = useState<string>("5");
 
   const parsed = Number(amount);
@@ -37,7 +39,7 @@ export function DonateForm({ action }: DonateFormProps) {
       </div>
 
       <label className="donate__custom">
-        <span className="donate__customlabel">Or choose your own amount</span>
+        <span className="donate__customlabel">{t("customAmount")}</span>
         <span className="donate__inputwrap">
           <span className="donate__currency">€</span>
           <input
@@ -50,14 +52,14 @@ export function DonateForm({ action }: DonateFormProps) {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="donate__input"
-            aria-label="Donation amount in euros"
+            aria-label={t("amountAria")}
             required
           />
         </span>
       </label>
 
       <button type="submit" className="btn btn--primary" disabled={!valid}>
-        {valid ? `Donate €${parsed.toFixed(2)}` : `Enter €${DONATION_MIN}–€${DONATION_MAX}`}
+        {valid ? t("donate", { amount: parsed.toFixed(2) }) : t("enterRange", { min: DONATION_MIN, max: DONATION_MAX })}
       </button>
     </form>
   );

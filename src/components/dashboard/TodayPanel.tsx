@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import type { HabitUnit } from "@/lib/stats";
 import type { ISODate } from "@/lib/dates";
 import { habitUnitConfig } from "@/lib/config";
@@ -26,10 +27,11 @@ interface TodayPanelProps {
  *  panneau met le geste du jour (une ligne, un tap) tout en haut, avant même
  *  le graphique, sans dupliquer la logique de coche : mêmes DayCheckbox /
  *  DayValueCell que la grille, juste réarrangés en liste verticale. */
-export function TodayPanel({ habits, today }: TodayPanelProps) {
+export async function TodayPanel({ habits, today }: TodayPanelProps) {
+  const t = await getTranslations("Dashboard");
   return (
     <div className="panel todaypanel">
-      <h2 className="panel__title">Today</h2>
+      <h2 className="panel__title">{t("today")}</h2>
       <ul className="todaypanel__list">
         {habits.map((h) => {
           const isQuantified = h.unit && h.unit !== "TIMES";

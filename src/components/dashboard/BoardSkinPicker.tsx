@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { BOARD_SKINS, type BoardSkinKey } from "@/lib/config";
 import { setBoardSkin } from "@/lib/actions/settings";
 
@@ -16,14 +17,15 @@ interface BoardSkinPickerProps {
  * le tier côté serveur, et `resolveBoardSkin` force le thème gratuit au rendu.
  */
 export function BoardSkinPicker({ current, plan }: BoardSkinPickerProps) {
+  const t = useTranslations("Dashboard.skinPicker");
   const [, startTransition] = useTransition();
   const lockedCount = BOARD_SKINS.filter((s) => s.tier === "pro").length;
 
   return (
     <div className="skinpicker">
       <p className="skinpicker__label">
-        Theme
-        {plan !== "PRO" && <span className="skinpicker__badge">Free</span>}
+        {t("theme")}
+        {plan !== "PRO" && <span className="skinpicker__badge">{t("free")}</span>}
       </p>
       <div className="skinpicker__row">
         {BOARD_SKINS.map((skin) => {
@@ -36,8 +38,8 @@ export function BoardSkinPicker({ current, plan }: BoardSkinPickerProps) {
                 locked ? " skinpicker__swatch--locked" : ""
               }`}
               style={{ background: skin.check }}
-              title={locked ? `${skin.label} (Pro)` : skin.label}
-              aria-label={locked ? `${skin.label}, requires Pro` : `Use ${skin.label} skin`}
+              title={locked ? t("proSuffix", { label: skin.label }) : skin.label}
+              aria-label={locked ? t("requiresPro", { label: skin.label }) : t("useSkin", { label: skin.label })}
               onClick={() => {
                 if (locked) return;
                 startTransition(async () => {
@@ -52,7 +54,7 @@ export function BoardSkinPicker({ current, plan }: BoardSkinPickerProps) {
       </div>
       {plan !== "PRO" && (
         <Link href="/pricing" className="skinpicker__upsell">
-          Unlock {lockedCount} more themes →
+          {t("unlockMore", { count: lockedCount })}
         </Link>
       )}
     </div>

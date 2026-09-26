@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/user";
 import { prisma } from "@/lib/prisma";
 import { createCheckoutSession, createPortalSession, createDonationCheckoutSession } from "@/lib/actions/billing";
@@ -26,47 +27,45 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
   const month = currentMonth(user.timezone);
   const recapUrl = `${APP_URL}/recap/${user.id}/${month}`;
   const habitCount = await prisma.habit.count({ where: { userId: user.id } });
+  const t = await getTranslations("Billing");
 
   return (
     <div className="billingpage">
       <Link href="/app" className="billingpage__back">
-        ← Back to dashboard
+        {t("back")}
       </Link>
-      <h1 className="billingpage__title">Billing</h1>
+      <h1 className="billingpage__title">{t("title")}</h1>
 
       <div className="billingcard">
         <p className="billingcard__row">
-          <span>Plan</span>
+          <span>{t("plan")}</span>
           <strong>{user.plan}</strong>
         </p>
         {user.planStatus && (
           <p className="billingcard__row">
-            <span>Status</span>
+            <span>{t("status")}</span>
             <strong>{user.planStatus}</strong>
           </p>
         )}
         {user.trialEndsAt && (
           <p className="billingcard__row">
-            <span>Trial ends</span>
+            <span>{t("trialEnds")}</span>
             <strong>{user.trialEndsAt.toLocaleDateString()}</strong>
           </p>
         )}
 
         {!checkoutEnabled ? (
-          <p className="billingcard__soon">
-            💳 Payments aren&apos;t switched on yet — upgrading will be available shortly.
-            Everything on the Free plan keeps working in the meantime.
-          </p>
+          <p className="billingcard__soon">{t("paymentsSoon")}</p>
         ) : user.plan === "FREE" ? (
           <form action={createCheckoutSession}>
             <button type="submit" className="btn btn--primary">
-              Upgrade to Pro — €0.99/month, {trialDays}-day trial
+              {t("upgradeButton", { trialDays })}
             </button>
           </form>
         ) : (
           <form action={createPortalSession}>
             <button type="submit" className="btn btn--secondary">
-              Manage subscription
+              {t("manageSubscription")}
             </button>
           </form>
         )}
@@ -76,60 +75,41 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
 
       {user.plan === "PRO" && (
         <div className="billingexport">
-          <h2 className="billingexport__title">Export & Share</h2>
+          <h2 className="billingexport__title">{t("exportShare")}</h2>
           <div className="billingexport__row">
-            <span className="billingexport__label">Download all habit data as CSV</span>
+            <span className="billingexport__label">{t("downloadCsv")}</span>
             <a href="/api/export" className="btn btn--secondary" download>
-              Export CSV
+              {t("exportCsvButton")}
             </a>
           </div>
           <div className="billingexport__row">
-            <span className="billingexport__label">Share this month&apos;s recap</span>
+            <span className="billingexport__label">{t("shareRecap")}</span>
             <CopyReferralLink link={recapUrl} />
           </div>
           <p className="billingexport__copy">{recapUrl}</p>
           <div className="billingexport__row">
-            <span className="billingexport__label">
-              Same recap, as an image — for Instagram/WhatsApp stories, where a link won&apos;t unfurl
-            </span>
+            <span className="billingexport__label">{t("recapImageLabel")}</span>
             <a href={`${recapUrl}/opengraph-image`} className="btn btn--secondary" download>
-              Download image
+              {t("downloadImage")}
             </a>
           </div>
         </div>
       )}
 
       <div className="billingcard donate">
-        <h2 className="donate__title">Support this project</h2>
-        <p className="donate__text">
-          Habitcade is built and run by a small team. Every donation goes straight back into
-          keeping the servers running and shipping the features on the roadmap — no data
-          selling, ever, just a tool we want to keep making better. If it&apos;s helped you build a
-          habit, anything you give helps us keep it going.
-        </p>
-        {donated === "1" && <p className="donate__thanks">🎉 Thank you for your support!</p>}
-        {stripeReady ? (
-          <DonateForm action={createDonationCheckoutSession} />
-        ) : (
-          <p className="billingcard__soon">
-            Donations open as soon as payments are switched on. Thank you for wanting to help.
-          </p>
-        )}
+        <h2 className="donate__title">{t("supportTitle")}</h2>
+        <p className="donate__text">{t("supportText")}</p>
+        {donated === "1" && <p className="donate__thanks">{t("donateThanks")}</p>}
+        {stripeReady ? <DonateForm action={createDonationCheckoutSession} /> : <p className="billingcard__soon">{t("donationsSoon")}</p>}
       </div>
 
       {user.referralCode && (
         <div className="billingcard referral">
-          <h2 className="referral__title">Refer a friend, get a free month</h2>
-          <p className="referral__text">
-            Every friend who upgrades to Pro earns you 1 free month — automatically applied to your
-            next checkout.
-          </p>
+          <h2 className="referral__title">{t("referralTitle")}</h2>
+          <p className="referral__text">{t("referralText")}</p>
           <CopyReferralLink link={`${APP_URL}/login?ref=${user.referralCode}`} />
           {user.referralCreditMonths > 0 && (
-            <p className="referral__credit">
-              🎁 You have {user.referralCreditMonths} free month{user.referralCreditMonths > 1 ? "s" : ""} waiting
-              — it&apos;ll be applied automatically on your next upgrade.
-            </p>
+            <p className="referral__credit">{t("referralCredit", { count: user.referralCreditMonths })}</p>
           )}
         </div>
       )}

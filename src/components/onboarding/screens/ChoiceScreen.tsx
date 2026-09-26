@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 interface ChoiceScreenProps {
   aiConfigured: boolean;
   onQuestionnaire: () => void;
@@ -7,23 +9,25 @@ interface ChoiceScreenProps {
 }
 
 export function ChoiceScreen({ aiConfigured, onQuestionnaire, onAi }: ChoiceScreenProps) {
+  const t = useTranslations("Onboarding.choice");
+
   return (
     <div className="onboardscreen">
-      <h1 className="onboardscreen__title">Let&apos;s build your habits</h1>
-      <p className="onboardscreen__subtitle">Two ways to start — pick whichever feels right.</p>
+      <h1 className="onboardscreen__title">{t("title")}</h1>
+      <p className="onboardscreen__subtitle">{t("subtitle")}</p>
 
       <div className="onboardchoice">
         <button type="button" className="onboardchoice__card" onClick={onQuestionnaire}>
           <span className="onboardchoice__emoji">📋</span>
-          <span className="onboardchoice__label">Answer a few questions</span>
-          <span className="onboardchoice__desc">Quick multiple-choice — we&apos;ll suggest habits that fit.</span>
+          <span className="onboardchoice__label">{t("questionnaireLabel")}</span>
+          <span className="onboardchoice__desc">{t("questionnaireDesc")}</span>
         </button>
 
         {aiConfigured && (
           <button type="button" className="onboardchoice__card" onClick={onAi}>
             <span className="onboardchoice__emoji">✨</span>
-            <span className="onboardchoice__label">Let AI build my plan</span>
-            <span className="onboardchoice__desc">A short tap-through quiz — AI builds a personalized 30-day plan.</span>
+            <span className="onboardchoice__label">{t("aiLabel")}</span>
+            <span className="onboardchoice__desc">{t("aiDesc")}</span>
           </button>
         )}
       </div>

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { resetHabitsAction } from "@/lib/actions/onboarding";
 
 interface StartOverPanelProps {
@@ -14,6 +15,7 @@ interface StartOverPanelProps {
  *  utilise nulle part ailleurs) : un premier clic révèle l'avertissement
  *  explicite + Confirm/Cancel, rien ne se supprime sur le premier clic. */
 export function StartOverPanel({ habitCount }: StartOverPanelProps) {
+  const t = useTranslations("Billing.startOver");
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -29,29 +31,23 @@ export function StartOverPanel({ habitCount }: StartOverPanelProps) {
 
   return (
     <div className="billingcard startover">
-      <h2 className="startover__title">Start over</h2>
+      <h2 className="startover__title">{t("title")}</h2>
       {!confirming ? (
         <>
-          <p className="startover__text">
-            Delete all {habitCount} habit{habitCount === 1 ? "" : "s"} and their history, then rebuild your list from
-            scratch.
-          </p>
+          <p className="startover__text">{t("description", { count: habitCount })}</p>
           <button type="button" className="btn btn--secondary startover__trigger" onClick={() => setConfirming(true)}>
-            Start over
+            {t("title")}
           </button>
         </>
       ) : (
         <>
-          <p className="startover__warning">
-            This deletes all {habitCount} habit{habitCount === 1 ? "" : "s"} and every day you&apos;ve logged for
-            them. This can&apos;t be undone.
-          </p>
+          <p className="startover__warning">{t("warning", { count: habitCount })}</p>
           <div className="startover__actions">
             <button type="button" className="btn btn--secondary" onClick={() => setConfirming(false)} disabled={isPending}>
-              Cancel
+              {t("cancel")}
             </button>
             <button type="button" className="btn startover__confirm" onClick={confirm} disabled={isPending}>
-              {isPending ? "Deleting…" : "Yes, delete everything"}
+              {isPending ? t("deleting") : t("confirm")}
             </button>
           </div>
         </>

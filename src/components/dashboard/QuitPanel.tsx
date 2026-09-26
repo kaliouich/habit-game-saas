@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import type { QuitStreak } from "@/lib/stats";
 import { QuitCounter } from "./QuitCounter";
 
@@ -16,12 +17,13 @@ interface QuitPanelProps {
 /** Phase 2 roadmap : QUIT n'est plus une case à cocher — un chronomètre depuis
  *  la dernière rechute. Sorti de la grille mensuelle (MonthGrid), qui reste
  *  BUILD-only, voir Dashboard.tsx. */
-export function QuitPanel({ habits, quitStreaks }: QuitPanelProps) {
+export async function QuitPanel({ habits, quitStreaks }: QuitPanelProps) {
   if (habits.length === 0) return null;
+  const t = await getTranslations("Dashboard");
 
   return (
     <div className="panel panel--quit">
-      <h2 className="panel__title">Quit Habits</h2>
+      <h2 className="panel__title">{t("quitHabits")}</h2>
       <div className="quitpanel">
         {habits.map((h) => {
           const streak = quitStreaks.get(h.id);

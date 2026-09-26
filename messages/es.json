@@ -1,0 +1,439 @@
+{
+  "Common": {
+    "copy": "Copiar",
+    "copied": "¡Copiado!"
+  },
+  "Marketing": {
+    "hero": {
+      "eyebrow": "✦ Convierte tu constancia en un juego que estás ganando",
+      "title": "Tus hábitos, registrados como un <em>juego que de verdad quieres jugar</em>.",
+      "subtitle": "{appName} es un rastreador de hábitos construido alrededor de un tablero: cada hábito, cada día del mes, que vas completando sobre la marcha. Rachas, XP, niveles e insignias — sin notificaciones que generen culpa, solo el registro.",
+      "ctaPrimary": "Empieza gratis — sin tarjeta",
+      "ctaSecondary": "Ver precios",
+      "getItOn": "DISPONIBLE EN",
+      "note1": "3 hábitos gratis, para siempre",
+      "note2": "Prueba Pro de 14 días",
+      "note3": "Exporta tus datos cuando quieras"
+    },
+    "features": {
+      "title": "Todo lo que tenía una hoja de cálculo. Más todo lo que no podía hacer.",
+      "board": { "title": "El tablero mensual", "text": "Una fila por hábito, una columna por día. Todo el mes en una sola pantalla — ningún otro rastreador te muestra esto." },
+      "streaks": { "title": "Rachas y récords", "text": "Rachas de días consecutivos por hábito, más tu récord histórico. Lo que una lista en papel nunca sumó por ti." },
+      "badges": { "title": "Insignias y niveles", "text": "XP por cada marca, niveles a medida que avanzas, insignias por semanas perfectas y rachas largas. El plan gratuito incluye 3 insignias iniciales — Pro desbloquea el resto." },
+      "skins": { "title": "Temas del tablero", "text": "8 temas de color cosméticos para tu tablero. 2 gratis, 6 con Pro — sin ningún efecto en tus datos, solo tu estilo." },
+      "mood": { "title": "Seguimiento del ánimo", "text": "Registra cómo te sentiste cada día y compáralo con tu constancia." },
+      "pause": { "title": "Modo pausa", "text": "¿Te vas de vacaciones? Pausa un hábito y los días intermedios no romperán tu racha (Pro)." }
+    },
+    "howItWorks": {
+      "title": "Cómo funciona",
+      "step1": { "title": "Añade tus hábitos", "text": "Levantarte temprano, gimnasio, leer — cualquier cosa que quieras construir o dejar." },
+      "step2": { "title": "Marca la casilla, cada día", "text": "Un clic. Instantáneo, sin recargar la página. El XP y la racha se actualizan al momento." },
+      "step3": { "title": "Sube de nivel", "text": "Insignias, temas del tablero y una clasificación te mantienen honesto y con ganas de volver." }
+    },
+    "cta": {
+      "title": "El primer día es el único nivel difícil.",
+      "button": "Empezar gratis"
+    }
+  },
+  "MarketingNav": {
+    "features": "Funciones",
+    "pricing": "Precios",
+    "dashboard": "Panel",
+    "signIn": "Iniciar sesión",
+    "terms": "Términos",
+    "privacy": "Privacidad"
+  },
+  "Pricing": {
+    "title": "Precios",
+    "subtitle": "Reconstruye tu constancia. Cancela cuando quieras.",
+    "free": {
+      "name": "Gratis",
+      "habits": "{count} hábitos",
+      "currentMonth": "Solo el mes en curso",
+      "starterBadges": "3 insignias iniciales",
+      "ads": "Incluye anuncios",
+      "cta": "Empezar"
+    },
+    "shared": {
+      "mood": "Seguimiento del ánimo",
+      "streaks": "Rachas"
+    },
+    "pro": {
+      "name": "Pro",
+      "perMonth": "/mes",
+      "billing": "facturado 9,99 $/año · prueba gratuita de 14 días · no se cobra hasta entonces",
+      "unlimitedHabits": "Hábitos ilimitados",
+      "unlimitedHistory": "Historial ilimitado",
+      "badges": "Todas las insignias y niveles de XP",
+      "skins": "Todos los temas del tablero",
+      "pause": "Modo pausa / vacaciones",
+      "csv": "Exportación CSV",
+      "weeklyRecap": "Resumen semanal por email",
+      "shareableRecap": "Resumen mensual para compartir",
+      "noAds": "Sin anuncios",
+      "ctaFree": "Empezar gratis — 5 hábitos",
+      "opensShortly": "Las suscripciones Pro abrirán pronto.",
+      "ctaTrial": "Empezar prueba gratuita",
+      "ctaSignIn": "Inicia sesión para suscribirte"
+    }
+  },
+  "Login": {
+    "subtitle": "Reconstruye tu constancia",
+    "or": "o",
+    "email": "Email",
+    "sendMagicLink": "Enviar enlace mágico",
+    "settingUp": "El inicio de sesión se está configurando — vuelve pronto.",
+    "footNote": "Sin contraseña. Sin tarjeta. {count} hábitos gratis.",
+    "checkYourEmail": "Revisa tu email",
+    "magicLinkSent": "Te hemos enviado un enlace mágico. Haz clic para iniciar sesión — puedes cerrar esta pestaña.",
+    "continueWithGoogle": "Continuar con Google"
+  },
+  "Onboarding": {
+    "back": "Atrás",
+    "backArrow": "← Atrás",
+    "time": {
+      "tiny": "Menos de 10 minutos",
+      "short": "10–30 minutos",
+      "medium": "30–60 minutos",
+      "long": "1 hora o más"
+    },
+    "choice": {
+      "title": "Construyamos tus hábitos",
+      "subtitle": "Dos formas de empezar — elige la que prefieras.",
+      "questionnaireLabel": "Responder unas preguntas",
+      "questionnaireDesc": "Opción múltiple rápida — te sugerimos hábitos que encajen.",
+      "aiLabel": "Que la IA cree mi plan",
+      "aiDesc": "Un cuestionario breve tocando pantalla — la IA crea un plan personalizado de 30 días."
+    },
+    "qFocus": {
+      "title": "¿Cuál es tu enfoque principal ahora mismo?",
+      "fitness": "Salud y fitness",
+      "mind": "Mente y concentración",
+      "productivity": "Productividad",
+      "quit": "Dejar un hábito",
+      "sleep": "Sueño y energía",
+      "general": "Mejora personal general"
+    },
+    "qTime": {
+      "title": "¿Cuánto tiempo puedes dedicarle cada día, de forma realista?"
+    },
+    "qEnergy": {
+      "title": "¿Cuándo tienes más energía?",
+      "morning": "Muy temprano",
+      "day": "Durante el día",
+      "evening": "Por la noche",
+      "varies": "Varía"
+    },
+    "qPick": {
+      "title": "Elige algunas cosas en las que te gustaría trabajar",
+      "subtitle": "Toca para seleccionar — puedes cambiarlo todo después.",
+      "continue": "Continuar",
+      "continueWithCount": "Continuar ({count})"
+    },
+    "aiGoal": {
+      "title": "¿Cuál es el objetivo?",
+      "subtitle": "Elige lo que más se parezca — puedes ajustar los hábitos después.",
+      "skip": "✍️ Crearé mis propios hábitos →",
+      "loseWeight": "Perder peso / ponerme en forma",
+      "sleepBetter": "Dormir mejor",
+      "quitBadHabit": "Dejar un mal hábito",
+      "beatProcrastination": "Vencer la procrastinación",
+      "feelLessAnxious": "Sentirme menos ansioso/a o estresado/a",
+      "turnLifeAround": "Cambiar mi vida"
+    },
+    "aiScope": {
+      "title": "¿Qué tan grande es el cambio que buscas?",
+      "smallTweak": "Ajuste pequeño — una sola cosa, hecha con constancia",
+      "newRoutine": "Nueva rutina — varios hábitos funcionando juntos",
+      "fullReset": "Reinicio total — quiero reconstruir desde cero"
+    },
+    "aiObstacle": {
+      "title": "¿Qué suele interponerse en tu camino?",
+      "noTime": "Falta de tiempo",
+      "noMotivation": "Falta de motivación al empezar el día",
+      "forget": "Simplemente se me olvida",
+      "unsure": "No sé por dónde empezar"
+    },
+    "aiTime": {
+      "title": "¿Cuánto tiempo puedes dedicarle, cada día?"
+    },
+    "generating": {
+      "title": "Construyendo tu misión…",
+      "subtitle": "Convirtiendo tus respuestas en un plan de 30 días.",
+      "errorTitle": "Algo salió mal",
+      "retry": "Intentar de nuevo",
+      "back": "Atrás",
+      "errorNotConfigured": "Las sugerencias de IA no están disponibles ahora mismo — prueba el cuestionario en su lugar.",
+      "errorRateLimited": "Has alcanzado el límite horario de sugerencias de IA. Vuelve a intentarlo en un rato, o usa el cuestionario.",
+      "errorGeneric": "Algo salió mal al generar tus hábitos. Por favor, inténtalo de nuevo."
+    },
+    "review": {
+      "title": "Aquí tienes tu lista inicial",
+      "subtitle": "Revisa, ajusta los nombres o elimina lo que no encaje.",
+      "questLabel": "Tu primera misión",
+      "disclaimer": "Sugerencias generales de bienestar, no un consejo médico — si lo estás pasando mal, habla también con un profesional.",
+      "empty": "No queda nada por añadir — vuelve atrás y elige algo.",
+      "remove": "Eliminar",
+      "back": "Atrás",
+      "creating": "Creando…",
+      "create": "Crear {count, plural, one {# hábito} other {# hábitos}}",
+      "createError": "No se pudieron crear tus hábitos. Por favor, inténtalo de nuevo."
+    }
+  },
+  "Dashboard": {
+    "today": "Hoy",
+    "dailyProgress": "Progreso diario",
+    "quitHabits": "Hábitos a dejar",
+    "sidebar": {
+      "month": "Mes",
+      "previousMonth": "Mes anterior",
+      "nextMonth": "Mes siguiente",
+      "myHabits": "Mis hábitos",
+      "streakTitle": "{current} días seguidos (récord {best})",
+      "mood": "Ánimo",
+      "motivation": "Motivación",
+      "referral": "Invita a un amigo, gana un mes gratis",
+      "journal": "Diario",
+      "downloadReport": "Descargar informe de progreso",
+      "upgrade": "Mejorar a Pro",
+      "pro": "Pro",
+      "signOut": "Cerrar sesión"
+    },
+    "addHabit": {
+      "limitReached": "Límite de {limit} hábitos alcanzado",
+      "genericError": "Error",
+      "namePlaceholder": "Nuevo hábito…",
+      "typeTitle": "Construir = hábito a hacer · Dejar = hábito a evitar",
+      "build": "Construir",
+      "quit": "Dejar",
+      "addHabit": "Añadir hábito",
+      "unitTitle": "¿Cómo se mide este hábito cada día?",
+      "units": {
+        "TIMES": "Marca",
+        "COUNT": "Cantidad",
+        "MINUTES": "Minutos",
+        "HOURS": "Horas",
+        "STEPS": "Pasos",
+        "KM": "Kilómetros",
+        "CALORIES": "Calorías"
+      },
+      "targetPlaceholder": "Objetivo/día ({suffix})",
+      "unitLabelPlaceholder": "etiqueta de la unidad…"
+    },
+    "habitMenu": {
+      "editAria": "Editar {name}",
+      "name": "Nombre",
+      "emoji": "Emoji",
+      "goal": "Objetivo",
+      "goalHint": "(vacío = automático)",
+      "targetPerDay": "Objetivo/día",
+      "unitLabel": "Etiqueta de la unidad",
+      "unitLabelHint": "(ej. vasos, páginas)",
+      "tags": "Etiquetas",
+      "proOnly": "(Pro)",
+      "tagsPlaceholder": "mañana, salud…",
+      "proUpsell": "Desbloquea etiquetas, notas y modo pausa con Pro →",
+      "noteForToday": "Nota de hoy",
+      "notePlaceholder": "¿Cómo te fue?",
+      "loading": "Cargando…",
+      "noteNeedsCheck": "Marca primero el hábito de hoy",
+      "genericError": "Error",
+      "saveNote": "Guardar nota",
+      "pauseUntil": "Pausar hasta",
+      "vacationMode": "(modo vacaciones)",
+      "pause": "Pausar",
+      "pausedUntil": "Pausado hasta {date} — la racha no se romperá.",
+      "save": "Guardar",
+      "archive": "Archivar"
+    },
+    "valueCell": {
+      "target": "Objetivo: {target}{suffix}",
+      "clear": "Borrar",
+      "save": "Guardar"
+    },
+    "tasks": {
+      "title": "Pendientes",
+      "empty": "Nada en tu lista.",
+      "addPlaceholder": "Añadir una tarea…",
+      "priority": "Prioridad",
+      "addTask": "Añadir tarea",
+      "deleteAria": "Eliminar {title}"
+    },
+    "grid": {
+      "habit": "Hábito",
+      "overallWellness": "Bienestar general",
+      "mood": "Ánimo",
+      "motivation": "Motivación",
+      "moodScale": {
+        "1": "Fatal",
+        "2": "Mal",
+        "3": "Normal",
+        "4": "Bien",
+        "5": "Genial"
+      },
+      "motivationScale": {
+        "1": "Agotado/a",
+        "2": "Bajo",
+        "3": "Normal",
+        "4": "Motivado/a",
+        "5": "A tope"
+      }
+    },
+    "quit": {
+      "relapseCount": "{count, plural, one {# recaída} other {# recaídas}}",
+      "personalBest": "récord personal",
+      "best": "Récord: {duration}",
+      "relapseConfirm": "¿Registrar una recaída para «{name}»? Esto reinicia el contador a cero.",
+      "iRelapsed": "He recaído"
+    },
+    "reminders": {
+      "permissionError": "Activa las notificaciones para Habitcade en los ajustes de tu teléfono para usar esto.",
+      "title": "Recordatorio diario",
+      "timeAria": "Hora del recordatorio",
+      "update": "Actualizar",
+      "set": "Activar",
+      "remindingAt": "Recordándote cada día a las {time}.",
+      "turnOff": "Desactivar"
+    },
+    "timer": {
+      "title": "Temporizador",
+      "pause": "Pausar",
+      "start": "Iniciar",
+      "reset": "Reiniciar",
+      "logged": "Registrado ✓",
+      "logToToday": "Registrar hoy"
+    },
+    "shieldPanel": {
+      "title": "Escudos de racha",
+      "missedDay": "Fallaste el <strong>{day}/{month}</strong>. Usa un escudo para que tu racha sobreviva.",
+      "shielding": "Protegiendo…",
+      "noShieldsLeft": "No quedan escudos",
+      "useShield": "Usar un escudo",
+      "noGaps": "Sin huecos este mes. Racha intacta. ⚔️",
+      "proUpsell": "Pro te da {count} escudos al mes.",
+      "errorNoShields": "No quedan escudos este mes.",
+      "errorAlreadyShielded": "Ese día ya está protegido.",
+      "errorNotPast": "Todavía puedes completar hoy.",
+      "errorNotCurrentMonth": "Los escudos solo cubren el mes en curso.",
+      "errorGeneric": "No se pudo usar el escudo."
+    },
+    "skinPicker": {
+      "theme": "Tema",
+      "free": "Gratis",
+      "proSuffix": "{label} (Pro)",
+      "requiresPro": "{label}, requiere Pro",
+      "useSkin": "Usar el tema {label}",
+      "unlockMore": "Desbloquear {count} temas más →"
+    },
+    "stats": {
+      "level": "Nivel {level}",
+      "xp": "{current} / {next} XP",
+      "nextRank": "Siguiente: {rank}",
+      "maxRank": "Rango máximo",
+      "weeklyProgress": "Progreso semanal",
+      "goal": "Objetivo",
+      "completed": "Completado",
+      "left": "Restante",
+      "overallStats": "Estadísticas generales",
+      "badges": "Insignias",
+      "moreBadgesWithPro": "🔒 +{count, plural, one {# insignia más} other {# insignias más}} con Pro",
+      "analysis": "Análisis",
+      "habit": "Hábito",
+      "actual": "Real",
+      "progress": "Progreso",
+      "top10": "Top 10 hábitos"
+    },
+    "onboardingBanner": {
+      "title": "¿Nuevo por aquí?",
+      "text": "Construyamos una lista de hábitos que se ajuste a lo que realmente quieres. O",
+      "adding": "añadiendo…",
+      "quickStart": "inicio rápido con hábitos predeterminados",
+      "cta": "Construir mis hábitos →"
+    }
+  },
+  "Badges": {
+    "perfectWeek": "Semana perfecta",
+    "perfectWeeks": "{count} semanas perfectas",
+    "perfectWeekDesc": "Cada hábito, cada día, durante una semana entera.",
+    "perfectDays": "{count} días perfectos",
+    "perfectDaysDesc": "Días en los que se marcó cada hábito.",
+    "perfectMonth": "Mes perfecto",
+    "perfectMonthDesc": "Cada objetivo cumplido, cada hábito, todo el mes.",
+    "streak100": "Racha de 100 días",
+    "streak30": "Racha de 30 días",
+    "streak7": "Racha de 7 días",
+    "streakDesc": "{count} días seguidos.",
+    "century": "Centuria",
+    "centuryDesc": "{count} logros, en total.",
+    "dedication": "Dedicación",
+    "dedicationDesc": "Racha de {count} días, tu mejor marca."
+  },
+  "Ranks": {
+    "recruit": "Recluta",
+    "squire": "Escudero",
+    "warrior": "Guerrero",
+    "knight": "Caballero",
+    "champion": "Campeón",
+    "warlord": "Señor de la guerra",
+    "legend": "Leyenda"
+  },
+  "Billing": {
+    "back": "← Volver al panel",
+    "title": "Facturación",
+    "plan": "Plan",
+    "status": "Estado",
+    "trialEnds": "Fin de la prueba",
+    "paymentsSoon": "💳 Los pagos aún no están activados — la mejora de plan estará disponible pronto. Todo sigue funcionando en el plan Gratis mientras tanto.",
+    "upgradeButton": "Mejorar a Pro — 0,99 €/mes, prueba de {trialDays} días",
+    "manageSubscription": "Gestionar suscripción",
+    "exportShare": "Exportar y compartir",
+    "downloadCsv": "Descargar todos los datos de hábitos en CSV",
+    "exportCsvButton": "Exportar CSV",
+    "shareRecap": "Compartir el resumen de este mes",
+    "recapImageLabel": "El mismo resumen, como imagen — para historias de Instagram/WhatsApp, donde un enlace no se muestra",
+    "downloadImage": "Descargar imagen",
+    "supportTitle": "Apoya este proyecto",
+    "supportText": "Habitcade está creado y gestionado por un pequeño equipo. Cada donación se destina directamente a mantener los servidores y desarrollar las funciones previstas — nunca vendemos datos, solo queremos seguir mejorando la herramienta. Si te ha ayudado a construir un hábito, cualquier aportación nos ayuda a seguir adelante.",
+    "donateThanks": "🎉 ¡Gracias por tu apoyo!",
+    "donationsSoon": "Las donaciones se abrirán en cuanto se activen los pagos. Gracias por querer ayudar.",
+    "referralTitle": "Invita a un amigo, gana un mes gratis",
+    "referralText": "Cada amigo que se pase a Pro te da 1 mes gratis — se aplica automáticamente en tu próximo pago.",
+    "referralCredit": "🎁 Tienes {count, plural, one {# mes gratis} other {# meses gratis}} en espera — se aplicará automáticamente en tu próxima mejora.",
+    "startOver": {
+      "title": "Empezar de nuevo",
+      "description": "Elimina {count, plural, one {# hábito} other {# hábitos}} y su historial, y reconstruye tu lista desde cero.",
+      "warning": "Esto elimina {count, plural, one {# hábito} other {# hábitos}} y cada día registrado para ellos. No se puede deshacer.",
+      "cancel": "Cancelar",
+      "deleting": "Eliminando…",
+      "confirm": "Sí, eliminar todo"
+    },
+    "donate": {
+      "customAmount": "O elige tu propia cantidad",
+      "amountAria": "Cantidad de la donación en euros",
+      "donate": "Donar {amount} €",
+      "enterRange": "Introduce entre {min} € y {max} €"
+    },
+    "compare": {
+      "title": "Comparar planes",
+      "feature": "Función",
+      "free": "Gratis",
+      "pro": "Pro",
+      "unlimited": "Ilimitado",
+      "currentMonth": "Mes en curso",
+      "perMonth": "{count}/mes",
+      "yes": "Sí",
+      "no": "No",
+      "features": {
+        "habits": "Hábitos",
+        "history": "Historial",
+        "moodTracking": "Seguimiento del ánimo",
+        "streakShields": "Escudos de racha",
+        "vacationMode": "Modo vacaciones",
+        "perDayNotes": "Notas diarias",
+        "exportCsv": "Exportación CSV",
+        "weeklyEmailRecap": "Resumen semanal por email",
+        "ads": "Anuncios"
+      }
+    }
+  }
+}

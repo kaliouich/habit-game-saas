@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { signInWithGoogle } from "@/lib/actions/auth";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
@@ -19,6 +20,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
  * avec la soumission.
  */
 export function GoogleSignInButton() {
+  const t = useTranslations("Login");
   const handleClick = async () => {
     const { Capacitor } = await import("@capacitor/core");
     if (Capacitor.isNativePlatform()) {
@@ -31,7 +33,7 @@ export function GoogleSignInButton() {
 
   return (
     <button type="button" className="btn btn--google" onClick={handleClick}>
-      Continue with Google
+      {t("continueWithGoogle")}
     </button>
   );
 }

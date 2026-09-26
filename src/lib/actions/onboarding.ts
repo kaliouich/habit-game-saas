@@ -2,11 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { getLocale } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/user";
 import { canAddHabit, maxHabits } from "@/lib/quotas";
 import { rateLimit, RATE_LIMITS } from "@/lib/rateLimit";
 import { generateHabitsFromGoal, isAiOnboardingConfigured } from "@/lib/ai";
+import { LOCALE_LABELS, type Locale } from "@/i18n/config";
 import type { HabitDraft } from "@/lib/onboardingCatalog";
 
 /** B9 : les 8 habitudes de la vidéo, en 1 clic. */
@@ -126,7 +128,8 @@ export async function generateHabitsAction(
   }
 
   try {
-    const { milestone, habits } = await generateHabitsFromGoal(input);
+    const locale = (await getLocale()) as Locale;
+    const { milestone, habits } = await generateHabitsFromGoal({ ...input, language: LOCALE_LABELS[locale] ?? "English" });
     return { ok: true, milestone, habits };
   } catch {
     return { ok: false, error: "AI_GENERATION_FAILED" };

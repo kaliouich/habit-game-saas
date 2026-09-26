@@ -320,17 +320,23 @@ export interface Badge {
 }
 
 const STREAK_THRESHOLDS = [
-  { days: 100, emoji: "💎", label: "100-Day Streak", tier: "pro" as const },
-  { days: 30, emoji: "🔥", label: "30-Day Streak", tier: "pro" as const },
-  { days: 7, emoji: "🔥", label: "7-Day Streak", tier: "free" as const },
+  { days: 100, emoji: "💎", key: "streak100", tier: "pro" as const },
+  { days: 30, emoji: "🔥", key: "streak30", tier: "pro" as const },
+  { days: 7, emoji: "🔥", key: "streak7", tier: "free" as const },
 ];
+
+/** next-intl `useTranslations`/`getTranslations` renvoient une fonction de
+ *  cette forme — pas d'import direct de next-intl ici (lib/stats.ts est du
+ *  pur calcul, testé sans provider React) : le composant appelant passe la
+ *  sienne. */
+export type Translator = (key: string, params?: Record<string, string | number>) => string;
 
 /**
  * Badges dérivés de `MonthStats` + de l'historique complet des habitudes —
  * rien n'est stocké en base (règle projet : aucune duplication des stats),
  * tout est recalculé à l'affichage. B1/B5 (Sprint 5) + badges lifetime (Sprint 6).
  */
-export function computeBadges(stats: MonthStats, habits: { loggedDates: Set<ISODate> }[]): Badge[] {
+export function computeBadges(stats: MonthStats, habits: { loggedDates: Set<ISODate> }[], t: Translator): Badge[] {
   const badges: Badge[] = [];
 
   // Perfect week(s) : toutes les semaines entièrement écoulées à 100% (un jour
@@ -340,8 +346,11 @@ export function computeBadges(stats: MonthStats, habits: { loggedDates: Set<ISOD
     badges.push({
       id: "perfect_week",
       emoji: "🏅",
-      title: perfectWeeks.length === 1 ? "Perfect Week" : `${perfectWeeks.length} Perfect Weeks`,
-      description: "Every habit, every day, for a full week.",
+      title:
+        perfectWeeks.length === 1
+          ? t("perfectWeek")
+          : t("perfectWeeks", { count: perfectWeeks.length }),
+      description: t("perfectWeekDesc"),
       tier: "pro",
     });
   }
@@ -351,8 +360,8 @@ export function computeBadges(stats: MonthStats, habits: { loggedDates: Set<ISOD
     badges.push({
       id: "perfect_days",
       emoji: "🌟",
-      title: `${stats.perfectDays.size} Perfect Days`,
-      description: "Days where every habit was checked off.",
+      title: t("perfectDays", { count: stats.perfectDays.size }),
+      description: t("perfectDaysDesc"),
       tier: "free",
     });
   }
@@ -362,8 +371,8 @@ export function computeBadges(stats: MonthStats, habits: { loggedDates: Set<ISOD
     badges.push({
       id: "full_month",
       emoji: "👑",
-      title: "Perfect Month",
-      description: "Every goal hit, every habit, the whole month.",
+      title: t("perfectMonth"),
+      description: t("perfectMonthDesc"),
       tier: "pro",
     });
   }
@@ -372,13 +381,13 @@ export function computeBadges(stats: MonthStats, habits: { loggedDates: Set<ISOD
   for (const analysis of stats.analysis) {
     const streak = stats.streaks.get(analysis.habitId);
     if (!streak) continue;
-    const tier = STREAK_THRESHOLDS.find((t) => streak.current >= t.days);
+    const tier = STREAK_THRESHOLDS.find((th) => streak.current >= th.days);
     if (tier) {
       badges.push({
         id: `streak_${analysis.habitId}`,
         emoji: tier.emoji,
-        title: `${tier.label} — ${analysis.name}`,
-        description: `${streak.current} days in a row.`,
+        title: `${t(tier.key)} — ${analysis.name}`,
+        description: t("streakDesc", { count: streak.current }),
         tier: tier.tier,
       });
     }
@@ -390,8 +399,8 @@ export function computeBadges(stats: MonthStats, habits: { loggedDates: Set<ISOD
     badges.push({
       id: "century",
       emoji: "💯",
-      title: "Century",
-      description: `${totalTicks} completions, lifetime.`,
+      title: t("century"),
+      description: t("centuryDesc", { count: totalTicks }),
       tier: "pro",
     });
   }
@@ -401,8 +410,8 @@ export function computeBadges(stats: MonthStats, habits: { loggedDates: Set<ISOD
     badges.push({
       id: "dedication",
       emoji: "🏔",
-      title: "Dedication",
-      description: `${everBest}-day streak, your best ever.`,
+      title: t("dedication"),
+      description: t("dedicationDesc", { count: everBest }),
       tier: "pro",
     });
   }

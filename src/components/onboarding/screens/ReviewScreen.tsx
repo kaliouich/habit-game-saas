@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { HabitDraft } from "@/lib/onboardingCatalog";
 
 interface ReviewScreenProps {
@@ -13,6 +14,7 @@ interface ReviewScreenProps {
 }
 
 export function ReviewScreen({ drafts, fromAi, milestone, isCreating, onBack, onCreate }: ReviewScreenProps) {
+  const t = useTranslations("Onboarding.review");
   const [items, setItems] = useState(drafts);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,31 +30,26 @@ export function ReviewScreen({ drafts, fromAi, milestone, isCreating, onBack, on
     setError(null);
     const res = await onCreate(items);
     if (!res.ok) {
-      setError(res.error ?? "Couldn't create your habits. Please try again.");
+      setError(res.error ?? t("createError"));
     }
   }
 
   return (
     <div className="onboardscreen">
-      <h1 className="onboardscreen__title">Here&apos;s your starting list</h1>
-      <p className="onboardscreen__subtitle">Review, tweak the names, or remove anything that doesn&apos;t fit.</p>
+      <h1 className="onboardscreen__title">{t("title")}</h1>
+      <p className="onboardscreen__subtitle">{t("subtitle")}</p>
 
       {fromAi && milestone && (
         <div className="onboardreview__quest">
-          <span className="onboardreview__questlabel">Your first quest</span>
+          <span className="onboardreview__questlabel">{t("questLabel")}</span>
           <p className="onboardreview__questtext">{milestone}</p>
         </div>
       )}
 
-      {fromAi && (
-        <p className="onboardreview__disclaimer">
-          General wellness suggestions, not medical advice — if you&apos;re struggling, please also talk to a
-          professional.
-        </p>
-      )}
+      {fromAi && <p className="onboardreview__disclaimer">{t("disclaimer")}</p>}
 
       <div className="onboardreview__list">
-        {items.length === 0 && <p className="onboardreview__empty">Nothing left to add — go back and pick something.</p>}
+        {items.length === 0 && <p className="onboardreview__empty">{t("empty")}</p>}
         {items.map((draft, i) => (
           <div key={i} className="onboardreview__item">
             <span className="onboardreview__emoji">{draft.emoji}</span>
@@ -65,7 +62,7 @@ export function ReviewScreen({ drafts, fromAi, milestone, isCreating, onBack, on
               />
               {draft.rationale && <span className="onboardreview__rationale">{draft.rationale}</span>}
             </div>
-            <button type="button" className="onboardreview__remove" onClick={() => remove(i)} aria-label="Remove">
+            <button type="button" className="onboardreview__remove" onClick={() => remove(i)} aria-label={t("remove")}>
               ✕
             </button>
           </div>
@@ -76,7 +73,7 @@ export function ReviewScreen({ drafts, fromAi, milestone, isCreating, onBack, on
 
       <div className="onboardreview__actions">
         <button type="button" className="btn btn--secondary" onClick={onBack} disabled={isCreating}>
-          Back
+          {t("back")}
         </button>
         <button
           type="button"
@@ -84,7 +81,7 @@ export function ReviewScreen({ drafts, fromAi, milestone, isCreating, onBack, on
           onClick={handleCreate}
           disabled={items.length === 0 || isCreating}
         >
-          {isCreating ? "Creating…" : `Create ${items.length} habit${items.length === 1 ? "" : "s"}`}
+          {isCreating ? t("creating") : t("create", { count: items.length })}
         </button>
       </div>
     </div>

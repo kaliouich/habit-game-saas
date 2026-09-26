@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { recordRelapse } from "@/lib/actions/quit";
 
 interface QuitCounterProps {
@@ -26,6 +27,7 @@ function formatDuration(ms: number): string {
  *  seul (aucune requête). Se remonte (voir `key` dans QuitPanel) après une
  *  rechute pour repartir d'un état frais sans logique de reset manuelle. */
 export function QuitCounter({ habitId, name, emoji, quitStartedAt, bestMs, relapseCount }: QuitCounterProps) {
+  const t = useTranslations("Dashboard.quit");
   const startMs = new Date(quitStartedAt).getTime();
   // null jusqu'au montage client : Date.now() calculé dans l'initializer de
   // useState tournait aussi côté serveur (SSR d'un composant "use client"),
@@ -55,24 +57,22 @@ export function QuitCounter({ habitId, name, emoji, quitStartedAt, bestMs, relap
         <span className="quitcard__name">
           {name} {emoji}
         </span>
-        {relapseCount > 0 && (
-          <span className="quitcard__relapses">{relapseCount} relapse{relapseCount > 1 ? "s" : ""}</span>
-        )}
+        {relapseCount > 0 && <span className="quitcard__relapses">{t("relapseCount", { count: relapseCount })}</span>}
       </div>
       <p className="quitcard__timer">{formatDuration(elapsedMs ?? 0)}</p>
-      <p className="quitcard__best">{isRecord ? "🏆 personal best" : `Best: ${formatDuration(bestMs)}`}</p>
+      <p className="quitcard__best">{isRecord ? `🏆 ${t("personalBest")}` : t("best", { duration: formatDuration(bestMs) })}</p>
       <button
         type="button"
         className="quitcard__relapse"
         disabled={isPending}
         onClick={() => {
-          if (!confirm(`Log a relapse for "${name}"? This resets the counter to zero.`)) return;
+          if (!confirm(t("relapseConfirm", { name }))) return;
           startTransition(async () => {
             await recordRelapse({ habitId });
           });
         }}
       >
-        I relapsed
+        {t("iRelapsed")}
       </button>
     </div>
   );

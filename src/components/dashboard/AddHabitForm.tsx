@@ -1,11 +1,13 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { createHabit } from "@/lib/actions/habits";
 import { HABIT_UNITS } from "@/lib/config";
 
 /** V2 : ajout inline dans la sidebar, comme une nouvelle ligne du tableur. */
 export function AddHabitForm({ canAdd, limit }: { canAdd: boolean; limit: number }) {
+  const t = useTranslations("Dashboard.addHabit");
   const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -13,7 +15,7 @@ export function AddHabitForm({ canAdd, limit }: { canAdd: boolean; limit: number
   const [unit, setUnit] = useState<string>("TIMES");
 
   if (!canAdd) {
-    return <p className="sidebar__limit">Limit of {limit} habits reached</p>;
+    return <p className="sidebar__limit">{t("limitReached", { limit })}</p>;
   }
 
   // Phase 1 roadmap : QUIT n'a pas d'unité (chronomètre), et TIMES reste la
@@ -48,24 +50,24 @@ export function AddHabitForm({ canAdd, limit }: { canAdd: boolean; limit: number
             setUnit("TIMES");
             setError(null);
           } else {
-            setError(res.error ?? "Error");
+            setError(res.error ?? t("genericError"));
           }
         });
       }}
     >
       <input name="emoji" className="addhabit__emoji" placeholder="✨" maxLength={8} autoComplete="off" />
-      <input name="name" className="addhabit__name" placeholder="New habit…" maxLength={40} required autoComplete="off" />
+      <input name="name" className="addhabit__name" placeholder={t("namePlaceholder")} maxLength={40} required autoComplete="off" />
       <select
         name="type"
         className="addhabit__type"
         value={type}
         onChange={(e) => setType(e.target.value as "BUILD" | "QUIT")}
-        title="Build = habit to do · Quit = habit to avoid"
+        title={t("typeTitle")}
       >
-        <option value="BUILD">Build</option>
-        <option value="QUIT">Quit</option>
+        <option value="BUILD">{t("build")}</option>
+        <option value="QUIT">{t("quit")}</option>
       </select>
-      <button type="submit" className="addhabit__submit" disabled={isPending} aria-label="Add habit">
+      <button type="submit" className="addhabit__submit" disabled={isPending} aria-label={t("addHabit")}>
         +
       </button>
       {type === "BUILD" && (
@@ -75,11 +77,11 @@ export function AddHabitForm({ canAdd, limit }: { canAdd: boolean; limit: number
             className="addhabit__unit"
             value={unit}
             onChange={(e) => setUnit(e.target.value)}
-            title="How is this habit measured each day?"
+            title={t("unitTitle")}
           >
             {HABIT_UNITS.map((u) => (
               <option key={u.key} value={u.key}>
-                {u.label}
+                {t(`units.${u.key}`)}
               </option>
             ))}
           </select>
@@ -91,10 +93,10 @@ export function AddHabitForm({ canAdd, limit }: { canAdd: boolean; limit: number
                 step="any"
                 min={0}
                 className="addhabit__target"
-                placeholder={`Target/day (${HABIT_UNITS.find((u) => u.key === unit)?.suffix || "…"})`}
+                placeholder={t("targetPlaceholder", { suffix: HABIT_UNITS.find((u) => u.key === unit)?.suffix || "…" })}
               />
               {unit === "COUNT" && (
-                <input name="unitLabel" className="addhabit__unitlabel" placeholder="unit label…" maxLength={20} autoComplete="off" />
+                <input name="unitLabel" className="addhabit__unitlabel" placeholder={t("unitLabelPlaceholder")} maxLength={20} autoComplete="off" />
               )}
             </>
           )}

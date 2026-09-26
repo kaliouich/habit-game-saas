@@ -1,10 +1,12 @@
 "use client";
 
 import { useRef, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { createTask } from "@/lib/actions/tasks";
 
 /** Phase 4 roadmap (minimal) — titre + échéance optionnelle + drapeau, rien de plus. */
 export function TaskForm({ today }: { today: string }) {
+  const t = useTranslations("Dashboard.tasks");
   const formRef = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -23,12 +25,12 @@ export function TaskForm({ today }: { today: string }) {
         });
       }}
     >
-      <input name="title" placeholder="Add a task…" maxLength={140} required autoComplete="off" />
+      <input name="title" placeholder={t("addPlaceholder")} maxLength={140} required autoComplete="off" />
       <input type="date" name="dueDate" defaultValue={today} />
-      <label className="taskform__flag" title="Priority">
+      <label className="taskform__flag" title={t("priority")}>
         <input type="checkbox" name="priority" /> 🚩
       </label>
-      <button type="submit" disabled={isPending} aria-label="Add task">
+      <button type="submit" disabled={isPending} aria-label={t("addTask")}>
         +
       </button>
     </form>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 interface Option {
   key: string;
   label: string;
@@ -18,10 +20,12 @@ interface GoalScreenProps {
  *  reste du sondage et va droit au dashboard (onSkip), pas juste un retour
  *  à l'écran de choix — voir OnboardingWizard. */
 export function GoalScreen({ options, onSelect, onSkip }: GoalScreenProps) {
+  const t = useTranslations("Onboarding.aiGoal");
+
   return (
     <div className="onboardscreen">
-      <h1 className="onboardscreen__title">What&apos;s the goal?</h1>
-      <p className="onboardscreen__subtitle">Pick what&apos;s closest — you can adjust the habits after.</p>
+      <h1 className="onboardscreen__title">{t("title")}</h1>
+      <p className="onboardscreen__subtitle">{t("subtitle")}</p>
 
       <div className="onboardoptions">
         {options.map((opt) => (
@@ -32,7 +36,7 @@ export function GoalScreen({ options, onSelect, onSkip }: GoalScreenProps) {
       </div>
 
       <button type="button" className="goalscreen__skip" onClick={onSkip}>
-        ✍️ I&apos;ll build my own habits →
+        {t("skip")}
       </button>
     </div>
   );

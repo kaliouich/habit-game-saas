@@ -1,9 +1,11 @@
 "use client";
 
 import { useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { signOutAction } from "@/lib/actions/auth";
 
 export function SignOutButton() {
+  const t = useTranslations("Dashboard.sidebar");
   const [isPending, startTransition] = useTransition();
   return (
     <button
@@ -12,7 +14,7 @@ export function SignOutButton() {
       disabled={isPending}
       onClick={() => startTransition(() => signOutAction())}
     >
-      Sign out
+      {t("signOut")}
     </button>
   );
 }

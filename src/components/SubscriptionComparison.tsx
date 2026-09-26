@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { PLAN_LIMITS, SHIELDS_PER_MONTH } from "@/lib/config";
 
 /**
@@ -10,75 +11,66 @@ import { PLAN_LIMITS, SHIELDS_PER_MONTH } from "@/lib/config";
  */
 
 interface Feature {
-  name: string;
+  nameKey: string;
   free: string | boolean;
   pro: string | boolean;
 }
 
-function habitsLabel(max: number): string {
-  return Number.isFinite(max) ? String(max) : "Unlimited";
-}
-
-const FEATURES: Feature[] = [
-  {
-    name: "Habits",
-    free: habitsLabel(PLAN_LIMITS.FREE.maxHabits),
-    pro: habitsLabel(PLAN_LIMITS.PRO.maxHabits),
-  },
-  { name: "History", free: "Current month", pro: "Unlimited" },
-  { name: "Mood tracking", free: true, pro: true },
-  {
-    name: "Streak shields",
-    free: `${SHIELDS_PER_MONTH.FREE}/month`,
-    pro: `${SHIELDS_PER_MONTH.PRO}/month`,
-  },
-  { name: "Vacation mode", free: false, pro: true },
-  { name: "Per-day notes", free: false, pro: true },
-  { name: "Export CSV", free: false, pro: true },
-  { name: "Weekly email recap", free: false, pro: true },
-  { name: "Ads", free: true, pro: false },
-];
-
-function Cell({ value }: { value: string | boolean }) {
+function Cell({ value, yesLabel, noLabel }: { value: string | boolean; yesLabel: string; noLabel: string }) {
   if (typeof value !== "boolean") return <>{value}</>;
   return value ? (
-    <span className="feature-check" aria-label="Yes">
+    <span className="feature-check" aria-label={yesLabel}>
       ✓
     </span>
   ) : (
-    <span className="feature-x" aria-label="No">
+    <span className="feature-x" aria-label={noLabel}>
       ✗
     </span>
   );
 }
 
-export function SubscriptionComparison() {
+export async function SubscriptionComparison() {
+  const t = await getTranslations("Billing.compare");
+  const habitsLabel = (max: number) => (Number.isFinite(max) ? String(max) : t("unlimited"));
+
+  const features: Feature[] = [
+    { nameKey: "habits", free: habitsLabel(PLAN_LIMITS.FREE.maxHabits), pro: habitsLabel(PLAN_LIMITS.PRO.maxHabits) },
+    { nameKey: "history", free: t("currentMonth"), pro: t("unlimited") },
+    { nameKey: "moodTracking", free: true, pro: true },
+    { nameKey: "streakShields", free: t("perMonth", { count: SHIELDS_PER_MONTH.FREE }), pro: t("perMonth", { count: SHIELDS_PER_MONTH.PRO }) },
+    { nameKey: "vacationMode", free: false, pro: true },
+    { nameKey: "perDayNotes", free: false, pro: true },
+    { nameKey: "exportCsv", free: false, pro: true },
+    { nameKey: "weeklyEmailRecap", free: false, pro: true },
+    { nameKey: "ads", free: true, pro: false },
+  ];
+
   return (
     <div className="subscription-comparison">
-      <h2 className="subscription-comparison__title">Compare plans</h2>
+      <h2 className="subscription-comparison__title">{t("title")}</h2>
       <table className="subscription-comparison__table">
         <thead>
           <tr>
-            <th scope="col">Feature</th>
+            <th scope="col">{t("feature")}</th>
             <th scope="col" className="subscription-comparison__free">
-              🆓 Free
+              🆓 {t("free")}
             </th>
             <th scope="col" className="subscription-comparison__pro">
-              ⭐ Pro
+              ⭐ {t("pro")}
             </th>
           </tr>
         </thead>
         <tbody>
-          {FEATURES.map((feature) => (
-            <tr key={feature.name} className="subscription-comparison__row">
+          {features.map((feature) => (
+            <tr key={feature.nameKey} className="subscription-comparison__row">
               <th scope="row" className="subscription-comparison__feature">
-                {feature.name}
+                {t(`features.${feature.nameKey}`)}
               </th>
               <td className="subscription-comparison__free">
-                <Cell value={feature.free} />
+                <Cell value={feature.free} yesLabel={t("yes")} noLabel={t("no")} />
               </td>
               <td className="subscription-comparison__pro">
-                <Cell value={feature.pro} />
+                <Cell value={feature.pro} yesLabel={t("yes")} noLabel={t("no")} />
               </td>
             </tr>
           ))}

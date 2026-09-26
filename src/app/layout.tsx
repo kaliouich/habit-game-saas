@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Literata } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 import { APP_NAME } from "@/lib/config";
 import { Analytics } from "@/components/Analytics";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
@@ -47,18 +49,22 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="en" className={literata.variable}>
+    <html lang={locale} className={literata.variable}>
       <body>
-        {children}
-        <Analytics />
-        <ServiceWorkerRegister />
-        <MobileAuthBridgeListener />
+        <NextIntlClientProvider>
+          {children}
+          <Analytics />
+          <ServiceWorkerRegister />
+          <MobileAuthBridgeListener />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

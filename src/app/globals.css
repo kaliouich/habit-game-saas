@@ -2136,6 +2136,35 @@ select {
   font-size: 11px;
 }
 
+.langswitcher {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid var(--grid-line);
+  border-radius: 5px;
+  padding: 3px 6px;
+  font-size: 11px;
+  color: inherit;
+  cursor: pointer;
+}
+
+.langswitcher--nav {
+  border-color: rgb(255 255 255 / 0.25);
+  color: var(--m-paper-2);
+  font-size: 13px;
+  padding: 4px 8px;
+}
+
+.langswitcher--auth {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 5;
+  background: var(--cell);
+  color: var(--fg);
+  font-size: 12px;
+  padding: 5px 8px;
+}
+
 .sidebar__signout:hover {
   color: var(--panel-fg);
 }

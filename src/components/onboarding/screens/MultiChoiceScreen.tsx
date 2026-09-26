@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { habitUnitConfig } from "@/lib/config";
 import type { HabitDraft } from "@/lib/onboardingCatalog";
 
@@ -20,6 +21,7 @@ function targetLabel(draft: HabitDraft): string | null {
 /** Écran final du chemin questionnaire — sélection multiple, Continue explicite
  *  (contrairement aux 3 écrans single-choice qui précèdent, qui avancent au clic). */
 export function MultiChoiceScreen({ title, candidates, onContinue }: MultiChoiceScreenProps) {
+  const t = useTranslations("Onboarding.qPick");
   const [selected, setSelected] = useState<Set<number>>(new Set(candidates.map((_, i) => i)));
 
   function toggle(i: number) {
@@ -36,7 +38,7 @@ export function MultiChoiceScreen({ title, candidates, onContinue }: MultiChoice
   return (
     <div className="onboardscreen">
       <h1 className="onboardscreen__title">{title}</h1>
-      <p className="onboardscreen__subtitle">Tap to toggle — you can change everything later.</p>
+      <p className="onboardscreen__subtitle">{t("subtitle")}</p>
 
       <div className="onboardpick">
         {candidates.map((draft, i) => {
@@ -65,7 +67,7 @@ export function MultiChoiceScreen({ title, candidates, onContinue }: MultiChoice
         disabled={picked.length === 0}
         onClick={() => onContinue(picked)}
       >
-        Continue{picked.length > 0 ? ` (${picked.length})` : ""}
+        {picked.length > 0 ? t("continueWithCount", { count: picked.length }) : t("continue")}
       </button>
     </div>
   );

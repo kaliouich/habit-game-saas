@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { APP_NAME } from "@/lib/config";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
+  const t = await getTranslations("MarketingNav");
 
   return (
     <div className="marketing">
@@ -13,15 +16,16 @@ export default async function MarketingLayout({ children }: { children: React.Re
           {APP_NAME}
         </Link>
         <nav className="marketingheader__nav">
-          <Link href="/#features">Features</Link>
-          <Link href="/pricing">Pricing</Link>
+          <Link href="/#features">{t("features")}</Link>
+          <Link href="/pricing">{t("pricing")}</Link>
+          <LanguageSwitcher className="langswitcher langswitcher--nav" />
           {session?.user ? (
             <Link href="/app" className="btn btn--primary btn--nav">
-              Dashboard
+              {t("dashboard")}
             </Link>
           ) : (
             <Link href="/login" className="btn btn--primary btn--nav">
-              Sign in
+              {t("signIn")}
             </Link>
           )}
         </nav>
@@ -34,9 +38,9 @@ export default async function MarketingLayout({ children }: { children: React.Re
           © {new Date().getFullYear()} {APP_NAME}
         </span>
         <nav className="marketingfooter__nav">
-          <Link href="/pricing">Pricing</Link>
-          <Link href="/legal/terms">Terms</Link>
-          <Link href="/legal/privacy">Privacy</Link>
+          <Link href="/pricing">{t("pricing")}</Link>
+          <Link href="/legal/terms">{t("terms")}</Link>
+          <Link href="/legal/privacy">{t("privacy")}</Link>
         </nav>
       </footer>
     </div>

@@ -13,6 +13,13 @@ import {
   type HabitWithLogs,
 } from "./stats";
 
+// Traducteur factice : le texte réel de `title`/`description` vit dans
+// messages/en.json, pas ici — mais on garde les paramètres visibles (clé +
+// valeurs) pour que les deux tests qui vérifient un compte/palier dynamique
+// (pas juste id/tier) restent significatifs.
+const t = (key: string, params?: Record<string, string | number>) =>
+  params ? `${key}(${Object.values(params).join(",")})` : key;
+
 const DAY_MS = 86_400_000;
 
 function habit(id: string, dates: string[], overrides: Partial<HabitWithLogs> = {}): HabitWithLogs {
@@ -180,34 +187,34 @@ describe("badges (Sprint 5)", () => {
     const dates = ["06", "07", "08", "09", "10", "11", "12"].map((d) => `2026-07-${d}`);
     const habits = [habit("a", dates)];
     const stats = computeMonthStats({ month: MONTH, habits, moods: [], today: "2026-07-12" });
-    expect(computeBadges(stats, habits).some((b) => b.id === "perfect_week")).toBe(true);
+    expect(computeBadges(stats, habits, t).some((b) => b.id === "perfect_week")).toBe(true);
   });
 
   it("pas de perfect week si la semaine est incomplète (jours futurs)", () => {
     const dates = ["06", "07", "08"].map((d) => `2026-07-${d}`);
     const habits = [habit("a", dates)];
     const stats = computeMonthStats({ month: MONTH, habits, moods: [], today: "2026-07-08" });
-    expect(computeBadges(stats, habits).some((b) => b.id === "perfect_week")).toBe(false);
+    expect(computeBadges(stats, habits, t).some((b) => b.id === "perfect_week")).toBe(false);
   });
 
   it("badge perfect days à partir de 3 jours parfaits", () => {
     const habits = [habit("a", ["2026-07-01", "2026-07-02", "2026-07-03"])];
     const stats = computeMonthStats({ month: MONTH, habits, moods: [], today: "2026-07-03" });
-    const badge = computeBadges(stats, habits).find((b) => b.id === "perfect_days");
-    expect(badge?.title).toBe("3 Perfect Days");
+    const badge = computeBadges(stats, habits, t).find((b) => b.id === "perfect_days");
+    expect(badge?.title).toBe("perfectDays(3)");
     expect(badge?.tier).toBe("free");
   });
 
   it("pas de badge perfect days sous le seuil de 3", () => {
     const habits = [habit("a", ["2026-07-01", "2026-07-02"])];
     const stats = computeMonthStats({ month: MONTH, habits, moods: [], today: "2026-07-02" });
-    expect(computeBadges(stats, habits).some((b) => b.id === "perfect_days")).toBe(false);
+    expect(computeBadges(stats, habits, t).some((b) => b.id === "perfect_days")).toBe(false);
   });
 
   it("mois parfait quand goalTotal === completedTotal", () => {
     const habits = [habit("a", ["2026-07-01"], { goal: 1 })];
     const stats = computeMonthStats({ month: MONTH, habits, moods: [], today: "2026-07-01" });
-    const badge = computeBadges(stats, habits).find((b) => b.id === "full_month");
+    const badge = computeBadges(stats, habits, t).find((b) => b.id === "full_month");
     expect(badge).toBeDefined();
     expect(badge?.tier).toBe("pro");
   });
@@ -216,13 +223,13 @@ describe("badges (Sprint 5)", () => {
     const sevenDays = ["01", "02", "03", "04", "05", "06", "07"].map((d) => `2026-07-${d}`);
     const habitsA = [habit("a", sevenDays)];
     const stats7 = computeMonthStats({ month: MONTH, habits: habitsA, moods: [], today: "2026-07-07" });
-    const badge = computeBadges(stats7, habitsA).find((b) => b.id === "streak_a");
+    const badge = computeBadges(stats7, habitsA, t).find((b) => b.id === "streak_a");
     expect(badge?.tier).toBe("free");
 
     const sixDays = sevenDays.slice(0, 6);
     const habitsB = [habit("b", sixDays)];
     const stats6 = computeMonthStats({ month: MONTH, habits: habitsB, moods: [], today: "2026-07-06" });
-    expect(computeBadges(stats6, habitsB).some((b) => b.id === "streak_b")).toBe(false);
+    expect(computeBadges(stats6, habitsB, t).some((b) => b.id === "streak_b")).toBe(false);
   });
 
   it("badge streak au palier 30 jours passe en tier pro", () => {
@@ -230,9 +237,9 @@ describe("badges (Sprint 5)", () => {
     for (let d = 1; d <= 30; d++) days30.push(`2026-06-${String(d).padStart(2, "0")}`);
     const habits = [habit("a", days30)];
     const stats = computeMonthStats({ month: "2026-06", habits, moods: [], today: "2026-06-30" });
-    const badge = computeBadges(stats, habits).find((b) => b.id === "streak_a");
+    const badge = computeBadges(stats, habits, t).find((b) => b.id === "streak_a");
     expect(badge?.tier).toBe("pro");
-    expect(badge?.title).toContain("30-Day");
+    expect(badge?.title).toContain("streak30");
   });
 
   it("badge century à 100 completions lifetime, toutes habitudes confondues", () => {
@@ -240,13 +247,13 @@ describe("badges (Sprint 5)", () => {
     const b = Array.from({ length: 45 }, (_, i) => `2026-0${1 + Math.floor(i / 28)}-${String((i % 28) + 1).padStart(2, "0")}`);
     const habits = [habit("a", a), habit("b", b)];
     const stats = computeMonthStats({ month: MONTH, habits, moods: [], today: "2026-07-31" });
-    expect(computeBadges(stats, habits).some((x) => x.id === "century")).toBe(true);
+    expect(computeBadges(stats, habits, t).some((x) => x.id === "century")).toBe(true);
   });
 
   it("pas de badge century sous 100 completions lifetime", () => {
     const habits = [habit("a", ["2026-07-01", "2026-07-02"])];
     const stats = computeMonthStats({ month: MONTH, habits, moods: [], today: "2026-07-02" });
-    expect(computeBadges(stats, habits).some((x) => x.id === "century")).toBe(false);
+    expect(computeBadges(stats, habits, t).some((x) => x.id === "century")).toBe(false);
   });
 });
 

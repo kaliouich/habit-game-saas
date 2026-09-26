@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import type { HabitUnit, MonthStats } from "@/lib/stats";
 import type { ISODate } from "@/lib/dates";
 import { DayCheckbox } from "./DayCheckbox";
@@ -24,8 +25,9 @@ interface MonthGridProps {
 }
 
 /** V3 + V10 : la grille du tableur — Week 1..N, We/Th/Fr + numéros, checkboxes, ligne mood. */
-export function MonthGrid({ stats, habits, today }: MonthGridProps) {
+export async function MonthGrid({ stats, habits, today }: MonthGridProps) {
   const { weeks, days, perfectDays } = stats;
+  const t = await getTranslations("Dashboard.grid");
 
   return (
     <div className="gridwrap">
@@ -33,7 +35,7 @@ export function MonthGrid({ stats, habits, today }: MonthGridProps) {
       <table className="grid">
         <thead>
           <tr className="grid__weeks">
-            <th className="grid__corner" aria-label="Habit" />
+            <th className="grid__corner" aria-label={t("habit")} />
             {weeks.map((w) => (
               <th key={w.label} colSpan={w.days.length} className="grid__week">
                 {w.label}
@@ -95,12 +97,12 @@ export function MonthGrid({ stats, habits, today }: MonthGridProps) {
         <tfoot>
           <tr>
             <th colSpan={days.length + 1} className="grid__wellness">
-              Overall wellness
+              {t("overallWellness")}
             </th>
           </tr>
           <tr>
             <th scope="row" className="grid__habit grid__habit--mood">
-              Mood
+              {t("mood")}
             </th>
             {days.map((d) => (
               <td key={d.date} className="grid__cell grid__cell--mood">
@@ -110,7 +112,7 @@ export function MonthGrid({ stats, habits, today }: MonthGridProps) {
           </tr>
           <tr>
             <th scope="row" className="grid__habit grid__habit--mood">
-              Motivation
+              {t("motivation")}
             </th>
             {days.map((d) => (
               <td key={d.date} className="grid__cell grid__cell--mood">

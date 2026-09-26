@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import {
   cancelDailyReminder,
   getSavedReminderTime,
@@ -13,6 +14,7 @@ const DEFAULT_TIME = "08:00";
 /** Web no-op (voir notifications.ts) : ne se rend que dans l'app native,
  *  où seul un rappel local a un sens. */
 export function ReminderSettings() {
+  const t = useTranslations("Dashboard.reminders");
   const [native, setNative] = useState(false);
   const [checked, setChecked] = useState(false);
   const [time, setTime] = useState(DEFAULT_TIME);
@@ -43,7 +45,7 @@ export function ReminderSettings() {
       if (ok) {
         setEnabled(true);
       } else {
-        setError("Enable notifications for Habitcade in your phone settings to turn this on.");
+        setError(t("permissionError"));
       }
     });
   }
@@ -57,22 +59,25 @@ export function ReminderSettings() {
 
   return (
     <div className="remindersettings">
-      <p className="remindersettings__text">🔔 Daily reminder</p>
+      <p className="remindersettings__text">🔔 {t("title")}</p>
       <div className="remindersettings__row">
         <input
           type="time"
           value={time}
           onChange={(e) => setTime(e.target.value)}
           className="remindersettings__time"
-          aria-label="Reminder time"
+          aria-label={t("timeAria")}
         />
         <button type="button" className="btn btn--secondary btn--nav" onClick={save} disabled={isPending}>
-          {isPending ? "…" : enabled ? "Update" : "Set"}
+          {isPending ? "…" : enabled ? t("update") : t("set")}
         </button>
       </div>
       {enabled && (
         <p className="remindersettings__hint">
-          Reminding you every day at {time}. <button type="button" className="remindersettings__off" onClick={turnOff}>Turn off</button>
+          {t("remindingAt", { time })}{" "}
+          <button type="button" className="remindersettings__off" onClick={turnOff}>
+            {t("turnOff")}
+          </button>
         </p>
       )}
       {error && <p className="remindersettings__error">{error}</p>}

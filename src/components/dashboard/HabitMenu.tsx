@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import { useEffect, useRef, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { archiveHabit, updateHabit } from "@/lib/actions/habits";
 import { getLogNote, setLogNote } from "@/lib/actions/logs";
 import { createHabitPause } from "@/lib/actions/pause";
@@ -32,6 +33,7 @@ interface HabitMenuProps {
  *  existants perdraient leur sens — ex. "1" en TIMES vs "1" en STEPS) ; seule
  *  la cible/jour et le libellé libre (COUNT) le sont. */
 export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today, unit, targetValue, unitLabel }: HabitMenuProps) {
+  const t = useTranslations("Dashboard.habitMenu");
   const ref = useRef<HTMLDetailsElement>(null);
   // .sidebar a un position:sticky (pour rester visible au scroll), qui crée
   // une stacking context à part entière — un descendant en position:fixed
@@ -82,7 +84,7 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
       name="habitmenu"
       onToggle={() => setIsOpen(!!ref.current?.open)}
     >
-      <summary className="habitmenu__trigger" aria-label={`Edit ${name}`}>
+      <summary className="habitmenu__trigger" aria-label={t("editAria", { name })}>
         ⋯
       </summary>
       {isOpen &&
@@ -98,7 +100,7 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
               const newTags = isPro
                 ? tagsRaw
                     .split(",")
-                    .map((t) => t.trim())
+                    .map((tag) => tag.trim())
                     .filter(Boolean)
                     .slice(0, 5)
                 : undefined;
@@ -119,58 +121,58 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
             }}
           >
             <label>
-              Name
+              {t("name")}
               <input name="name" defaultValue={name} maxLength={40} />
             </label>
             <label>
-              Emoji
+              {t("emoji")}
               <input name="emoji" defaultValue={emoji ?? ""} maxLength={8} />
             </label>
             {isBuild && (
               <label>
-                Goal <span className="habitmenu__hint">(vide = auto)</span>
+                {t("goal")} <span className="habitmenu__hint">{t("goalHint")}</span>
                 <input name="goal" type="number" min={1} max={31} defaultValue={goal ?? ""} />
               </label>
             )}
             {isQuantified && (
               <label>
-                Target/day {unitConfig?.suffix && <span className="habitmenu__hint">({unitConfig.suffix})</span>}
+                {t("targetPerDay")} {unitConfig?.suffix && <span className="habitmenu__hint">({unitConfig.suffix})</span>}
                 <input name="targetValue" type="number" step="any" min={0} defaultValue={targetValue ?? ""} />
               </label>
             )}
             {isQuantified && unit === "COUNT" && (
               <label>
-                Unit label <span className="habitmenu__hint">(ex. verres, pages)</span>
+                {t("unitLabel")} <span className="habitmenu__hint">{t("unitLabelHint")}</span>
                 <input name="unitLabel" defaultValue={unitLabel ?? ""} maxLength={20} />
               </label>
             )}
 
             <label className={isPro ? "" : "habitmenu__locked"}>
-              Tags {!isPro && <span className="habitmenu__hint">(Pro)</span>}
+              {t("tags")} {!isPro && <span className="habitmenu__hint">{t("proOnly")}</span>}
               <input
                 name="tags"
                 defaultValue={tags.join(", ")}
-                placeholder="morning, health…"
+                placeholder={t("tagsPlaceholder")}
                 maxLength={100}
                 disabled={!isPro}
               />
             </label>
             {!isPro && (
               <Link href="/pricing" className="habitmenu__upsell">
-                Unlock tags, notes &amp; pause mode with Pro →
+                {t("proUpsell")}
               </Link>
             )}
 
             {isPro && isBuild && (
               <div className="habitmenu__note">
                 <label>
-                  Note for today
+                  {t("noteForToday")}
                   <textarea
                     maxLength={280}
                     value={note ?? ""}
                     disabled={!noteLoaded}
                     onChange={(e) => setNote(e.target.value)}
-                    placeholder={noteLoaded ? "How did it go?" : "Loading…"}
+                    placeholder={noteLoaded ? t("notePlaceholder") : t("loading")}
                   />
                 </label>
                 <button
@@ -180,11 +182,11 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
                     setNoteError(null);
                     startTransition(async () => {
                       const res = await setLogNote({ habitId, date: today, note: note ?? "" });
-                      if (!res.ok) setNoteError(res.error === "NO_LOG" ? "Check the habit today first" : "Error");
+                      if (!res.ok) setNoteError(res.error === "NO_LOG" ? t("noteNeedsCheck") : t("genericError"));
                     });
                   }}
                 >
-                  Save note
+                  {t("saveNote")}
                 </button>
                 {noteError && <p className="habitmenu__error">{noteError}</p>}
               </div>
@@ -193,7 +195,7 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
             {isPro && (
               <div className="habitmenu__pause">
                 <label>
-                  Pause until <span className="habitmenu__hint">(vacation mode)</span>
+                  {t("pauseUntil")} <span className="habitmenu__hint">{t("vacationMode")}</span>
                   <input type="date" value={pauseTo} onChange={(e) => setPauseTo(e.target.value)} min={today} />
                 </label>
                 <button
@@ -208,21 +210,21 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
                         setPauseOk(true);
                         setPauseTo("");
                       } else {
-                        setPauseError("Error");
+                        setPauseError(t("genericError"));
                       }
                     });
                   }}
                 >
-                  Pause
+                  {t("pause")}
                 </button>
-                {pauseOk && <p className="habitmenu__ok">Paused until {pauseTo || "—"} — streak won&apos;t break.</p>}
+                {pauseOk && <p className="habitmenu__ok">{t("pausedUntil", { date: pauseTo || "—" })}</p>}
                 {pauseError && <p className="habitmenu__error">{pauseError}</p>}
               </div>
             )}
 
             <div className="habitmenu__actions">
               <button type="submit" disabled={isPending}>
-                Save
+                {t("save")}
               </button>
               <button
                 type="button"
@@ -234,7 +236,7 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
                   });
                 }}
               >
-                Archive
+                {t("archive")}
               </button>
             </div>
           </form>,

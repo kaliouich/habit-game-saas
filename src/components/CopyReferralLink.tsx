@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function CopyReferralLink({ link }: { link: string }) {
+  const t = useTranslations("Common");
   const [copied, setCopied] = useState(false);
 
   return (
@@ -17,7 +19,7 @@ export function CopyReferralLink({ link }: { link: string }) {
           setTimeout(() => setCopied(false), 2000);
         }}
       >
-        {copied ? "Copied!" : "Copy"}
+        {copied ? t("copied") : t("copy")}
       </button>
     </div>
   );

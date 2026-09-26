@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 import path from "node:path";
 import { withSentryConfig } from "@sentry/nextjs";
+import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   // Image Docker minimale (PLAN.md §9)
@@ -74,9 +75,13 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
-  // Sentry source map upload — no-op when SENTRY_AUTH_TOKEN is absent
-  silent: true,
-  disableLogger: true,
-  automaticVercelMonitors: false,
-});
+const withNextIntl = createNextIntlPlugin();
+
+export default withNextIntl(
+  withSentryConfig(nextConfig, {
+    // Sentry source map upload — no-op when SENTRY_AUTH_TOKEN is absent
+    silent: true,
+    disableLogger: true,
+    automaticVercelMonitors: false,
+  }),
+);

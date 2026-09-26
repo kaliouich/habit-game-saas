@@ -30,6 +30,12 @@ export interface GoalSurveyInput {
   scope: string;
   obstacle: string;
   timeBudget: string;
+  /** Nom complet de la langue ("English", "Français", "Español") — les 4
+   *  réponses ci-dessus sont déjà dans cette langue (labels traduits du
+   *  sondage), donc Claude la determinerait de toute façon depuis l'input ;
+   *  l'expliciter dans le system prompt évite juste un mélange de langues
+   *  si un des 4 champs était ambigu. */
+  language: string;
 }
 
 const SuggestedHabitSchema = z.object({
@@ -86,13 +92,14 @@ Rules:
 - Each habit needs: a short name (max 40 chars), one emoji, a type (BUILD to start doing something, QUIT to stop/reduce something), a unit (TIMES for a plain daily check, or MINUTES/HOURS/COUNT/STEPS/KM/CALORIES for a quantified target), a sensible targetValue for that unit (null for TIMES), a unitLabel only when unit is COUNT (e.g. "glasses", "pages", else null).
 - Each habit's rationale (max ~160 chars, one sentence) must name how it serves the milestone AND respond to the stated obstacle specifically — e.g. if the obstacle is "I just forget," the rationale should mention anchoring it to an existing routine; if "no time," lean on the habit's brevity; if "no motivation," note how small/frictionless it is; if "I don't know where to start," frame it as the concrete first step. Don't write generic wellness-blurb rationale.
 - Keep targets realistic for a total beginner, scaled down for shorter stated time budgets.
+- Write the milestone, every habit name, and every rationale in the survey's language (stated explicitly below) — never answer in English if the input isn't English.
 - Respond only in the requested structure — no extra commentary.`;
 
 export async function generateHabitsFromGoal(
   input: GoalSurveyInput,
 ): Promise<{ milestone: string; habits: HabitDraft[] }> {
   const client = getAnthropicClient();
-  const userMessage = `Goal: ${input.goal}\nScope: ${input.scope}\nBiggest obstacle: ${input.obstacle}\nDaily time available: ${input.timeBudget}`;
+  const userMessage = `Language: ${input.language}\nGoal: ${input.goal}\nScope: ${input.scope}\nBiggest obstacle: ${input.obstacle}\nDaily time available: ${input.timeBudget}`;
 
   const response = await client.messages.parse({
     model: "claude-opus-5",

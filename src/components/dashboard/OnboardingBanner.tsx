@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { seedStarterHabits } from "@/lib/actions/onboarding";
 
 /** B9 : proposé quand l'utilisateur n'a encore aucune habitude.
@@ -9,14 +10,15 @@ import { seedStarterHabits } from "@/lib/actions/onboarding";
  *  instantané des 8 habitudes classiques reste dispo en lien secondaire pour
  *  qui veut juste démarrer sans réfléchir. */
 export function OnboardingBanner() {
+  const t = useTranslations("Dashboard.onboardingBanner");
   const [isPending, startTransition] = useTransition();
 
   return (
     <div className="onboarding">
       <div>
-        <p className="onboarding__title">New here?</p>
+        <p className="onboarding__title">{t("title")}</p>
         <p className="onboarding__text">
-          Let&apos;s build a habit list that fits what you actually want. Or{" "}
+          {t("text")}{" "}
           <button
             type="button"
             className="onboarding__quicklink"
@@ -27,12 +29,12 @@ export function OnboardingBanner() {
               })
             }
           >
-            {isPending ? "adding…" : "quick start with defaults"}
+            {isPending ? t("adding") : t("quickStart")}
           </button>
         </p>
       </div>
       <Link href="/app/onboarding" className="btn btn--primary">
-        Build my habits →
+        {t("cta")}
       </Link>
     </div>
   );

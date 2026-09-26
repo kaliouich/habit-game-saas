@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { incrementLogValue } from "@/lib/actions/logs";
 
 interface TimerHabit {
@@ -28,6 +29,7 @@ function formatElapsed(seconds: number): string {
  *  Pomodoro" en référence à l'écran concurrent) : une session alimente un log
  *  en minutes/heures via incrementLogValue. Ticke côté client seul. */
 export function TimerPanel({ habits, today }: TimerPanelProps) {
+  const t = useTranslations("Dashboard.timer");
   const [habitId, setHabitId] = useState(habits[0]?.id ?? "");
   const [elapsed, setElapsed] = useState(0);
   const [running, setRunning] = useState(false);
@@ -61,7 +63,7 @@ export function TimerPanel({ habits, today }: TimerPanelProps) {
 
   return (
     <div className="panel panel--timer">
-      <h2 className="panel__title">Timer</h2>
+      <h2 className="panel__title">{t("title")}</h2>
       <div className="timerpanel">
         <select
           value={habit.id}
@@ -91,7 +93,7 @@ export function TimerPanel({ habits, today }: TimerPanelProps) {
 
         <div className="timerpanel__controls">
           <button type="button" onClick={() => setRunning((r) => !r)} disabled={isPending}>
-            {running ? "Pause" : "Start"}
+            {running ? t("pause") : t("start")}
           </button>
           <button
             type="button"
@@ -101,10 +103,10 @@ export function TimerPanel({ habits, today }: TimerPanelProps) {
             }}
             disabled={isPending || elapsed === 0}
           >
-            Reset
+            {t("reset")}
           </button>
           <button type="button" className="timerpanel__log" onClick={logSession} disabled={isPending || elapsed === 0}>
-            {logged ? "Logged ✓" : "Log to today"}
+            {logged ? t("logged") : t("logToToday")}
           </button>
         </div>
       </div>

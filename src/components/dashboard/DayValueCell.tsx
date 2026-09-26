@@ -2,6 +2,7 @@
 
 import { createPortal } from "react-dom";
 import { useEffect, useOptimistic, useRef, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { setLogValue } from "@/lib/actions/logs";
 import { habitUnitConfig, type HabitUnitKey } from "@/lib/config";
 
@@ -26,6 +27,7 @@ interface DayValueCellProps {
  *  lisible : le remplissage est proportionnel à value/target, la valeur
  *  exacte est dans le `title` (tooltip) et dans l'éditeur. */
 export function DayValueCell({ habitId, date, value, target, unit, disabled }: DayValueCellProps) {
+  const t = useTranslations("Dashboard.valueCell");
   const [, startTransition] = useTransition();
   const [optimistic, setOptimistic] = useOptimistic(value);
   const [burst, setBurst] = useState<number | null>(null);
@@ -125,12 +127,12 @@ export function DayValueCell({ habitId, date, value, target, unit, disabled }: D
                   +
                 </button>
               </div>
-              <p className="valuecell__hint">Target: {target}{suffix ? ` ${suffix}` : ""}</p>
+              <p className="valuecell__hint">{t("target", { target, suffix: suffix ? ` ${suffix}` : "" })}</p>
               <div className="valuecell__actions">
                 <button type="button" className="valuecell__clear" onClick={() => { commit(0); setIsEditing(false); }}>
-                  Clear
+                  {t("clear")}
                 </button>
-                <button type="submit">Save</button>
+                <button type="submit">{t("save")}</button>
               </div>
             </form>
           </>,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useOptimistic, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { deleteTask, toggleTaskComplete } from "@/lib/actions/tasks";
 
 interface TaskItemProps {
@@ -14,6 +15,7 @@ interface TaskItemProps {
 
 /** Phase 4 roadmap (minimal) — coche optimiste, même convention que DayCheckbox. */
 export function TaskItem({ id, title, dueDate, priority, completed, today }: TaskItemProps) {
+  const t = useTranslations("Dashboard.tasks");
   const [, startTransition] = useTransition();
   const [optimistic, setOptimistic] = useOptimistic(completed);
   const overdue = !optimistic && !!dueDate && dueDate < today;
@@ -52,7 +54,7 @@ export function TaskItem({ id, title, dueDate, priority, completed, today }: Tas
       <button
         type="button"
         className="taskitem__delete"
-        aria-label={`Delete ${title}`}
+        aria-label={t("deleteAria", { title })}
         onClick={() =>
           startTransition(async () => {
             await deleteTask({ taskId: id });

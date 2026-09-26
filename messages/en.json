@@ -1,0 +1,439 @@
+{
+  "Common": {
+    "copy": "Copy",
+    "copied": "Copied!"
+  },
+  "Marketing": {
+    "hero": {
+      "eyebrow": "✦ Turn showing up into a game you're winning",
+      "title": "Your habits, tracked like a <em>game you actually want to play</em>.",
+      "subtitle": "{appName} is a habit tracker built around one board: every habit, every day of the month, filling in as you go. Streaks, XP, levels and badges — no guilt notifications, just the record.",
+      "ctaPrimary": "Start free — no card required",
+      "ctaSecondary": "See pricing",
+      "getItOn": "GET IT ON",
+      "note1": "3 habits free, forever",
+      "note2": "14-day Pro trial",
+      "note3": "Export your data anytime"
+    },
+    "features": {
+      "title": "Everything a spreadsheet had. Plus everything it couldn't.",
+      "board": { "title": "The month board", "text": "One row per habit, one column per day. The whole month on one screen — no other tracker shows you this." },
+      "streaks": { "title": "Streaks & records", "text": "Consecutive-day streaks per habit, plus your all-time record. The thing a paper checklist never totaled for you." },
+      "badges": { "title": "Badges & levels", "text": "XP for every tick, levels as you go, badges for perfect weeks and long streaks. Free gets 3 starter badges — Pro unlocks the rest." },
+      "skins": { "title": "Board skins", "text": "8 cosmetic color themes for your board. 2 free, 6 with Pro — zero effect on your data, just your taste." },
+      "mood": { "title": "Mood tracking", "text": "Log how you felt each day and watch it line up against your consistency." },
+      "pause": { "title": "Pause mode", "text": "Going on vacation? Pause a habit and the days in between won't break your streak (Pro)." }
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "step1": { "title": "Add your habits", "text": "Wake up early, gym, reading — anything you want to build or quit." },
+      "step2": { "title": "Check the box, daily", "text": "One click. Optimistic, instant, no page reload. XP and streak update live." },
+      "step3": { "title": "Level up", "text": "Badges, board skins and a ranked list keep you honest and coming back." }
+    },
+    "cta": {
+      "title": "Day one is the only level that's hard.",
+      "button": "Get started free"
+    }
+  },
+  "MarketingNav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "dashboard": "Dashboard",
+    "signIn": "Sign in",
+    "terms": "Terms",
+    "privacy": "Privacy"
+  },
+  "Pricing": {
+    "title": "Pricing",
+    "subtitle": "Rebuild your consistency. Cancel anytime.",
+    "free": {
+      "name": "Free",
+      "habits": "{count} habits",
+      "currentMonth": "Current month only",
+      "starterBadges": "3 starter badges",
+      "ads": "Contains ads",
+      "cta": "Get started"
+    },
+    "shared": {
+      "mood": "Mood tracking",
+      "streaks": "Streaks"
+    },
+    "pro": {
+      "name": "Pro",
+      "perMonth": "/mo",
+      "billing": "billed $9.99/year · 14-day free trial · no card charged until then",
+      "unlimitedHabits": "Unlimited habits",
+      "unlimitedHistory": "Unlimited history",
+      "badges": "Full badge set & XP levels",
+      "skins": "All board skins",
+      "pause": "Pause / vacation mode",
+      "csv": "CSV export",
+      "weeklyRecap": "Weekly email recap",
+      "shareableRecap": "Shareable monthly recap",
+      "noAds": "No ads",
+      "ctaFree": "Start free — 5 habits",
+      "opensShortly": "Pro subscriptions open shortly.",
+      "ctaTrial": "Start free trial",
+      "ctaSignIn": "Sign in to subscribe"
+    }
+  },
+  "Login": {
+    "subtitle": "Rebuild your consistency",
+    "or": "or",
+    "email": "Email",
+    "sendMagicLink": "Send magic link",
+    "settingUp": "Sign-in is being set up — check back soon.",
+    "footNote": "No password. No card. {count} habits free.",
+    "checkYourEmail": "Check your email",
+    "magicLinkSent": "We sent you a magic link. Click it to sign in — you can close this tab.",
+    "continueWithGoogle": "Continue with Google"
+  },
+  "Onboarding": {
+    "back": "Back",
+    "backArrow": "← Back",
+    "time": {
+      "tiny": "Under 10 minutes",
+      "short": "10–30 minutes",
+      "medium": "30–60 minutes",
+      "long": "1 hour or more"
+    },
+    "choice": {
+      "title": "Let's build your habits",
+      "subtitle": "Two ways to start — pick whichever feels right.",
+      "questionnaireLabel": "Answer a few questions",
+      "questionnaireDesc": "Quick multiple-choice — we'll suggest habits that fit.",
+      "aiLabel": "Let AI build my plan",
+      "aiDesc": "A short tap-through quiz — AI builds a personalized 30-day plan."
+    },
+    "qFocus": {
+      "title": "What's your main focus right now?",
+      "fitness": "Health & Fitness",
+      "mind": "Mind & Focus",
+      "productivity": "Productivity",
+      "quit": "Breaking a habit",
+      "sleep": "Sleep & Energy",
+      "general": "General self-improvement"
+    },
+    "qTime": {
+      "title": "How much time can you realistically give each day?"
+    },
+    "qEnergy": {
+      "title": "When do you have the most energy?",
+      "morning": "Early morning",
+      "day": "During the day",
+      "evening": "Evening",
+      "varies": "It varies"
+    },
+    "qPick": {
+      "title": "Pick a few things you'd like to work on",
+      "subtitle": "Tap to toggle — you can change everything later.",
+      "continue": "Continue",
+      "continueWithCount": "Continue ({count})"
+    },
+    "aiGoal": {
+      "title": "What's the goal?",
+      "subtitle": "Pick what's closest — you can adjust the habits after.",
+      "skip": "✍️ I'll build my own habits →",
+      "loseWeight": "Lose weight / get fit",
+      "sleepBetter": "Sleep better",
+      "quitBadHabit": "Quit a bad habit",
+      "beatProcrastination": "Beat procrastination",
+      "feelLessAnxious": "Feel less anxious or stressed",
+      "turnLifeAround": "Turn my life around"
+    },
+    "aiScope": {
+      "title": "How big a swing are you making?",
+      "smallTweak": "Small tweak — one thing, done consistently",
+      "newRoutine": "New routine — a few habits working together",
+      "fullReset": "Full reset — I want to rebuild from scratch"
+    },
+    "aiObstacle": {
+      "title": "What usually gets in the way?",
+      "noTime": "No time",
+      "noMotivation": "No motivation once the day starts",
+      "forget": "I just forget",
+      "unsure": "I don't know where to start"
+    },
+    "aiTime": {
+      "title": "How much time can you give it, daily?"
+    },
+    "generating": {
+      "title": "Building your quest…",
+      "subtitle": "Turning your answers into a 30-day plan.",
+      "errorTitle": "Something went wrong",
+      "retry": "Try again",
+      "back": "Back",
+      "errorNotConfigured": "AI suggestions aren't available right now — try the questionnaire instead.",
+      "errorRateLimited": "You've hit the hourly limit for AI suggestions. Try again in a bit, or use the questionnaire.",
+      "errorGeneric": "Something went wrong generating your habits. Please try again."
+    },
+    "review": {
+      "title": "Here's your starting list",
+      "subtitle": "Review, tweak the names, or remove anything that doesn't fit.",
+      "questLabel": "Your first quest",
+      "disclaimer": "General wellness suggestions, not medical advice — if you're struggling, please also talk to a professional.",
+      "empty": "Nothing left to add — go back and pick something.",
+      "remove": "Remove",
+      "back": "Back",
+      "creating": "Creating…",
+      "create": "Create {count, plural, one {# habit} other {# habits}}",
+      "createError": "Couldn't create your habits. Please try again."
+    }
+  },
+  "Dashboard": {
+    "today": "Today",
+    "dailyProgress": "Daily Progress",
+    "quitHabits": "Quit Habits",
+    "sidebar": {
+      "month": "Month",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "myHabits": "My Habits",
+      "streakTitle": "{current} days in a row (record {best})",
+      "mood": "Mood",
+      "motivation": "Motivation",
+      "referral": "Invite a friend, get a free month",
+      "journal": "Journal",
+      "downloadReport": "Download progress report",
+      "upgrade": "Upgrade",
+      "pro": "Pro",
+      "signOut": "Sign out"
+    },
+    "addHabit": {
+      "limitReached": "Limit of {limit} habits reached",
+      "genericError": "Error",
+      "namePlaceholder": "New habit…",
+      "typeTitle": "Build = habit to do · Quit = habit to avoid",
+      "build": "Build",
+      "quit": "Quit",
+      "addHabit": "Add habit",
+      "unitTitle": "How is this habit measured each day?",
+      "units": {
+        "TIMES": "Check",
+        "COUNT": "Count",
+        "MINUTES": "Minutes",
+        "HOURS": "Hours",
+        "STEPS": "Steps",
+        "KM": "Kilometers",
+        "CALORIES": "Calories"
+      },
+      "targetPlaceholder": "Target/day ({suffix})",
+      "unitLabelPlaceholder": "unit label…"
+    },
+    "habitMenu": {
+      "editAria": "Edit {name}",
+      "name": "Name",
+      "emoji": "Emoji",
+      "goal": "Goal",
+      "goalHint": "(blank = auto)",
+      "targetPerDay": "Target/day",
+      "unitLabel": "Unit label",
+      "unitLabelHint": "(e.g. glasses, pages)",
+      "tags": "Tags",
+      "proOnly": "(Pro)",
+      "tagsPlaceholder": "morning, health…",
+      "proUpsell": "Unlock tags, notes & pause mode with Pro →",
+      "noteForToday": "Note for today",
+      "notePlaceholder": "How did it go?",
+      "loading": "Loading…",
+      "noteNeedsCheck": "Check the habit today first",
+      "genericError": "Error",
+      "saveNote": "Save note",
+      "pauseUntil": "Pause until",
+      "vacationMode": "(vacation mode)",
+      "pause": "Pause",
+      "pausedUntil": "Paused until {date} — streak won't break.",
+      "save": "Save",
+      "archive": "Archive"
+    },
+    "valueCell": {
+      "target": "Target: {target}{suffix}",
+      "clear": "Clear",
+      "save": "Save"
+    },
+    "tasks": {
+      "title": "To-Do",
+      "empty": "Nothing on your list.",
+      "addPlaceholder": "Add a task…",
+      "priority": "Priority",
+      "addTask": "Add task",
+      "deleteAria": "Delete {title}"
+    },
+    "grid": {
+      "habit": "Habit",
+      "overallWellness": "Overall wellness",
+      "mood": "Mood",
+      "motivation": "Motivation",
+      "moodScale": {
+        "1": "Awful",
+        "2": "Bad",
+        "3": "Okay",
+        "4": "Good",
+        "5": "Great"
+      },
+      "motivationScale": {
+        "1": "Drained",
+        "2": "Low",
+        "3": "Okay",
+        "4": "Motivated",
+        "5": "Fired up"
+      }
+    },
+    "quit": {
+      "relapseCount": "{count, plural, one {# relapse} other {# relapses}}",
+      "personalBest": "personal best",
+      "best": "Best: {duration}",
+      "relapseConfirm": "Log a relapse for \"{name}\"? This resets the counter to zero.",
+      "iRelapsed": "I relapsed"
+    },
+    "reminders": {
+      "permissionError": "Enable notifications for Habitcade in your phone settings to turn this on.",
+      "title": "Daily reminder",
+      "timeAria": "Reminder time",
+      "update": "Update",
+      "set": "Set",
+      "remindingAt": "Reminding you every day at {time}.",
+      "turnOff": "Turn off"
+    },
+    "timer": {
+      "title": "Timer",
+      "pause": "Pause",
+      "start": "Start",
+      "reset": "Reset",
+      "logged": "Logged ✓",
+      "logToToday": "Log to today"
+    },
+    "shieldPanel": {
+      "title": "Streak Shields",
+      "missedDay": "You missed <strong>{day}/{month}</strong>. Shield it so your streak survives.",
+      "shielding": "Shielding…",
+      "noShieldsLeft": "No shields left",
+      "useShield": "Use a shield",
+      "noGaps": "No gaps this month. Streak intact. ⚔️",
+      "proUpsell": "Pro gets {count} shields a month.",
+      "errorNoShields": "No shields left this month.",
+      "errorAlreadyShielded": "That day is already shielded.",
+      "errorNotPast": "You can still complete today.",
+      "errorNotCurrentMonth": "Shields only cover the current month.",
+      "errorGeneric": "Could not use shield."
+    },
+    "skinPicker": {
+      "theme": "Theme",
+      "free": "Free",
+      "proSuffix": "{label} (Pro)",
+      "requiresPro": "{label}, requires Pro",
+      "useSkin": "Use {label} skin",
+      "unlockMore": "Unlock {count} more themes →"
+    },
+    "stats": {
+      "level": "Level {level}",
+      "xp": "{current} / {next} XP",
+      "nextRank": "Next: {rank}",
+      "maxRank": "Max rank",
+      "weeklyProgress": "Weekly Progress",
+      "goal": "Goal",
+      "completed": "Completed",
+      "left": "Left",
+      "overallStats": "Overall Stats",
+      "badges": "Badges",
+      "moreBadgesWithPro": "🔒 +{count, plural, one {# more badge} other {# more badges}} with Pro",
+      "analysis": "Analysis",
+      "habit": "Habit",
+      "actual": "Actual",
+      "progress": "Progress",
+      "top10": "Top 10 Habits"
+    },
+    "onboardingBanner": {
+      "title": "New here?",
+      "text": "Let's build a habit list that fits what you actually want. Or",
+      "adding": "adding…",
+      "quickStart": "quick start with defaults",
+      "cta": "Build my habits →"
+    }
+  },
+  "Badges": {
+    "perfectWeek": "Perfect Week",
+    "perfectWeeks": "{count} Perfect Weeks",
+    "perfectWeekDesc": "Every habit, every day, for a full week.",
+    "perfectDays": "{count} Perfect Days",
+    "perfectDaysDesc": "Days where every habit was checked off.",
+    "perfectMonth": "Perfect Month",
+    "perfectMonthDesc": "Every goal hit, every habit, the whole month.",
+    "streak100": "100-Day Streak",
+    "streak30": "30-Day Streak",
+    "streak7": "7-Day Streak",
+    "streakDesc": "{count} days in a row.",
+    "century": "Century",
+    "centuryDesc": "{count} completions, lifetime.",
+    "dedication": "Dedication",
+    "dedicationDesc": "{count}-day streak, your best ever."
+  },
+  "Ranks": {
+    "recruit": "Recruit",
+    "squire": "Squire",
+    "warrior": "Warrior",
+    "knight": "Knight",
+    "champion": "Champion",
+    "warlord": "Warlord",
+    "legend": "Legend"
+  },
+  "Billing": {
+    "back": "← Back to dashboard",
+    "title": "Billing",
+    "plan": "Plan",
+    "status": "Status",
+    "trialEnds": "Trial ends",
+    "paymentsSoon": "💳 Payments aren't switched on yet — upgrading will be available shortly. Everything on the Free plan keeps working in the meantime.",
+    "upgradeButton": "Upgrade to Pro — €0.99/month, {trialDays}-day trial",
+    "manageSubscription": "Manage subscription",
+    "exportShare": "Export & Share",
+    "downloadCsv": "Download all habit data as CSV",
+    "exportCsvButton": "Export CSV",
+    "shareRecap": "Share this month's recap",
+    "recapImageLabel": "Same recap, as an image — for Instagram/WhatsApp stories, where a link won't unfurl",
+    "downloadImage": "Download image",
+    "supportTitle": "Support this project",
+    "supportText": "Habitcade is built and run by a small team. Every donation goes straight back into keeping the servers running and shipping the features on the roadmap — no data selling, ever, just a tool we want to keep making better. If it's helped you build a habit, anything you give helps us keep it going.",
+    "donateThanks": "🎉 Thank you for your support!",
+    "donationsSoon": "Donations open as soon as payments are switched on. Thank you for wanting to help.",
+    "referralTitle": "Refer a friend, get a free month",
+    "referralText": "Every friend who upgrades to Pro earns you 1 free month — automatically applied to your next checkout.",
+    "referralCredit": "🎁 You have {count, plural, one {# free month} other {# free months}} waiting — it'll be applied automatically on your next upgrade.",
+    "startOver": {
+      "title": "Start over",
+      "description": "Delete all {count, plural, one {# habit} other {# habits}} and their history, then rebuild your list from scratch.",
+      "warning": "This deletes all {count, plural, one {# habit} other {# habits}} and every day you've logged for them. This can't be undone.",
+      "cancel": "Cancel",
+      "deleting": "Deleting…",
+      "confirm": "Yes, delete everything"
+    },
+    "donate": {
+      "customAmount": "Or choose your own amount",
+      "amountAria": "Donation amount in euros",
+      "donate": "Donate €{amount}",
+      "enterRange": "Enter €{min}–€{max}"
+    },
+    "compare": {
+      "title": "Compare plans",
+      "feature": "Feature",
+      "free": "Free",
+      "pro": "Pro",
+      "unlimited": "Unlimited",
+      "currentMonth": "Current month",
+      "perMonth": "{count}/month",
+      "yes": "Yes",
+      "no": "No",
+      "features": {
+        "habits": "Habits",
+        "history": "History",
+        "moodTracking": "Mood tracking",
+        "streakShields": "Streak shields",
+        "vacationMode": "Vacation mode",
+        "perDayNotes": "Per-day notes",
+        "exportCsv": "Export CSV",
+        "weeklyEmailRecap": "Weekly email recap",
+        "ads": "Ads"
+      }
+    }
+  }
+}

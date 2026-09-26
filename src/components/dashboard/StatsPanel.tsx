@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { computeBadges, computeLifetimeProgress, pctTone, type MonthStats } from "@/lib/stats";
 import type { ISODate } from "@/lib/dates";
 import { BarChart } from "@/components/charts/BarChart";
@@ -15,8 +16,11 @@ interface StatsPanelProps {
 }
 
 /** V5 + V6 + V7 + V8 + V9 + B1/B5 (badges) + XP/levels (Sprint 6) : colonne droite. */
-export function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
-  const allBadges = computeBadges(stats, habits);
+export async function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
+  const t = await getTranslations("Dashboard.stats");
+  const tBadges = await getTranslations("Badges");
+  const tRanks = await getTranslations("Ranks");
+  const allBadges = computeBadges(stats, habits, tBadges);
   const unlocked = allBadges.filter((b) => plan === "PRO" || b.tier === "free");
   const lockedCount = allBadges.length - unlocked.length;
   const progress = computeLifetimeProgress(habits);
@@ -26,24 +30,20 @@ export function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
     <section className="statspanel">
       <div className="herocard">
         <div className="herocard__head">
-          <span className="herocard__rank">{progress.rank.label}</span>
-          <span className="herocard__lvl">Level {progress.level}</span>
+          <span className="herocard__rank">{tRanks(progress.rank.key)}</span>
+          <span className="herocard__lvl">{t("level", { level: progress.level })}</span>
         </div>
         <div className="herocard__track">
           <span className="herocard__fill" style={{ width: `${levelPct}%` }} />
         </div>
         <div className="herocard__foot">
-          <span>
-            {progress.xpIntoLevel} / {progress.xpForNextLevel} XP
-          </span>
-          <span>
-            {progress.nextRank ? `Next: ${progress.nextRank.label}` : "Max rank"}
-          </span>
+          <span>{t("xp", { current: progress.xpIntoLevel, next: progress.xpForNextLevel })}</span>
+          <span>{progress.nextRank ? t("nextRank", { rank: tRanks(progress.nextRank.key) }) : t("maxRank")}</span>
         </div>
       </div>
 
       <div className="panel">
-        <h2 className="panel__title">Weekly Progress</h2>
+        <h2 className="panel__title">{t("weeklyProgress")}</h2>
         <BarChart
           values={stats.weeklyProgress.map((w) => w.pct)}
           labels={stats.weeklyProgress.map((w) => w.label.toLowerCase())}
@@ -53,27 +53,27 @@ export function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
 
       <div className="statcards">
         <div className="statcard">
-          <span className="statcard__label">Goal</span>
+          <span className="statcard__label">{t("goal")}</span>
           <span className="statcard__value">{stats.goalTotal}</span>
         </div>
         <div className="statcard">
-          <span className="statcard__label">Completed</span>
+          <span className="statcard__label">{t("completed")}</span>
           <span className="statcard__value">{stats.completedTotal}</span>
         </div>
         <div className="statcard">
-          <span className="statcard__label">Left</span>
+          <span className="statcard__label">{t("left")}</span>
           <span className="statcard__value">{stats.leftTotal}</span>
         </div>
       </div>
 
       <div className="panel panel--donut">
-        <h2 className="panel__title">Overall Stats</h2>
+        <h2 className="panel__title">{t("overallStats")}</h2>
         <DonutChart pct={stats.overallPct} />
       </div>
 
       {(unlocked.length > 0 || lockedCount > 0) && (
         <div className="panel">
-          <h2 className="panel__title">Badges</h2>
+          <h2 className="panel__title">{t("badges")}</h2>
           <ul className="badgelist">
             {unlocked.map((b) => (
               <li key={b.id} className="badgelist__item" title={b.description}>
@@ -84,23 +84,23 @@ export function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
           </ul>
           {lockedCount > 0 && (
             <Link href="/pricing" className="badgelist__upsell">
-              🔒 +{lockedCount} more badge{lockedCount > 1 ? "s" : ""} with Pro
+              {t("moreBadgesWithPro", { count: lockedCount })}
             </Link>
           )}
         </div>
       )}
 
       <div className="panel">
-        <h2 className="panel__title">Analysis</h2>
+        <h2 className="panel__title">{t("analysis")}</h2>
         <div className="analysiswrap">
         <table className="analysis">
           <thead>
             <tr>
-              <th className="analysis__namehead">Habit</th>
-              <th>Goal</th>
-              <th>Actual</th>
-              <th>Left</th>
-              <th className="analysis__progresshead">Progress</th>
+              <th className="analysis__namehead">{t("habit")}</th>
+              <th>{t("goal")}</th>
+              <th>{t("actual")}</th>
+              <th>{t("left")}</th>
+              <th className="analysis__progresshead">{t("progress")}</th>
               <th>%</th>
             </tr>
           </thead>
@@ -125,7 +125,7 @@ export function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
       </div>
 
       <div className="panel">
-        <h2 className="panel__title">Top 10 Habits</h2>
+        <h2 className="panel__title">{t("top10")}</h2>
         <ol className="tophabits">
           {stats.top10.map((a, i) => (
             <li key={a.habitId} className="tophabits__row">

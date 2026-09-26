@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import type { HabitUnit, MonthStats, QuitStreak } from "@/lib/stats";
 import type { ISODate, MonthKey } from "@/lib/dates";
 import type { BoardSkinKey } from "@/lib/config";
@@ -50,7 +51,7 @@ interface DashboardProps {
 }
 
 /** Assemblage 3 zones : sidebar noire / centre (daily + grille) / stats à droite. */
-export function Dashboard({
+export async function Dashboard({
   month,
   stats,
   habits,
@@ -65,6 +66,7 @@ export function Dashboard({
   tasks,
   referralCode,
 }: DashboardProps) {
+  const t = await getTranslations("Dashboard");
   const todayIndex = stats.days.findIndex((d) => d.date === today);
 
   // QUIT n'est plus une case à cocher (Phase 2 roadmap) : la grille mensuelle
@@ -115,7 +117,7 @@ export function Dashboard({
         {buildHabits.length > 0 && <TodayPanel habits={buildHabits} today={today} />}
         {buildHabits.length > 0 && (
           <div className="panel panel--daily">
-            <h2 className="panel__title">Daily Progress</h2>
+            <h2 className="panel__title">{t("dailyProgress")}</h2>
             <BarChart
               values={stats.dailyProgress}
               labels={stats.days.map((d) => d.dow)}

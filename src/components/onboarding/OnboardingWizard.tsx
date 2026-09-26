@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createHabitsFromSelection, generateHabitsAction } from "@/lib/actions/onboarding";
 import { candidatesFor, type EnergyKey, type FocusKey, type HabitDraft, type TimeBudgetKey } from "@/lib/onboardingCatalog";
 import { ChoiceScreen } from "./screens/ChoiceScreen";
@@ -38,26 +39,53 @@ interface WizardData {
   aiError?: string;
 }
 
-const AI_ERROR_MESSAGES: Record<string, string> = {
-  AI_NOT_CONFIGURED: "AI suggestions aren't available right now — try the questionnaire instead.",
-  RATE_LIMITED: "You've hit the hourly limit for AI suggestions. Try again in a bit, or use the questionnaire.",
-  AI_GENERATION_FAILED: "Something went wrong generating your habits. Please try again.",
-};
-
-// Mêmes libellés que le chemin questionnaire (q-time) — cohérence visuelle,
-// et le modèle reçoit le même vocabulaire de budget-temps des deux côtés.
-const TIME_OPTIONS = [
-  { key: "Under 10 minutes", label: "Under 10 minutes" },
-  { key: "10–30 minutes", label: "10–30 minutes" },
-  { key: "30–60 minutes", label: "30–60 minutes" },
-  { key: "1 hour or more", label: "1 hour or more" },
-];
-
 export function OnboardingWizard({ aiConfigured }: { aiConfigured: boolean }) {
   const router = useRouter();
+  const t = useTranslations("Onboarding");
   const [stack, setStack] = useState<ScreenId[]>(["choice"]);
   const [data, setData] = useState<WizardData>({});
   const [isCreating, setIsCreating] = useState(false);
+
+  // Les libellés traduits eux-mêmes servent de valeur envoyée à l'IA (voir
+  // lib/ai.ts) — Claude comprend directement le français/espagnol, et on lui
+  // demande de répondre dans la même langue que l'input, donc pas besoin
+  // d'une table de correspondance id -> texte anglais séparée. `plainLabel`
+  // (sans emoji) est ce qui part réellement vers generateHabitsAction ;
+  // `label` (avec emoji) n'est que pour l'affichage du bouton.
+  const timeOptions = [
+    { key: "tiny", label: t("time.tiny") },
+    { key: "short", label: t("time.short") },
+    { key: "medium", label: t("time.medium") },
+    { key: "long", label: t("time.long") },
+  ];
+
+  const aiGoalOptions = [
+    { key: "loseWeight", label: `🏋️ ${t("aiGoal.loseWeight")}`, plainLabel: t("aiGoal.loseWeight") },
+    { key: "sleepBetter", label: `😴 ${t("aiGoal.sleepBetter")}`, plainLabel: t("aiGoal.sleepBetter") },
+    { key: "quitBadHabit", label: `🚭 ${t("aiGoal.quitBadHabit")}`, plainLabel: t("aiGoal.quitBadHabit") },
+    { key: "beatProcrastination", label: `📈 ${t("aiGoal.beatProcrastination")}`, plainLabel: t("aiGoal.beatProcrastination") },
+    { key: "feelLessAnxious", label: `🧘 ${t("aiGoal.feelLessAnxious")}`, plainLabel: t("aiGoal.feelLessAnxious") },
+    { key: "turnLifeAround", label: `🎯 ${t("aiGoal.turnLifeAround")}`, plainLabel: t("aiGoal.turnLifeAround") },
+  ];
+
+  const aiScopeOptions = [
+    { key: "smallTweak", label: `🌱 ${t("aiScope.smallTweak")}`, plainLabel: t("aiScope.smallTweak") },
+    { key: "newRoutine", label: `🏗️ ${t("aiScope.newRoutine")}`, plainLabel: t("aiScope.newRoutine") },
+    { key: "fullReset", label: `🔄 ${t("aiScope.fullReset")}`, plainLabel: t("aiScope.fullReset") },
+  ];
+
+  const aiObstacleOptions = [
+    { key: "noTime", label: `⏰ ${t("aiObstacle.noTime")}`, plainLabel: t("aiObstacle.noTime") },
+    { key: "noMotivation", label: `🔋 ${t("aiObstacle.noMotivation")}`, plainLabel: t("aiObstacle.noMotivation") },
+    { key: "forget", label: `🧠 ${t("aiObstacle.forget")}`, plainLabel: t("aiObstacle.forget") },
+    { key: "unsure", label: `🤷 ${t("aiObstacle.unsure")}`, plainLabel: t("aiObstacle.unsure") },
+  ];
+
+  const aiErrorMessages: Record<string, string> = {
+    AI_NOT_CONFIGURED: t("generating.errorNotConfigured"),
+    RATE_LIMITED: t("generating.errorRateLimited"),
+    AI_GENERATION_FAILED: t("generating.errorGeneric"),
+  };
 
   const current = stack[stack.length - 1];
 
@@ -79,7 +107,7 @@ export function OnboardingWizard({ aiConfigured }: { aiConfigured: boolean }) {
       setData((d) => ({ ...d, drafts: res.habits, milestone: res.milestone, fromAi: true }));
       replaceTop("review");
     } else {
-      setData((d) => ({ ...d, aiError: AI_ERROR_MESSAGES[res.error ?? ""] ?? "Something went wrong. Please try again." }));
+      setData((d) => ({ ...d, aiError: aiErrorMessages[res.error ?? ""] ?? t("generating.errorGeneric") }));
     }
   }
 
@@ -97,8 +125,8 @@ export function OnboardingWizard({ aiConfigured }: { aiConfigured: boolean }) {
     <div className="onboardwizard">
       <div className="onboardwizard__card">
         {stack.length > 1 && current !== "review" && current !== "ai-generating" && (
-          <button type="button" className="onboardwizard__back" onClick={back} aria-label="Back">
-            ← Back
+          <button type="button" className="onboardwizard__back" onClick={back} aria-label={t("back")}>
+            {t("backArrow")}
           </button>
         )}
 
@@ -112,14 +140,14 @@ export function OnboardingWizard({ aiConfigured }: { aiConfigured: boolean }) {
 
         {current === "q-focus" && (
           <SingleChoiceScreen
-            title="What's your main focus right now?"
+            title={t("qFocus.title")}
             options={[
-              { key: "fitness", label: "💪 Health & Fitness" },
-              { key: "mind", label: "🧘 Mind & Focus" },
-              { key: "productivity", label: "🎯 Productivity" },
-              { key: "quit", label: "🚭 Breaking a habit" },
-              { key: "sleep", label: "😴 Sleep & Energy" },
-              { key: "general", label: "✨ General self-improvement" },
+              { key: "fitness", label: `💪 ${t("qFocus.fitness")}` },
+              { key: "mind", label: `🧘 ${t("qFocus.mind")}` },
+              { key: "productivity", label: `🎯 ${t("qFocus.productivity")}` },
+              { key: "quit", label: `🚭 ${t("qFocus.quit")}` },
+              { key: "sleep", label: `😴 ${t("qFocus.sleep")}` },
+              { key: "general", label: `✨ ${t("qFocus.general")}` },
             ]}
             onSelect={(key) => {
               setData((d) => ({ ...d, focus: key as FocusKey }));
@@ -130,13 +158,8 @@ export function OnboardingWizard({ aiConfigured }: { aiConfigured: boolean }) {
 
         {current === "q-time" && (
           <SingleChoiceScreen
-            title="How much time can you realistically give each day?"
-            options={[
-              { key: "tiny", label: "Under 10 minutes" },
-              { key: "short", label: "10–30 minutes" },
-              { key: "medium", label: "30–60 minutes" },
-              { key: "long", label: "1 hour or more" },
-            ]}
+            title={t("qTime.title")}
+            options={timeOptions}
             onSelect={(key) => {
               setData((d) => ({ ...d, time: key as TimeBudgetKey }));
               push("q-energy");
@@ -146,12 +169,12 @@ export function OnboardingWizard({ aiConfigured }: { aiConfigured: boolean }) {
 
         {current === "q-energy" && (
           <SingleChoiceScreen
-            title="When do you have the most energy?"
+            title={t("qEnergy.title")}
             options={[
-              { key: "morning", label: "🌅 Early morning" },
-              { key: "day", label: "☀️ During the day" },
-              { key: "evening", label: "🌆 Evening" },
-              { key: "varies", label: "🔀 It varies" },
+              { key: "morning", label: `🌅 ${t("qEnergy.morning")}` },
+              { key: "day", label: `☀️ ${t("qEnergy.day")}` },
+              { key: "evening", label: `🌆 ${t("qEnergy.evening")}` },
+              { key: "varies", label: `🔀 ${t("qEnergy.varies")}` },
             ]}
             onSelect={(key) => {
               setData((d) => ({ ...d, energy: key as EnergyKey }));
@@ -162,7 +185,7 @@ export function OnboardingWizard({ aiConfigured }: { aiConfigured: boolean }) {
 
         {current === "q-pick" && data.focus && data.time && (
           <MultiChoiceScreen
-            title="Pick a few things you'd like to work on"
+            title={t("qPick.title")}
             candidates={candidatesFor(data.focus, data.time)}
             onContinue={(selected) => {
               setData((d) => ({ ...d, drafts: selected, fromAi: false }));
@@ -173,16 +196,9 @@ export function OnboardingWizard({ aiConfigured }: { aiConfigured: boolean }) {
 
         {current === "ai-goal" && (
           <GoalScreen
-            options={[
-              { key: "Lose weight / get fit", label: "🏋️ Lose weight / get fit" },
-              { key: "Sleep better", label: "😴 Sleep better" },
-              { key: "Quit a bad habit", label: "🚭 Quit a bad habit" },
-              { key: "Beat procrastination", label: "📈 Beat procrastination" },
-              { key: "Feel less anxious or stressed", label: "🧘 Feel less anxious or stressed" },
-              { key: "Turn my life around", label: "🎯 Turn my life around" },
-            ]}
-            onSelect={(goal) => {
-              setData((d) => ({ ...d, aiGoal: goal }));
+            options={aiGoalOptions}
+            onSelect={(key) => {
+              setData((d) => ({ ...d, aiGoal: aiGoalOptions.find((o) => o.key === key)?.plainLabel ?? key }));
               push("ai-scope");
             }}
             onSkip={() => router.push("/app")}
@@ -191,14 +207,10 @@ export function OnboardingWizard({ aiConfigured }: { aiConfigured: boolean }) {
 
         {current === "ai-scope" && (
           <SingleChoiceScreen
-            title="How big a swing are you making?"
-            options={[
-              { key: "Small tweak — one thing, done consistently", label: "🌱 Small tweak — one thing, done consistently" },
-              { key: "New routine — a few habits working together", label: "🏗️ New routine — a few habits working together" },
-              { key: "Full reset — I want to rebuild from scratch", label: "🔄 Full reset — I want to rebuild from scratch" },
-            ]}
-            onSelect={(scope) => {
-              setData((d) => ({ ...d, aiScope: scope }));
+            title={t("aiScope.title")}
+            options={aiScopeOptions}
+            onSelect={(key) => {
+              setData((d) => ({ ...d, aiScope: aiScopeOptions.find((o) => o.key === key)?.plainLabel ?? key }));
               push("ai-obstacle");
             }}
           />
@@ -206,15 +218,10 @@ export function OnboardingWizard({ aiConfigured }: { aiConfigured: boolean }) {
 
         {current === "ai-obstacle" && (
           <SingleChoiceScreen
-            title="What usually gets in the way?"
-            options={[
-              { key: "No time", label: "⏰ No time" },
-              { key: "No motivation once the day starts", label: "🔋 No motivation once the day starts" },
-              { key: "I just forget", label: "🧠 I just forget" },
-              { key: "I don't know where to start", label: "🤷 I don't know where to start" },
-            ]}
-            onSelect={(obstacle) => {
-              setData((d) => ({ ...d, aiObstacle: obstacle }));
+            title={t("aiObstacle.title")}
+            options={aiObstacleOptions}
+            onSelect={(key) => {
+              setData((d) => ({ ...d, aiObstacle: aiObstacleOptions.find((o) => o.key === key)?.plainLabel ?? key }));
               push("ai-time");
             }}
           />
@@ -222,9 +229,12 @@ export function OnboardingWizard({ aiConfigured }: { aiConfigured: boolean }) {
 
         {current === "ai-time" && (
           <SingleChoiceScreen
-            title="How much time can you give it, daily?"
-            options={TIME_OPTIONS}
-            onSelect={(timeBudget) => {
+            title={t("aiTime.title")}
+            options={timeOptions}
+            onSelect={(key) => {
+              // L'IA reçoit le texte lisible ("Moins de 10 minutes"), pas la clé
+              // courte interne ("tiny") — même logique que goal/scope/obstacle.
+              const timeBudget = timeOptions.find((o) => o.key === key)?.label ?? key;
               setData((d) => ({ ...d, aiTime: timeBudget }));
               if (data.aiGoal && data.aiScope && data.aiObstacle) {
                 void runGeneration({ goal: data.aiGoal, scope: data.aiScope, obstacle: data.aiObstacle, timeBudget });

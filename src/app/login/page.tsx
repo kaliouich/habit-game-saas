@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { APP_NAME } from "@/lib/config";
 import { signInWithEmail } from "@/lib/actions/auth";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export const metadata: Metadata = { title: "Sign in" };
 // Sans ça, Next prérend cette page une fois au build (où les secrets ne sont
@@ -11,19 +13,21 @@ export const dynamic = "force-dynamic";
 /** Rangée décorative : 4 cases cochées sur 7, comme une semaine du tracker. */
 const STRIP = [true, true, false, true, true, false, true];
 
-export default function LoginPage() {
+export default async function LoginPage() {
   // N'affiche que les providers réellement configurés — évite un bouton/formulaire
   // qui planterait silencieusement si la clé correspondante n'est pas encore fournie.
   const googleEnabled = Boolean(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
   const emailEnabled = Boolean(process.env.AUTH_RESEND_KEY);
+  const t = await getTranslations("Login");
 
   return (
     <div className="authpage">
+      <LanguageSwitcher className="langswitcher langswitcher--auth" />
       <div className="authcard">
         <div className="authcard__head">
           <img src="/icon-512.png" alt="" width={48} height={48} className="authcard__mark" />
           <h1 className="authcard__title">{APP_NAME}</h1>
-          <p className="authcard__subtitle">Rebuild your consistency</p>
+          <p className="authcard__subtitle">{t("subtitle")}</p>
           <div className="authcard__strip" aria-hidden>
             {STRIP.map((on, i) => (
               <i key={i} className={on ? "on" : undefined} />
@@ -36,14 +40,14 @@ export default function LoginPage() {
 
           {googleEnabled && emailEnabled && (
             <div className="authcard__divider">
-              <span>or</span>
+              <span>{t("or")}</span>
             </div>
           )}
 
           {emailEnabled && (
             <form action={signInWithEmail} className="authcard__email">
               <label className="authcard__label" htmlFor="email">
-                Email
+                {t("email")}
               </label>
               <input
                 id="email"
@@ -55,17 +59,15 @@ export default function LoginPage() {
                 className="authcard__input"
               />
               <button type="submit" className="btn btn--primary">
-                Send magic link
+                {t("sendMagicLink")}
               </button>
             </form>
           )}
 
-          {!googleEnabled && !emailEnabled && (
-            <p className="authcard__hint">Sign-in is being set up — check back soon.</p>
-          )}
+          {!googleEnabled && !emailEnabled && <p className="authcard__hint">{t("settingUp")}</p>}
         </div>
 
-        <p className="authcard__foot">No password. No card. 5 habits free.</p>
+        <p className="authcard__foot">{t("footNote", { count: 5 })}</p>
       </div>
     </div>
   );

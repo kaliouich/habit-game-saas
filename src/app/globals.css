@@ -1771,18 +1771,60 @@ select {
     order: 1;
   }
 
-  /* Stats (XP, badges, analysis) before the sidebar, not after — the sidebar
-     ends with the account footer (Journal / export / Sign out), and having
-     game stats appear BELOW "Sign out" reads as content past the end of the
-     page. Sign out should be the actual last thing on the screen. */
+  /* Stats (XP, badges, analysis) before the account footer, not after — see
+     .sidebar__bottom below for why "Sign out" needs to stay the actual last
+     thing on the screen. */
   .dashboard__right {
-    order: 2;
+    order: 3;
   }
 
+  /* .sidebar itself stops being a rendered box on mobile (`display: contents`
+     lifts its 3 children — title/switcher/month-nav, habit list, and the
+     mood/shields/referral/account block — up to be direct .dashboard grid
+     items in their own right). Reported directly by a user testing on a real
+     phone: with the whole sidebar as one order:3 block (after main, after
+     stats), the month picker only appeared after a 5+ screen scroll past
+     Today/grid/stats, and "Mes habitudes" (add/edit) sat just as far from
+     the grid it manages — reads as "everything is mixed up, I get lost."
+     Splitting it lets the header go first and habit management sit right
+     after the grid, without changing anything about desktop (where .sidebar
+     still renders as one sticky flex column — this whole block is mobile-only). */
   .sidebar {
-    order: 3;
-    position: static;
-    max-height: none;
+    display: contents;
+  }
+
+  /* Title + language switcher + month nav — the page's "where/what am I
+     looking at" context, now first instead of buried at the bottom. */
+  .sidebar__top {
+    order: -1;
+    background: var(--panel);
+    color: var(--panel-fg);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow);
+    padding: 14px;
+  }
+
+  /* Habit list + add-habit form, right after the grid it manages instead of
+     scrolled miles away from it. */
+  .sidebar__habits {
+    order: 2;
+    background: var(--panel);
+    color: var(--panel-fg);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow);
+    padding: 14px;
+  }
+
+  /* Mood chart, shields, reminders, referral, skin picker, account footer —
+     secondary/administrative, stays last (ends on Sign out, not before it). */
+  .sidebar__bottom {
+    order: 4;
+    margin-top: 0;
+    background: var(--panel);
+    color: var(--panel-fg);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow);
+    padding: 14px;
   }
 
   .statspanel {

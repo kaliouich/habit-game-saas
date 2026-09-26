@@ -29,5 +29,5 @@ export async function signInWithGoogleMobile() {
 }
 
 export async function signOutAction() {
-  await signOut({ redirectTo: "/login" });
+  await signOut({ redirectTo: "/" });
 }

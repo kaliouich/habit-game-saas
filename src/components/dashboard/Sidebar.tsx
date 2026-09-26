@@ -52,7 +52,10 @@ export async function Sidebar({ month, habits, stats, canAdd, limit, userEmail, 
   return (
     <aside className="sidebar">
       <div className="sidebar__top">
-        <h1 className="sidebar__title">{APP_NAME.toUpperCase()}</h1>
+        <div className="sidebar__titlerow">
+          <h1 className="sidebar__title">{APP_NAME.toUpperCase()}</h1>
+          <LanguageSwitcher className="langswitcher langswitcher--sidebar" />
+        </div>
         <nav className="monthpicker" aria-label={t("month")}>
           <Link href={`/app?month=${addMonths(month, -1)}`} className="monthpicker__arrow" aria-label={t("previousMonth")}>
             ‹
@@ -150,7 +153,6 @@ export async function Sidebar({ month, habits, stats, canAdd, limit, userEmail, 
           <Link href="/app/billing" className={plan === "FREE" ? "sidebar__plan sidebar__plan--free" : "sidebar__plan"}>
             {plan === "FREE" ? t("upgrade") : t("pro")}
           </Link>
-          <LanguageSwitcher className="langswitcher langswitcher--sidebar" />
           <SignOutButton />
         </div>
       </div>

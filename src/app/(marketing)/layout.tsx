@@ -18,7 +18,7 @@ export default async function MarketingLayout({ children }: { children: React.Re
         <nav className="marketingheader__nav">
           <Link href="/#features">{t("features")}</Link>
           <Link href="/pricing">{t("pricing")}</Link>
-          <LanguageSwitcher className="langswitcher langswitcher--nav" />
+          <LanguageSwitcher compact className="langswitcher langswitcher--nav" />
           {session?.user ? (
             <Link href="/app" className="btn btn--primary btn--nav">
               {t("dashboard")}

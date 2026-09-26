@@ -16,6 +16,7 @@ function seeded(h: number, d: number): number {
 /** Aperçu interactif de la landing — le board du produit, pas une capture d'écran. */
 export function HeroPreview() {
   const t = useTranslations("Marketing.hero.preview");
+  const habitNames = [t("habit1"), t("habit2"), t("habit3"), t("habit4")];
   const initial = useMemo(
     () =>
       HABITS.map((_, h) =>
@@ -72,7 +73,7 @@ export function HeroPreview() {
       </div>
       <div className="heroboard__grid">
         {state.map((row, h) => (
-          <div className="heroboard__row" key={HABITS[h]}>
+          <div className="heroboard__row" key={h}>
             {row.map((on, d) => (
               <span
                 key={d}
@@ -85,11 +86,11 @@ export function HeroPreview() {
       </div>
 
       <div className="heroboard__tasks">
-        {HABITS.map((name, h) => {
+        {habitNames.map((name, h) => {
           const done = state[h][TODAY - 1] ?? false;
           return (
             <button
-              key={name}
+              key={h}
               type="button"
               className="heroboard__task"
               aria-pressed={done}

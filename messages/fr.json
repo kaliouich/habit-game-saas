@@ -23,7 +23,11 @@
         "perfectWeek": "Semaine parfaite",
         "sevenDayStreak": "Série de 7 jours",
         "earlyRiser": "Lève-tôt",
-        "locked": "Verrouillé"
+        "locked": "Verrouillé",
+        "habit1": "Réveil à 05h00",
+        "habit2": "Gym",
+        "habit3": "Lecture",
+        "habit4": "Travail profond · 2h"
       }
     },
     "features": {
@@ -342,6 +346,7 @@
       "nextRank": "Suivant : {rank}",
       "maxRank": "Rang maximum",
       "weeklyProgress": "Progression hebdomadaire",
+      "weekAbbrev": "S{n}",
       "goal": "Objectif",
       "completed": "Réalisé",
       "left": "Restant",

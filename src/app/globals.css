@@ -346,12 +346,24 @@ select {
   overflow-y: auto;
 }
 
+/* Le sélecteur de langue vit ici (plutôt qu'en bas, sous les boucliers/rappels/
+   parrainage/skin picker) : enterré 4-5 écrans plus bas sur mobile, personne
+   ne le trouvait pour changer de langue depuis le dashboard (signalé en
+   test réel). En haut, à côté du titre, il est visible sans scroller. */
+.sidebar__titlerow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .sidebar__title {
   font-family: var(--font-display), Georgia, serif;
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-align: center;
+  flex: 1;
 }
 
 .monthpicker {
@@ -2154,6 +2166,11 @@ select {
   padding: 4px 8px;
 }
 
+.langswitcher--sidebar {
+  align-self: center;
+  flex-shrink: 0;
+}
+
 .langswitcher--auth {
   position: fixed;
   top: 16px;
@@ -2674,22 +2691,34 @@ select {
   color: var(--m-gold);
 }
 
-/* En dessous de ~700px, logo + "Features" + "Pricing" + sélecteur de langue +
-   bouton CTA ne tiennent plus sur une ligne (pas de flex-wrap ici, donc ça
-   déborde du viewport au lieu de passer à la ligne). Seuil relevé de 480px à
-   700px, et sélecteur de langue ajouté au masquage : au départ ce calcul ne
-   tenait compte que du texte anglais ("Dashboard") sans sélecteur de langue —
-   avec le FR/ES ("Tableau de bord" est ~2x plus large que "Dashboard") et le
-   nouveau <select> de langue, le seuil de 480px laissait le bloc déborder à
-   l'affichage (logo collé à "Fonctionnalités", bouton CTA coupé à droite du
-   téléphone — signalé par captures d'écran réelles en FR). On garde le CTA
-   (l'action qui compte) et on masque le reste plutôt que d'ajouter un menu
-   hamburger ; le sélecteur de langue reste disponible sur /login et dans la
-   sidebar du dashboard. */
+/* En dessous de ~700px, logo + "Features" + "Pricing" + bouton CTA ne
+   tiennent plus sur une ligne (pas de flex-wrap ici, donc ça déborde du
+   viewport au lieu de passer à la ligne). Seuil relevé de 480px à 700px : au
+   départ ce calcul ne tenait compte que du texte anglais ("Dashboard") — avec
+   le FR/ES ("Tableau de bord" est ~2x plus large) le seuil de 480px laissait
+   le bloc déborder (logo collé à "Fonctionnalités", bouton CTA coupé à droite
+   du téléphone — signalé par captures d'écran réelles en FR).
+   Le sélecteur de langue N'EST PAS masqué ici (contrairement à un essai
+   précédent) : le masquer privait les visiteurs mobiles de tout moyen de
+   changer de langue sur la page d'accueil, seule surface où /login et la
+   sidebar du dashboard ne sont d'aucun secours. Il reste affiché, mais en
+   version compacte (`compact` sur LanguageSwitcher, "FR" au lieu de
+   "Français") : voir la règle `.langswitcher--nav` ci-dessous et le padding
+   réduit du header en dessous de 420px pour le budget de largeur. */
 @media (max-width: 700px) {
-  .marketingheader__nav a:not(.btn),
-  .marketingheader__nav .langswitcher--nav {
+  .marketingheader__nav a:not(.btn) {
     display: none;
+  }
+}
+
+/* Phones les plus étroits (~360-390px réels) : le header garde padding 32px
+   de chaque côté par défaut (confortable dès qu'on a de la place), mais avec
+   logo + sélecteur compact + CTA "Tableau de bord" (FR, le plus long des 3
+   langues) ça devient serré — on regagne 32px en resserrant le padding ici. */
+@media (max-width: 420px) {
+  .marketingheader {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
 

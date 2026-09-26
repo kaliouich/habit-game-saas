@@ -46,7 +46,7 @@ export async function StatsPanel({ stats, habits, plan }: StatsPanelProps) {
         <h2 className="panel__title">{t("weeklyProgress")}</h2>
         <BarChart
           values={stats.weeklyProgress.map((w) => w.pct)}
-          labels={stats.weeklyProgress.map((w) => w.label.toLowerCase())}
+          labels={stats.weeklyProgress.map((_, i) => t("weekAbbrev", { n: i + 1 }))}
           height={170}
         />
       </div>

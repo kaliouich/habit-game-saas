@@ -14,7 +14,7 @@
 app:
   replicas: 1
   image:
-    tag: sha-ad9c1d1
+    tag: sha-8cda3b6
 
 route:
   enabled: true

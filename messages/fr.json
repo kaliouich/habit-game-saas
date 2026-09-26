@@ -1,7 +1,8 @@
 {
   "Common": {
     "copy": "Copier",
-    "copied": "Copié !"
+    "copied": "Copié !",
+    "language": "Langue"
   },
   "Marketing": {
     "hero": {
@@ -13,7 +14,17 @@
       "getItOn": "DISPONIBLE SUR",
       "note1": "3 habitudes gratuites, pour toujours",
       "note2": "Essai Pro de 14 jours",
-      "note3": "Exportez vos données à tout moment"
+      "note3": "Exportez vos données à tout moment",
+      "preview": {
+        "level": "Niveau",
+        "thisMonth": "Ce mois-ci",
+        "ticks": "cases",
+        "badges": "Badges",
+        "perfectWeek": "Semaine parfaite",
+        "sevenDayStreak": "Série de 7 jours",
+        "earlyRiser": "Lève-tôt",
+        "locked": "Verrouillé"
+      }
     },
     "features": {
       "title": "Tout ce qu'un tableur permettait. Plus tout ce qu'il ne pouvait pas faire.",
@@ -434,6 +445,21 @@
         "weeklyEmailRecap": "Récap hebdomadaire par email",
         "ads": "Publicités"
       }
+    }
+  },
+  "ErrorPage": {
+    "boundary": {
+      "title": "Une erreur est survenue",
+      "text": "La page n'a pas pu se charger. Vos habitudes et vos séries sont en sécurité — rien n'a été perdu.",
+      "retry": "Réessayer",
+      "backToDashboard": "Retour au tableau de bord",
+      "reference": "Référence : {digest}"
+    },
+    "notFound": {
+      "title": "Page introuvable",
+      "text": "Cette page n'existe pas, ou le lien partagé a expiré.",
+      "home": "Accueil {appName}",
+      "dashboard": "Mon tableau de bord"
     }
   }
 }

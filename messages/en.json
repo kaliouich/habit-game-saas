@@ -1,7 +1,8 @@
 {
   "Common": {
     "copy": "Copy",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "language": "Language"
   },
   "Marketing": {
     "hero": {
@@ -13,7 +14,17 @@
       "getItOn": "GET IT ON",
       "note1": "3 habits free, forever",
       "note2": "14-day Pro trial",
-      "note3": "Export your data anytime"
+      "note3": "Export your data anytime",
+      "preview": {
+        "level": "Level",
+        "thisMonth": "This month",
+        "ticks": "ticks",
+        "badges": "Badges",
+        "perfectWeek": "Perfect week",
+        "sevenDayStreak": "7-day streak",
+        "earlyRiser": "Early riser",
+        "locked": "Locked"
+      }
     },
     "features": {
       "title": "Everything a spreadsheet had. Plus everything it couldn't.",
@@ -434,6 +445,21 @@
         "weeklyEmailRecap": "Weekly email recap",
         "ads": "Ads"
       }
+    }
+  },
+  "ErrorPage": {
+    "boundary": {
+      "title": "Something went wrong",
+      "text": "The page couldn't load. Your habits and streaks are safe — nothing was lost.",
+      "retry": "Try again",
+      "backToDashboard": "Back to dashboard",
+      "reference": "Reference: {digest}"
+    },
+    "notFound": {
+      "title": "Page not found",
+      "text": "This page doesn't exist, or the shared link has expired.",
+      "home": "{appName} home",
+      "dashboard": "My dashboard"
     }
   }
 }

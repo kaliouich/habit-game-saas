@@ -32,6 +32,17 @@ describe("monthDays", () => {
     expect(days[0]).toEqual({ date: "2026-07-01", dayNum: 1, dow: "We" });
     expect(days[30].dow).toBe("Fr");
   });
+  it("locale fr/es : abréviations localisées, même structure", () => {
+    const fr = monthDays("2026-07", "fr");
+    expect(fr[0].dow).toBe("Me"); // mercredi
+    expect(fr[30].dow).toBe("Ve"); // vendredi
+    const es = monthDays("2026-07", "es");
+    expect(es[0].dow).toBe("Mi"); // miércoles
+    expect(es[30].dow).toBe("Vi"); // viernes
+  });
+  it("locale inconnue retombe sur l'anglais", () => {
+    expect(monthDays("2026-07", "de")[0].dow).toBe("We");
+  });
 });
 
 describe("weeksOf", () => {
@@ -40,6 +51,10 @@ describe("weeksOf", () => {
     expect(weeks.map((w) => w.label)).toEqual(["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"]);
     expect(weeks[0].days.map((d) => d.dayNum)).toEqual([1, 2, 3, 4, 5]); // We→Su
     expect(weeks[4].days.map((d) => d.dayNum)).toEqual([27, 28, 29, 30, 31]); // Mo→Fr
+  });
+  it("locale fr : le mot 'Week' est traduit, la numérotation ne change pas", () => {
+    const weeks = weeksOf("2026-07", 1, "fr");
+    expect(weeks.map((w) => w.label)).toEqual(["Semaine 1", "Semaine 2", "Semaine 3", "Semaine 4", "Semaine 5"]);
   });
   it("un mois peut produire 6 groupes (août 2026, lundi)", () => {
     const weeks = weeksOf("2026-08", 1);

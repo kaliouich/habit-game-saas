@@ -1,7 +1,8 @@
 {
   "Common": {
     "copy": "Copiar",
-    "copied": "¡Copiado!"
+    "copied": "¡Copiado!",
+    "language": "Idioma"
   },
   "Marketing": {
     "hero": {
@@ -13,7 +14,17 @@
       "getItOn": "DISPONIBLE EN",
       "note1": "3 hábitos gratis, para siempre",
       "note2": "Prueba Pro de 14 días",
-      "note3": "Exporta tus datos cuando quieras"
+      "note3": "Exporta tus datos cuando quieras",
+      "preview": {
+        "level": "Nivel",
+        "thisMonth": "Este mes",
+        "ticks": "casillas",
+        "badges": "Insignias",
+        "perfectWeek": "Semana perfecta",
+        "sevenDayStreak": "Racha de 7 días",
+        "earlyRiser": "Madrugador",
+        "locked": "Bloqueado"
+      }
     },
     "features": {
       "title": "Todo lo que tenía una hoja de cálculo. Más todo lo que no podía hacer.",
@@ -434,6 +445,21 @@
         "weeklyEmailRecap": "Resumen semanal por email",
         "ads": "Anuncios"
       }
+    }
+  },
+  "ErrorPage": {
+    "boundary": {
+      "title": "Algo salió mal",
+      "text": "La página no se pudo cargar. Tus hábitos y rachas están a salvo — no se perdió nada.",
+      "retry": "Reintentar",
+      "backToDashboard": "Volver al panel",
+      "reference": "Referencia: {digest}"
+    },
+    "notFound": {
+      "title": "Página no encontrada",
+      "text": "Esta página no existe, o el enlace compartido ha expirado.",
+      "home": "Inicio de {appName}",
+      "dashboard": "Mi panel"
     }
   }
 }

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import * as Sentry from "@sentry/nextjs";
+import { useTranslations } from "next-intl";
 
 /**
  * Frontière d'erreur des routes. Sans ce fichier, toute exception d'un Server
@@ -20,6 +21,8 @@ export default function ErrorBoundary({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("ErrorPage.boundary");
+
   useEffect(() => {
     Sentry.captureException(error); // no-op tant que le DSN n'est pas configuré
   }, [error]);
@@ -27,19 +30,17 @@ export default function ErrorBoundary({
   return (
     <div className="errorpage">
       <div className="errorcard">
-        <h1 className="errorcard__title">Something went wrong</h1>
-        <p className="errorcard__text">
-          The page couldn&apos;t load. Your habits and streaks are safe — nothing was lost.
-        </p>
+        <h1 className="errorcard__title">{t("title")}</h1>
+        <p className="errorcard__text">{t("text")}</p>
         <div className="errorcard__actions">
           <button type="button" onClick={reset} className="btn btn--primary">
-            Try again
+            {t("retry")}
           </button>
           <a href="/app" className="btn btn--secondary">
-            Back to dashboard
+            {t("backToDashboard")}
           </a>
         </div>
-        {error.digest && <p className="errorcard__digest">Reference: {error.digest}</p>}
+        {error.digest && <p className="errorcard__digest">{t("reference", { digest: error.digest })}</p>}
       </div>
     </div>
   );

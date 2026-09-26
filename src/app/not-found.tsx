@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { APP_NAME } from "@/lib/config";
 
 /**
@@ -6,20 +7,19 @@ import { APP_NAME } from "@/lib/config";
  * (/recap/<userId>/<month>) quand le lien est périmé, mal formé, ou que
  * l'auteur n'est plus Pro — cas nominal, pas une anomalie.
  */
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getTranslations("ErrorPage.notFound");
   return (
     <div className="errorpage">
       <div className="errorcard">
-        <h1 className="errorcard__title">Page not found</h1>
-        <p className="errorcard__text">
-          This page doesn&apos;t exist, or the shared link has expired.
-        </p>
+        <h1 className="errorcard__title">{t("title")}</h1>
+        <p className="errorcard__text">{t("text")}</p>
         <div className="errorcard__actions">
           <Link href="/" className="btn btn--secondary">
-            {APP_NAME} home
+            {t("home", { appName: APP_NAME })}
           </Link>
           <Link href="/app" className="btn btn--primary">
-            My dashboard
+            {t("dashboard")}
           </Link>
         </div>
       </div>

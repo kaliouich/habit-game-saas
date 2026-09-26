@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 const HABITS = ["Wake up at 05:00", "Gym", "Reading", "Deep work · 2h"];
 const WEIGHTS = [0.86, 0.55, 0.78, 0.66];
@@ -14,6 +15,7 @@ function seeded(h: number, d: number): number {
 
 /** Aperçu interactif de la landing — le board du produit, pas une capture d'écran. */
 export function HeroPreview() {
+  const t = useTranslations("Marketing.hero.preview");
   const initial = useMemo(
     () =>
       HABITS.map((_, h) =>
@@ -55,7 +57,7 @@ export function HeroPreview() {
         <div className="heroboard__level">
           <b>{level}</b>
           <div>
-            <small>Level</small>
+            <small>{t("level")}</small>
             <span>{xp % 500} / 500 XP</span>
           </div>
         </div>
@@ -63,9 +65,9 @@ export function HeroPreview() {
       </div>
 
       <div className="heroboard__label">
-        <span>This month</span>
+        <span>{t("thisMonth")}</span>
         <span>
-          {totalOn}/{totalPossible} ticks
+          {totalOn}/{totalPossible} {t("ticks")}
         </span>
       </div>
       <div className="heroboard__grid">
@@ -108,24 +110,24 @@ export function HeroPreview() {
       </div>
 
       <div className="heroboard__shelf">
-        <p className="heroboard__shelflabel">Badges</p>
+        <p className="heroboard__shelflabel">{t("badges")}</p>
         <div className="heroboard__badges">
-          <span className="heroboard__badge" data-got="1" title="Perfect week">
+          <span className="heroboard__badge" data-got="1" title={t("perfectWeek")}>
             🏅
           </span>
-          <span className="heroboard__badge" data-got="1" title="7-day streak">
+          <span className="heroboard__badge" data-got="1" title={t("sevenDayStreak")}>
             🔥
           </span>
-          <span className="heroboard__badge" data-got="1" title="Early riser">
+          <span className="heroboard__badge" data-got="1" title={t("earlyRiser")}>
             🌅
           </span>
-          <span className="heroboard__badge" data-got="0" title="Locked">
+          <span className="heroboard__badge" data-got="0" title={t("locked")}>
             🏔
           </span>
-          <span className="heroboard__badge" data-got="0" title="Locked">
+          <span className="heroboard__badge" data-got="0" title={t("locked")}>
             💎
           </span>
-          <span className="heroboard__badge" data-got="0" title="Locked">
+          <span className="heroboard__badge" data-got="0" title={t("locked")}>
             👑
           </span>
         </div>

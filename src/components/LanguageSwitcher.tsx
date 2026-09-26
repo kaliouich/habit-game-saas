@@ -1,12 +1,13 @@
 "use client";
 
 import { useTransition } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { setLocale } from "@/lib/actions/locale";
 import { LOCALES, LOCALE_LABELS } from "@/i18n/config";
 
 export function LanguageSwitcher({ className }: { className?: string }) {
   const locale = useLocale();
+  const t = useTranslations("Common");
   const [isPending, startTransition] = useTransition();
 
   return (
@@ -14,7 +15,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
       className={className ?? "langswitcher"}
       value={locale}
       disabled={isPending}
-      aria-label="Language"
+      aria-label={t("language")}
       onChange={(e) => {
         const next = e.target.value;
         startTransition(async () => {

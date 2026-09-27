@@ -122,7 +122,7 @@ export async function generateHabitsAction(
   const input = GoalSurveySchema.parse(surveyInput);
   const user = await getCurrentUser();
 
-  const limited = rateLimit(`ai-onboarding:${user.id}`, RATE_LIMITS.aiHabitGeneration.limit, RATE_LIMITS.aiHabitGeneration.windowMs);
+  const limited = await rateLimit(`ai-onboarding:${user.id}`, RATE_LIMITS.aiHabitGeneration.limit, RATE_LIMITS.aiHabitGeneration.windowMs);
   if (!limited.ok) {
     return { ok: false, error: "RATE_LIMITED" };
   }

@@ -90,6 +90,10 @@ spec:
                 secretKeyRef:
                   name: {{ include "habit-game.secretName" . }}
                   key: CRON_SECRET
+            {{- if .Values.valkey.enabled }}
+            - name: RATE_LIMIT_REDIS_URL
+              value: "redis://{{ include "habit-game.valkeyName" . }}:6379"
+            {{- end }}
           readinessProbe:
             httpGet:
               path: {{ .Values.app.probes.readiness.path }}

@@ -1,0 +1,52 @@
+{{- if .Values.valkey.enabled }}
+# Rate limiter dédié — voir src/lib/rateLimit.ts. Pas de PVC volontairement :
+# les compteurs sont éphémères par nature (fenêtre glissante de quelques
+# minutes), perdre l'état à un redémarrage ne fait que réinitialiser les
+# compteurs, jamais une perte de données réelle. Pas de mot de passe non plus :
+# ClusterIP interne uniquement, jamais exposé — même modèle de confiance que
+# la communication pod-à-pod vers habit-postgres avant l'ajout de secrets.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "habit-game.valkeyName" . }}
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    app: {{ include "habit-game.valkeyName" . }}
+    {{- include "habit-game.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "habit-game.valkeyName" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "habit-game.valkeyName" . }}
+    spec:
+      containers:
+        - name: valkey
+          image: {{ .Values.valkey.image }}
+          ports:
+            - containerPort: 6379
+          readinessProbe:
+            exec:
+              command: ["valkey-cli", "ping"]
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.valkey.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "habit-game.valkeyName" . }}
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    {{- include "habit-game.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ include "habit-game.valkeyName" . }}
+  ports:
+    - port: 6379
+      targetPort: 6379
+{{- end }}

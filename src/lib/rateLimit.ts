@@ -1,11 +1,14 @@
+import { createClient, type RedisClientType } from "redis";
+
 /**
- * Limitation de débit en mémoire, par processus.
+ * Limitation de débit — Valkey partagé si configuré (RATE_LIMIT_REDIS_URL,
+ * voir helm/habit-game/templates/valkey.yaml), sinon repli en mémoire du
+ * process (comportement historique, correct seulement à `replicas: 1`).
  *
- * ⚠️ Portée : le compteur vit dans le pod. Le déploiement tourne avec
- * `replicas: 1` (voir helm/habit-game/values.yaml), donc la limite est
- * effective aujourd'hui. **Passer à plusieurs replicas la diviserait d'autant**
- * — il faudra alors un store partagé (Redis/Valkey, déjà présent dans le
- * cluster pour Gitea) plutôt que cette Map.
+ * Le repli mémoire n'est pas qu'un filet pour la prod : c'est aussi ce qui
+ * fait tourner les tests et le dev local sans dépendance Redis — aucune des
+ * deux implémentations n'est un mode dégradé "cassé", les deux appliquent la
+ * même politique, seule la portée du compteur change (par pod vs partagée).
  *
  * Objectif : empêcher qu'un compte compromis ou un script crée des centaines
  * de sessions Stripe Checkout (chaque appel touche l'API Stripe et crée des
@@ -35,12 +38,7 @@ export interface RateLimitResult {
   retryAfter: number;
 }
 
-/**
- * Fenêtre fixe : `limit` requêtes par `windowMs` pour une même clé.
- * @param key identité de l'appelant (userId de préférence — stable et non
- *   falsifiable côté client, contrairement à une IP derrière proxy).
- */
-export function rateLimit(key: string, limit: number, windowMs: number): RateLimitResult {
+function memoryRateLimit(key: string, limit: number, windowMs: number): RateLimitResult {
   const now = Date.now();
   sweep(now);
 
@@ -56,6 +54,79 @@ export function rateLimit(key: string, limit: number, windowMs: number): RateLim
     return { ok: false, retryAfter: Math.ceil((bucket.resetAt - now) / 1000) };
   }
   return { ok: true, retryAfter: 0 };
+}
+
+const globalForRedis = globalThis as unknown as { rateLimitRedis?: RedisClientType };
+
+/**
+ * Client lazy, une seule connexion par process — jamais recréée à chaque
+ * appel (voir getStripeClient/getAnthropicClient, même convention). Retourne
+ * `null` (jamais ne lève) si RATE_LIMIT_REDIS_URL est absente ou si la
+ * connexion échoue : l'appelant retombe alors sur memoryRateLimit plutôt que
+ * de faire échouer un checkout parce que Valkey est indisponible.
+ */
+async function getRedis(): Promise<RedisClientType | null> {
+  const url = process.env.RATE_LIMIT_REDIS_URL;
+  if (!url) return null;
+
+  let client = globalForRedis.rateLimitRedis;
+  if (client === undefined) {
+    client = createClient({
+      url,
+      socket: {
+        // Sans ceci, le client par défaut retente indéfiniment (backoff
+        // exponentiel) une connexion à un hôte injoignable — un premier appel
+        // bloquerait la Server Action (checkout, export…) au lieu de retomber
+        // vite sur memoryRateLimit comme prévu. reconnectStrategy:false
+        // désactive SA boucle de reconnexion auto ; on reconnecte nous-mêmes
+        // ci-dessous, à la demande, pour ne pas rester bloqué en repli mémoire
+        // indéfiniment après une coupure transitoire de Valkey.
+        connectTimeout: 300,
+        reconnectStrategy: false,
+      },
+    });
+    client.on("error", () => {
+      /* évite un crash process (unhandled 'error') sur une coupure réseau —
+         chaque appel vérifie isReady avant usage et retente ci-dessous */
+    });
+    globalForRedis.rateLimitRedis = client;
+  }
+
+  if (!client.isReady && !client.isOpen) {
+    try {
+      await client.connect();
+    } catch {
+      return null;
+    }
+  }
+  return client.isReady ? client : null;
+}
+
+/**
+ * Fenêtre fixe : `limit` requêtes par `windowMs` pour une même clé.
+ * @param key identité de l'appelant (userId de préférence — stable et non
+ *   falsifiable côté client, contrairement à une IP derrière proxy).
+ */
+export async function rateLimit(key: string, limit: number, windowMs: number): Promise<RateLimitResult> {
+  const redis = await getRedis();
+  if (!redis) return memoryRateLimit(key, limit, windowMs);
+
+  try {
+    const rkey = `ratelimit:${key}`;
+    const hits = await redis.incr(rkey);
+    if (hits === 1) {
+      await redis.pExpire(rkey, windowMs);
+    }
+    if (hits > limit) {
+      const ttl = await redis.pTTL(rkey);
+      return { ok: false, retryAfter: Math.ceil((ttl > 0 ? ttl : windowMs) / 1000) };
+    }
+    return { ok: true, retryAfter: 0 };
+  } catch {
+    // Valkey injoignable en cours de route (pas seulement à la connexion) →
+    // repli mémoire pour cet appel plutôt que de bloquer l'action utilisateur.
+    return memoryRateLimit(key, limit, windowMs);
+  }
 }
 
 /** Quotas par opération — volontairement larges : un humain ne les atteint pas. */
@@ -81,7 +152,7 @@ export const RATE_LIMITS = {
   aiHabitGeneration: { limit: 5, windowMs: 60 * 60 * 1000 },
 } as const;
 
-/** Remise à zéro — tests uniquement. */
+/** Remise à zéro — tests uniquement (repli mémoire ; aucune instance Redis en test). */
 export function __resetRateLimits(): void {
   buckets.clear();
 }

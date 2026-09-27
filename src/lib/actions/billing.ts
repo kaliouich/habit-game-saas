@@ -37,7 +37,7 @@ export async function createDonationCheckoutSession(formData: FormData): Promise
 
   // Chaque appel crée un objet côté Stripe : on plafonne pour qu'un script ne
   // puisse pas noyer le tableau de bord de sessions abandonnées.
-  const limited = rateLimit(`donation:${user.id}`, RATE_LIMITS.checkout.limit, RATE_LIMITS.checkout.windowMs);
+  const limited = await rateLimit(`donation:${user.id}`, RATE_LIMITS.checkout.limit, RATE_LIMITS.checkout.windowMs);
   if (!limited.ok) throw new Error("RATE_LIMITED");
 
   let customerId = user.stripeCustomerId;
@@ -78,7 +78,7 @@ export async function createDonationCheckoutSession(formData: FormData): Promise
 export async function createCheckoutSession(): Promise<void> {
   const user = await getCurrentUser();
 
-  const limited = rateLimit(`checkout:${user.id}`, RATE_LIMITS.checkout.limit, RATE_LIMITS.checkout.windowMs);
+  const limited = await rateLimit(`checkout:${user.id}`, RATE_LIMITS.checkout.limit, RATE_LIMITS.checkout.windowMs);
   if (!limited.ok) throw new Error("RATE_LIMITED");
 
   let customerId = user.stripeCustomerId;
@@ -111,7 +111,7 @@ export async function createCheckoutSession(): Promise<void> {
 export async function createPortalSession(): Promise<void> {
   const user = await getCurrentUser();
 
-  const limited = rateLimit(`portal:${user.id}`, RATE_LIMITS.portal.limit, RATE_LIMITS.portal.windowMs);
+  const limited = await rateLimit(`portal:${user.id}`, RATE_LIMITS.portal.limit, RATE_LIMITS.portal.windowMs);
   if (!limited.ok) throw new Error("RATE_LIMITED");
   if (!user.stripeCustomerId) throw new Error("NO_STRIPE_CUSTOMER");
 

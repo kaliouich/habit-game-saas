@@ -18,6 +18,14 @@ des noms identiques.
 habit-postgres
 {{- end -}}
 
+{{/*
+Nom du service Valkey dédié au rate limiter (voir templates/valkey.yaml) —
+"habit-valkey", même convention que "habit-postgres" ci-dessus.
+*/}}
+{{- define "habit-game.valkeyName" -}}
+habit-valkey
+{{- end -}}
+
 {{- define "habit-game.labels" -}}
 app.kubernetes.io/name: {{ include "habit-game.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}

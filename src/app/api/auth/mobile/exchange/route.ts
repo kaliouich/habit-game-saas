@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  const rl = rateLimit(
+  const rl = await rateLimit(
     `mobile-auth-exchange:${ip}`,
     RATE_LIMITS.mobileAuthExchange.limit,
     RATE_LIMITS.mobileAuthExchange.windowMs,

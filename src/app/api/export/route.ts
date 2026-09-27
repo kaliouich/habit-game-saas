@@ -49,7 +49,7 @@ export async function GET(req: Request) {
 
   // Requête lourde (tout l'historique du compte) : on la plafonne pour qu'une
   // boucle ne puisse pas saturer la base à elle seule.
-  const limited = rateLimit(`export:${user.id}`, RATE_LIMITS.export.limit, RATE_LIMITS.export.windowMs);
+  const limited = await rateLimit(`export:${user.id}`, RATE_LIMITS.export.limit, RATE_LIMITS.export.windowMs);
   if (!limited.ok) {
     return Response.json(
       { error: "Too many exports, please retry later" },

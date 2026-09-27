@@ -71,6 +71,21 @@ postgres:
     limits:
       memory: 512Mi
 
+# ── Valkey (rate limiter partagé — voir src/lib/rateLimit.ts) ────────────────
+# Sans ça, le rate limiter vit en mémoire du process : correct à replicas:1
+# (aujourd'hui), mais diviserait la limite par le nombre de replicas dès qu'on
+# en ajoute un — ce service existe pour lever ce plafond avant d'en avoir besoin.
+# Pas de PVC, pas de mot de passe : voir templates/valkey.yaml.
+valkey:
+  enabled: true
+  image: valkey/valkey:8-alpine
+  resources:
+    requests:
+      cpu: 15m
+      memory: 24Mi
+    limits:
+      memory: 64Mi
+
 # ── CronJob : récap hebdomadaire (lundi 08:00) ──────────────────────────────
 weeklyRecap:
   enabled: true

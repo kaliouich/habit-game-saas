@@ -1766,14 +1766,31 @@ select {
 
   /* Content-first on mobile: the grid is the product, so it comes before
      the sidebar and stats column rather than forcing a long scroll past
-     "My Habits" / mood chart / account footer to reach it. */
+     "My Habits" / mood chart / account footer to reach it. Lifted (like
+     .sidebar/.dashboard__right below) so Today + Daily Progress can sit
+     before "Mes habitudes", and To-Do/Timer/the grid after it, per explicit
+     user-requested order: Today, Daily Progression, My Habits, To-Do. */
   .dashboard__main {
+    display: contents;
+  }
+
+  .dashboard__main > .todaypanel,
+  .dashboard__main > .panel--daily {
     order: 1;
+  }
+
+  .dashboard__main > .panel--tasks,
+  .dashboard__main > .panel--timer,
+  .dashboard__main > .panel--quit,
+  .dashboard__main > .gridwrap {
+    order: 3;
   }
 
   /* Stats (XP, badges, analysis) before the account footer, not after — see
      .sidebar__bottom below for why "Sign out" needs to stay the actual last
-     thing on the screen. */
+     thing on the screen. Same order:3 as the To-Do/Timer/grid group above:
+     DOM order (main's content precedes .dashboard__right's) breaks the tie,
+     so no separate number is needed. */
   .dashboard__right {
     order: 3;
   }
@@ -1804,8 +1821,9 @@ select {
     padding: 14px;
   }
 
-  /* Habit list + add-habit form, right after the grid it manages instead of
-     scrolled miles away from it. */
+  /* Habit list + add-habit form — user-requested position: right after Daily
+     Progression and before To-Do, not scrolled miles away from the habits
+     it's managing (was after the whole grid; moved on further feedback). */
   .sidebar__habits {
     order: 2;
     background: var(--panel);

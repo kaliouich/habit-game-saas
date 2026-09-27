@@ -114,7 +114,14 @@ export async function Dashboard({
       />
 
       <main className="dashboard__main">
-        {buildHabits.length > 0 && <TodayPanel habits={buildHabits} today={today} />}
+        {buildHabits.length > 0 && (
+          <TodayPanel
+            habits={buildHabits}
+            today={today}
+            todayMood={stats.moodByDate.get(today) ?? null}
+            todayMotivation={stats.motivationByDate.get(today) ?? null}
+          />
+        )}
         {buildHabits.length > 0 && (
           <div className="panel panel--daily">
             <h2 className="panel__title">{t("dailyProgress")}</h2>

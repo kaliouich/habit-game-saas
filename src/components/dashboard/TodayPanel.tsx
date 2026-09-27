@@ -4,6 +4,7 @@ import type { ISODate } from "@/lib/dates";
 import { habitUnitConfig } from "@/lib/config";
 import { DayCheckbox } from "./DayCheckbox";
 import { DayValueCell } from "./DayValueCell";
+import { MoodCell } from "./MoodCell";
 
 interface TodayHabit {
   id: string;
@@ -19,6 +20,11 @@ interface TodayHabit {
 interface TodayPanelProps {
   habits: TodayHabit[];
   today: ISODate;
+  /** Humeur/motivation du jour — mêmes champs que le pied de MonthGrid, juste
+   *  accessibles ici pour ne pas forcer un scroll jusqu'à la grille pour un
+   *  geste aussi quotidien que cocher une habitude. */
+  todayMood: number | null;
+  todayMotivation: number | null;
 }
 
 /** Le tableur mensuel (.gridwrap) reste la vue signature du produit, mais sur
@@ -27,12 +33,21 @@ interface TodayPanelProps {
  *  panneau met le geste du jour (une ligne, un tap) tout en haut, avant même
  *  le graphique, sans dupliquer la logique de coche : mêmes DayCheckbox /
  *  DayValueCell que la grille, juste réarrangés en liste verticale. */
-export async function TodayPanel({ habits, today }: TodayPanelProps) {
+export async function TodayPanel({ habits, today, todayMood, todayMotivation }: TodayPanelProps) {
   const t = await getTranslations("Dashboard");
+  const tGrid = await getTranslations("Dashboard.grid");
   return (
     <div className="panel todaypanel">
       <h2 className="panel__title">{t("today")}</h2>
       <ul className="todaypanel__list">
+        <li className="todaypanel__row">
+          <span className="todaypanel__name">{tGrid("mood")}</span>
+          <MoodCell date={today} value={todayMood} disabled={false} />
+        </li>
+        <li className="todaypanel__row">
+          <span className="todaypanel__name">{tGrid("motivation")}</span>
+          <MoodCell date={today} value={todayMotivation} disabled={false} field="motivation" />
+        </li>
         {habits.map((h) => {
           const isQuantified = h.unit && h.unit !== "TIMES";
           const unit = isQuantified ? habitUnitConfig(h.unit!) : null;

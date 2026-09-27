@@ -1827,8 +1827,32 @@ select {
     padding: 14px;
   }
 
+  /* Same lift as .sidebar above: reported directly ("why is my level in the
+     middle of the page") — the rank/level/XP hero card lived at the TOP of
+     .dashboard__right, but that whole block only appears at order:3, after
+     today's actions, the grid, AND habit management. Lifting .dashboard__right
+     and .statspanel to display:contents pulls just .herocard out to sit right
+     after the month header (order:0), while every other stat panel (weekly
+     chart, goal cards, donut, badges, analysis, top10) and the sidebar ad stay
+     grouped together at their previous order:3 position. Desktop untouched —
+     .dashboard__right/.statspanel keep their normal box on every wider
+     breakpoint, this is mobile-only. */
+  .dashboard__right {
+    display: contents;
+  }
+
   .statspanel {
-    grid-template-columns: 1fr;
+    display: contents;
+  }
+
+  .statspanel > .herocard {
+    order: 0;
+  }
+
+  .statspanel > .panel,
+  .statspanel > .statcards,
+  .dashboard__right > .ad-sidebar {
+    order: 3;
   }
 
   /* Touch targets: 18px checkboxes are well under the ~24px minimum that's

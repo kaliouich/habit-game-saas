@@ -92,6 +92,12 @@ weeklyRecap:
   schedule: "0 8 * * 1"
   curlImage: curlimages/curl:8.11.0
 
+# ── CronJob : relance des comptes inactifs (quotidien 09:00) ────────────────
+lapsedNudge:
+  enabled: true
+  schedule: "0 9 * * *"
+  curlImage: curlimages/curl:8.11.0
+
 # ── Secrets ──────────────────────────────────────────────────────────────────
 # secrets.create=true : le chart crée les Secrets k8s à partir des valeurs
 # ci-dessous (à passer via -f secrets.local.yaml gitignored, ou --set-string).

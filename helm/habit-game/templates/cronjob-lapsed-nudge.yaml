@@ -1,0 +1,36 @@
+{{- if .Values.lapsedNudge.enabled }}
+# Relance quotidienne des comptes inactifs depuis 3 jours (tous plans — voir
+# src/app/api/cron/lapsed-nudge/route.ts pour pourquoi ce n'est pas réservé
+# aux Pro comme le récap hebdomadaire). No-op propre côté app tant que
+# AUTH_RESEND_KEY n'est pas configurée.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "habit-game.name" . }}-lapsed-nudge
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    {{- include "habit-game.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.lapsedNudge.schedule | quote }}
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: trigger
+              image: {{ .Values.lapsedNudge.curlImage }}
+              env:
+                - name: CRON_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "habit-game.secretName" . }}
+                      key: CRON_SECRET
+              command:
+                - sh
+                - -c
+                - >
+                  curl -f -X POST http://{{ include "habit-game.name" . }}-svc/api/cron/lapsed-nudge
+                  -H "Authorization: Bearer $CRON_SECRET"
+{{- end }}

@@ -3,42 +3,32 @@
 import { useEffect } from "react";
 
 /**
- * Enregistre le service worker — sur le WEB uniquement.
+ * Enregistre le service worker — web ET app native désormais.
  *
- * Dans l'app Capacitor, il n'apporte rien (l'app est déjà « installée », et
- * la coque native gère son propre cycle de vie) mais ajoute une couche
- * d'interception sur chaque navigation. Il a déjà causé un bug réel en
- * mettant en cache les réponses de /api/auth/*, et il complique le diagnostic
- * de tout problème de navigation dans la WebView. Coût nul à le désactiver,
- * bénéfice réel en fiabilité.
+ * Désactivé pour la coque Capacitor le 10 août (commit 6582077) après un bug
+ * réel : le worker mettait en cache /api/auth/callback/google, rejouant une
+ * réponse d'auth à usage unique. Ce correctif-là est resté côté serveur
+ * (isBypassed() dans sw.js exclut tout /api/* de l'interception — structurel,
+ * jamais régressé depuis) ; l'autre moitié du bug de l'époque (cookies tiers
+ * bloqués par la WebView Android) est sans rapport avec le service worker et
+ * est réglée côté natif (MainActivity.setAcceptThirdPartyCookies). Le
+ * désactiver entièrement était alors la prudence la plus sûre en attendant
+ * de confirmer les deux correctifs en même temps — mais sans lui, l'app
+ * native n'offre aucun mode hors-ligne, ce qui est maintenant demandé
+ * explicitement. Le réactiver ne touche pas à /api/*, donc ne réintroduit
+ * pas le bug d'origine.
  *
- * Un service worker déjà enregistré par une version précédente de l'app est
- * désinscrit explicitement : il survit aux mises à jour d'APK (les données de
- * la WebView ne sont pas effacées par une réinstallation), donc ne plus
- * l'enregistrer ne suffirait pas à s'en débarrasser.
+ * Un service worker survit aux mises à jour d'APK (réinstaller n'efface pas
+ * les données de la WebView) — rien à désinscrire ici, au contraire de la
+ * version précédente de ce composant.
  */
 export function ServiceWorkerRegister() {
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
 
-    (async () => {
-      const { Capacitor } = await import("@capacitor/core");
-
-      if (Capacitor.isNativePlatform()) {
-        const registrations = await navigator.serviceWorker.getRegistrations().catch(() => []);
-        await Promise.all(registrations.map((r) => r.unregister().catch(() => false)));
-        // Purge aussi les réponses déjà stockées par l'ancien worker.
-        if ("caches" in window) {
-          const keys = await caches.keys().catch(() => [] as string[]);
-          await Promise.all(keys.map((k) => caches.delete(k).catch(() => false)));
-        }
-        return;
-      }
-
-      navigator.serviceWorker.register("/sw.js").catch(() => {
-        // installabilité PWA dégradée, mais non bloquante
-      });
-    })();
+    navigator.serviceWorker.register("/sw.js").catch(() => {
+      // installabilité PWA / cache hors-ligne dégradés, mais non bloquants
+    });
   }, []);
 
   return null;

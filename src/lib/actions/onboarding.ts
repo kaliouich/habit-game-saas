@@ -140,10 +140,20 @@ export async function generateHabitsAction(
  *  (et, en cascade via le schema Prisma, leurs logs/pauses/rechutes) puis
  *  renvoie vers l'onboarding pour reconstruire la liste depuis zéro.
  *  Irréversible : la confirmation à deux temps vit côté client
- *  (StartOverPanel), pas ici — cette action suppose déjà le consentement. */
+ *  (StartOverPanel), pas ici — cette action suppose déjà le consentement.
+ *
+ *  MoodLog n'est PAS une relation de Habit (voir schema.prisma — elle vit
+ *  directement sous userId, une entrée par jour, indépendante de toute
+ *  habitude précise) : supprimer les habitudes ne la purge jamais par
+ *  cascade. Oublié à l'origine — un "recommencer à zéro" laissait donc
+ *  l'humeur/motivation de tout l'historique intactes, contredisant le geste
+ *  même de repartir de zéro. */
 export async function resetHabitsAction(): Promise<{ ok: boolean; deleted: number }> {
   const user = await getCurrentUser();
-  const { count } = await prisma.habit.deleteMany({ where: { userId: user.id } });
+  const [{ count }] = await prisma.$transaction([
+    prisma.habit.deleteMany({ where: { userId: user.id } }),
+    prisma.moodLog.deleteMany({ where: { userId: user.id } }),
+  ]);
   revalidatePath("/app");
   return { ok: true, deleted: count };
 }

@@ -1,9 +1,21 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { auth } from "@/lib/auth";
 import { APP_NAME } from "@/lib/config";
 import { HeroPreview } from "@/components/marketing/HeroPreview";
 
 export default async function LandingPage() {
+  // L'app native (Capacitor) ET le navigateur chargent tous les deux "/" en
+  // entrée (server.url dans capacitor.config.ts, pas de bundle statique
+  // séparé) — sans ce check, un utilisateur déjà connecté revoyait la page
+  // marketing à chaque ouverture de l'app/du site au lieu d'atterrir
+  // directement sur son tableau de bord.
+  const session = await auth();
+  if (session?.user?.id) {
+    redirect("/app");
+  }
+
   const t = await getTranslations("Marketing");
   // Se remplit tout seul dès que la fiche Play Store existe — même mécanique
   // que isStripeConfigured()/isAiOnboardingConfigured() : le badge n'apparaît

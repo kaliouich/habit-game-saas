@@ -233,6 +233,13 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
                 onClick={() => {
                   startTransition(async () => {
                     await archiveHabit({ habitId });
+                    // Contrairement à Save, cette action fait disparaître la
+                    // ligne de la liste (archivedAt désormais hors des
+                    // filtres de getDashboardData) — rien à montrer une fois
+                    // le serveur revalidé, et sans ce close() explicite le
+                    // panneau restait visiblement ouvert le temps du
+                    // round-trip réseau (voire bloqué si l'action échouait).
+                    close();
                   });
                 }}
               >

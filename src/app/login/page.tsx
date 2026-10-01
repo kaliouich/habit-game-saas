@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { auth } from "@/lib/auth";
 import { APP_NAME } from "@/lib/config";
 import { signInWithEmail } from "@/lib/actions/auth";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
@@ -14,6 +16,14 @@ export const dynamic = "force-dynamic";
 const STRIP = [true, true, false, true, true, false, true];
 
 export default async function LoginPage() {
+  // Même raison que la page marketing : un utilisateur déjà connecté qui
+  // atterrit ici (bookmark, lien de parrainage réutilisé) ne doit pas revoir
+  // le formulaire de connexion, mais aller directement à son tableau de bord.
+  const session = await auth();
+  if (session?.user?.id) {
+    redirect("/app");
+  }
+
   // N'affiche que les providers réellement configurés — évite un bouton/formulaire
   // qui planterait silencieusement si la clé correspondante n'est pas encore fournie.
   const googleEnabled = Boolean(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);

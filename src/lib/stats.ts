@@ -3,10 +3,11 @@
  * Aucun composant ne recalcule quoi que ce soit : il consomme `MonthStats`.
  */
 import {
+  isDueOn,
+  countDueDays,
   type ISODate,
   type MonthKey,
   type WeekGroup,
-  daysInMonth,
   monthDays,
   weeksOf,
   prevDay,
@@ -29,6 +30,10 @@ export interface HabitWithLogs {
   loggedDates: Set<ISODate>;
   /** Jours en pause / vacation mode (Pro) — n'entrent ni ne cassent un streak. */
   pausedDates?: Set<ISODate>;
+  /** Jours prévus (0=dim..6=sam) — vide/absent = tous les jours. Les autres jours
+   *  se comportent comme une pause pour les séries, sortent du dénominateur de
+   *  la progression quotidienne et du but mensuel par défaut. */
+  scheduleDays?: number[];
   /** Tags libres (Pro) — non utilisés par les formules ci-dessous, portés pour l'UI. */
   tags?: string[];
   /** QUIT uniquement (Phase 2 roadmap) — début de l'abstinence en cours. */
@@ -94,31 +99,47 @@ export function deriveLoggedDates(logs: { date: ISODate; value: number }[], targ
 /**
  * Série en cours : jours consécutifs cochés en remontant depuis `today` (ou hier
  * si today pas coché). `paused` (vacation mode, Pro) : les jours dans cet
- * ensemble sont traversés sans compter ET sans casser la série.
+ * ensemble sont traversés sans compter ET sans casser la série. Un jour où
+ * l'habitude n'est pas prévue (`scheduleDays`) est traité exactement pareil.
  */
 export function currentStreak(
   logged: Set<ISODate>,
   today: ISODate,
   paused: Set<ISODate> = new Set(),
+  scheduleDays?: readonly number[],
 ): number {
+  const skip = (d: ISODate) => paused.has(d) || !isDueOn(scheduleDays, d);
   let cursor = logged.has(today) ? today : prevDay(today);
   let count = 0;
-  while (logged.has(cursor) || paused.has(cursor)) {
+  while (logged.has(cursor) || skip(cursor)) {
     if (logged.has(cursor)) count++;
     cursor = prevDay(cursor);
   }
   return count;
 }
 
+/** Vrai si `date` ouvre une série : en remontant à travers les jours ignorés
+ *  (pause / non prévus), on ne retombe pas sur un jour coché. Borné pour ne
+ *  jamais boucler si tout l'historique est ignoré. */
+function isChainStart(date: ISODate, logged: Set<ISODate>, skip: (d: ISODate) => boolean): boolean {
+  let cursor = prevDay(date);
+  for (let i = 0; i < 1200 && !logged.has(cursor) && skip(cursor); i++) cursor = prevDay(cursor);
+  return !logged.has(cursor);
+}
+
 /** Record absolu de jours consécutifs (mêmes règles de pause que currentStreak). */
-export function bestStreak(logged: Set<ISODate>, paused: Set<ISODate> = new Set()): number {
+export function bestStreak(
+  logged: Set<ISODate>,
+  paused: Set<ISODate> = new Set(),
+  scheduleDays?: readonly number[],
+): number {
+  const skip = (d: ISODate) => paused.has(d) || !isDueOn(scheduleDays, d);
   let best = 0;
   for (const date of logged) {
-    // départ de série uniquement : la veille n'est ni cochée ni en pause
-    if (logged.has(prevDay(date)) || paused.has(prevDay(date))) continue;
+    if (!isChainStart(date, logged, skip)) continue;
     let len = 0;
     let cursor = date;
-    while (logged.has(cursor) || paused.has(cursor)) {
+    while (logged.has(cursor) || skip(cursor)) {
       if (logged.has(cursor)) len++;
       const y = Number(cursor.slice(0, 4));
       const m = Number(cursor.slice(5, 7));
@@ -142,7 +163,6 @@ export function computeMonthStats(params: {
   const { month, habits, moods, today, weekStartsOn = 1, locale = "en" } = params;
   const days = monthDays(month, locale);
   const weeks = weeksOf(month, weekStartsOn, locale);
-  const nDays = daysInMonth(month);
   const habitCount = habits.length;
 
   const inMonth = (d: ISODate) => monthOf(d) === month;
@@ -151,9 +171,16 @@ export function computeMonthStats(params: {
   // V4 — Daily Progress
   const dailyProgress = days.map((day) => {
     if (!isPastOrToday(day.date) || habitCount === 0) return null;
+    // Seules les habitudes prévues ce jour-là comptent au dénominateur : un
+    // jour de repos d'une habitude M/Me/V ne doit pas faire chuter la barre.
+    let due = 0;
     let done = 0;
-    for (const h of habits) if (h.loggedDates.has(day.date)) done++;
-    return done / habitCount;
+    for (const h of habits) {
+      if (!isDueOn(h.scheduleDays, day.date)) continue;
+      due++;
+      if (h.loggedDates.has(day.date)) done++;
+    }
+    return due === 0 ? null : done / due;
   });
 
   // V5 — Weekly Progress (moyenne des jours écoulés de la semaine)
@@ -166,7 +193,7 @@ export function computeMonthStats(params: {
 
   // V8 — Analysis par habitude
   const analysis: HabitAnalysis[] = habits.map((h) => {
-    const goal = h.goal ?? nDays;
+    const goal = h.goal ?? countDueDays(h.scheduleDays, days.map((d) => d.date));
     let actual = 0;
     for (const d of h.loggedDates) if (inMonth(d)) actual++;
     const left = Math.max(0, goal - actual);
@@ -195,8 +222,8 @@ export function computeMonthStats(params: {
   for (const h of habits) {
     streaks.set(h.id, {
       habitId: h.id,
-      current: currentStreak(h.loggedDates, today, h.pausedDates),
-      best: bestStreak(h.loggedDates, h.pausedDates),
+      current: currentStreak(h.loggedDates, today, h.pausedDates, h.scheduleDays),
+      best: bestStreak(h.loggedDates, h.pausedDates, h.scheduleDays),
     });
   }
 
@@ -287,22 +314,23 @@ export function computeWeeklyRecap(habits: HabitWithLogs[], today: ISODate): Wee
 
   let completed = 0;
   let daysActive = 0;
+  let goal = 0;
   for (const day of last7) {
     let any = false;
     for (const h of habits) {
+      const due = isDueOn(h.scheduleDays, day);
+      if (due) goal++;
       if (h.loggedDates.has(day)) {
-        completed++;
+        if (due) completed++;
         any = true;
       }
     }
     if (any) daysActive++;
   }
 
-  const goal = habits.length * 7;
-
   let bestStreakHabit: WeeklyRecap["bestStreakHabit"] = null;
   for (const h of habits) {
-    const streak = currentStreak(h.loggedDates, today, h.pausedDates);
+    const streak = currentStreak(h.loggedDates, today, h.pausedDates, h.scheduleDays);
     if (streak > 0 && (!bestStreakHabit || streak > bestStreakHabit.streak)) {
       bestStreakHabit = { name: h.name, emoji: h.emoji, streak };
     }

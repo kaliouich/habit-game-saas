@@ -84,6 +84,9 @@ model Habit {
   type           HabitType      @default(BUILD)
   goal           Int?
   position       Int            @default(0)
+  // Jours prévus (0=dim..6=sam, comme getUTCDay). Vide = tous les jours. Les jours
+  // non prévus ne cassent pas la série et sortent du dénominateur de progression.
+  scheduleDays   Int[]          @default([])
   tags           String[]       @default([]) // libre, pro-only côté UI (voir actions/habits.ts)
   // Phase 1 roadmap : unité + cible PAR JOUR (ex. 10000 steps/jour). Distinct
   // de `goal`, qui reste la cible en NOMBRE DE JOURS sur le mois — les deux

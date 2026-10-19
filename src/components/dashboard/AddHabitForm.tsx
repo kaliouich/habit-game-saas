@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { createHabit } from "@/lib/actions/habits";
 import { HABIT_UNITS } from "@/lib/config";
+import { WeekdayPicker } from "./WeekdayPicker";
 
 /** V2 : ajout inline dans la sidebar, comme une nouvelle ligne du tableur. */
 export function AddHabitForm({ canAdd, limit }: { canAdd: boolean; limit: number }) {
@@ -13,6 +14,7 @@ export function AddHabitForm({ canAdd, limit }: { canAdd: boolean; limit: number
   const [isPending, startTransition] = useTransition();
   const [type, setType] = useState<"BUILD" | "QUIT">("BUILD");
   const [unit, setUnit] = useState<string>("TIMES");
+  const [days, setDays] = useState<number[]>([]);
 
   if (!canAdd) {
     return <p className="sidebar__limit">{t("limitReached", { limit })}</p>;
@@ -43,11 +45,13 @@ export function AddHabitForm({ canAdd, limit }: { canAdd: boolean; limit: number
             unit: formType === "BUILD" ? formUnit : "TIMES",
             targetValue: targetRaw === "" ? undefined : Number(targetRaw),
             unitLabel: unitLabel || undefined,
+            scheduleDays: formType === "BUILD" ? days : [],
           });
           if (res.ok) {
             formRef.current?.reset();
             setType("BUILD");
             setUnit("TIMES");
+            setDays([]);
             setError(null);
           } else {
             setError(res.error ?? t("genericError"));
@@ -102,6 +106,7 @@ export function AddHabitForm({ canAdd, limit }: { canAdd: boolean; limit: number
           )}
         </div>
       )}
+      {type === "BUILD" && <WeekdayPicker value={days} onChange={setDays} disabled={isPending} />}
       {error && <p className="addhabit__error">{error}</p>}
     </form>
   );

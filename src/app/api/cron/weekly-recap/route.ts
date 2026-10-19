@@ -56,6 +56,7 @@ export async function POST(req: Request) {
       emoji: h.emoji,
       type: h.type,
       goal: h.goal,
+      scheduleDays: h.scheduleDays,
       position: h.position,
       loggedDates: deriveLoggedDates(h.logs, h.targetValue),
       pausedDates: new Set(h.pauses.flatMap((p) => expandDateRange(p.from, p.to))),

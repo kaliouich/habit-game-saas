@@ -161,3 +161,29 @@ export function expandDateRange(from: ISODate, to: ISODate): ISODate[] {
   }
   return dates;
 }
+
+/**
+ * Jours prévus d'une habitude (0 = dimanche … 6 = samedi, comme getUTCDay).
+ * Vide/absent = tous les jours — c'est aussi la valeur de toutes les habitudes
+ * créées avant cette fonctionnalité, donc aucun backfill n'est nécessaire.
+ */
+export function isDueOn(scheduleDays: readonly number[] | null | undefined, date: ISODate): boolean {
+  if (!scheduleDays || scheduleDays.length === 0) return true;
+  const y = Number(date.slice(0, 4));
+  const m = Number(date.slice(5, 7));
+  const d = Number(date.slice(8, 10));
+  return scheduleDays.includes(new Date(Date.UTC(y, m - 1, d)).getUTCDay());
+}
+
+/** Nombre de dates (parmi `dates`) où l'habitude est prévue. */
+export function countDueDays(scheduleDays: readonly number[] | null | undefined, dates: readonly ISODate[]): number {
+  let n = 0;
+  for (const d of dates) if (isDueOn(scheduleDays, d)) n++;
+  return n;
+}
+
+/** Normalise une saisie : valeurs 0..6 uniques et triées ; les 7 jours = "tous" = []. */
+export function normalizeScheduleDays(days: readonly number[] | undefined): number[] {
+  const set = [...new Set((days ?? []).filter((n) => Number.isInteger(n) && n >= 0 && n <= 6))].sort((a, b) => a - b);
+  return set.length === 7 ? [] : set;
+}

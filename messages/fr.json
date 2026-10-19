@@ -236,6 +236,7 @@
       "unitLabelPlaceholder": "libellé de l'unité…"
     },
     "dayStart": { "label": "La journée commence à", "hint": "Les coches avant cette heure comptent encore pour la veille." },
+    "schedule": {"label": "Jours", "everyDay": "Tous les jours", "someDays": "{count, plural, one {# jour par semaine} other {# jours par semaine}} — les autres jours ne cassent jamais ta série", "restDay": "Jour de repos"},
     "habitMenu": {
       "editAria": "Modifier {name}",
       "name": "Nom",

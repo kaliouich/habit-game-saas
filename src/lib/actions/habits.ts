@@ -5,11 +5,14 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/user";
 import { canAddHabit, maxHabits } from "@/lib/quotas";
+import { normalizeScheduleDays } from "@/lib/dates";
 
 const NameSchema = z.string().trim().min(1).max(40);
 const EmojiSchema = z.string().trim().max(8).optional();
 const HabitUnitSchema = z.enum(["TIMES", "MINUTES", "HOURS", "COUNT", "STEPS", "KM", "CALORIES"]);
 const UnitLabelSchema = z.string().trim().max(20).optional();
+// Jours prévus 0=dim..6=sam ; vide/absent = tous les jours. Normalisé côté serveur (normalizeScheduleDays).
+const ScheduleDaysSchema = z.array(z.number().int().min(0).max(6)).max(7).optional();
 
 const CreateHabitSchema = z.object({
   name: NameSchema,
@@ -19,6 +22,7 @@ const CreateHabitSchema = z.object({
   unit: HabitUnitSchema.default("TIMES"),
   targetValue: z.number().positive().max(1_000_000).nullable().optional(),
   unitLabel: UnitLabelSchema,
+  scheduleDays: ScheduleDaysSchema,
 });
 
 export async function createHabit(input: unknown): Promise<{ ok: boolean; error?: string }> {
@@ -50,6 +54,8 @@ export async function createHabit(input: unknown): Promise<{ ok: boolean; error?
       unit: data.unit,
       targetValue: data.unit === "TIMES" ? null : data.targetValue ?? null,
       unitLabel: data.unit === "COUNT" ? data.unitLabel || null : null,
+      // QUIT = chronomètre, pas de jours prévus.
+      scheduleDays: data.type === "QUIT" ? [] : normalizeScheduleDays(data.scheduleDays),
     },
   });
 
@@ -67,6 +73,7 @@ const UpdateHabitSchema = z.object({
   tags: z.array(TagSchema).max(5).optional(),
   targetValue: z.number().positive().max(1_000_000).nullable().optional(),
   unitLabel: UnitLabelSchema,
+  scheduleDays: ScheduleDaysSchema,
 });
 
 export async function updateHabit(input: unknown): Promise<{ ok: boolean; error?: string }> {
@@ -93,6 +100,7 @@ export async function updateHabit(input: unknown): Promise<{ ok: boolean; error?
       ...(data.tags !== undefined && { tags: data.tags }),
       ...(data.targetValue !== undefined && { targetValue: data.targetValue }),
       ...(data.unitLabel !== undefined && { unitLabel: data.unitLabel || null }),
+      ...(data.scheduleDays !== undefined && { scheduleDays: normalizeScheduleDays(data.scheduleDays) }),
     },
   });
 

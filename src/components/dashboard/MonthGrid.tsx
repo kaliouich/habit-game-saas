@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import type { HabitUnit, MonthStats } from "@/lib/stats";
-import type { ISODate } from "@/lib/dates";
+import { isDueOn, type ISODate } from "@/lib/dates";
 import { DayCheckbox } from "./DayCheckbox";
 import { DayValueCell } from "./DayValueCell";
 import { MoodCell } from "./MoodCell";
@@ -16,6 +16,7 @@ interface GridHabit {
   targetValue?: number | null;
   unitLabel?: string | null;
   logValues?: Map<ISODate, number>;
+  scheduleDays?: number[];
 }
 
 interface MonthGridProps {
@@ -76,7 +77,16 @@ export async function MonthGrid({ stats, habits, today }: MonthGridProps) {
                 {h.name} {h.emoji}
               </th>
               {days.map((d) => (
-                <td key={d.date} className={d.date === today ? "grid__cell grid__cell--today" : "grid__cell"}>
+                <td
+                  key={d.date}
+                  className={[
+                    "grid__cell",
+                    d.date === today ? "grid__cell--today" : "",
+                    isDueOn(h.scheduleDays, d.date) ? "" : "grid__cell--off",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
                   {!h.unit || h.unit === "TIMES" ? (
                     <DayCheckbox habitId={h.id} date={d.date} checked={h.loggedDates.has(d.date)} disabled={d.date > today} />
                   ) : (

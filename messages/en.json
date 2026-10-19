@@ -236,6 +236,7 @@
       "unitLabelPlaceholder": "unit label…"
     },
     "dayStart": { "label": "Day starts at", "hint": "Check-ins before this hour still count for the previous day." },
+    "schedule": {"label": "Days", "everyDay": "Every day", "someDays": "{count, plural, one {# day a week} other {# days a week}} — other days never break your streak", "restDay": "Rest day"},
     "habitMenu": {
       "editAria": "Edit {name}",
       "name": "Name",

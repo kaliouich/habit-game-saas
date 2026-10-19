@@ -236,6 +236,7 @@
       "unitLabelPlaceholder": "etiqueta de la unidad…"
     },
     "dayStart": { "label": "El día empieza a las", "hint": "Los registros antes de esta hora cuentan para el día anterior." },
+    "schedule": {"label": "Días", "everyDay": "Todos los días", "someDays": "{count, plural, one {# día a la semana} other {# días a la semana}} — los demás días nunca rompen tu racha", "restDay": "Día de descanso"},
     "habitMenu": {
       "editAria": "Editar {name}",
       "name": "Nombre",

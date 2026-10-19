@@ -9,6 +9,7 @@ import { getLogNote, setLogNote } from "@/lib/actions/logs";
 import { createHabitPause } from "@/lib/actions/pause";
 import type { ISODate } from "@/lib/dates";
 import { habitUnitConfig, type HabitUnitKey } from "@/lib/config";
+import { WeekdayPicker } from "./WeekdayPicker";
 
 interface HabitMenuProps {
   habitId: string;
@@ -23,6 +24,8 @@ interface HabitMenuProps {
   unit?: HabitUnitKey;
   targetValue?: number | null;
   unitLabel?: string | null;
+  /** Jours prévus (0=dim..6=sam) — vide = tous les jours. */
+  scheduleDays?: number[];
 }
 
 /** V2 : édition d'une habitude (nom, emoji, goal) + archivage, dans un popover.
@@ -32,7 +35,7 @@ interface HabitMenuProps {
  *  Phase 1 roadmap : l'unité n'est pas éditable après création (des logs
  *  existants perdraient leur sens — ex. "1" en TIMES vs "1" en STEPS) ; seule
  *  la cible/jour et le libellé libre (COUNT) le sont. */
-export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today, unit, targetValue, unitLabel }: HabitMenuProps) {
+export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today, unit, targetValue, unitLabel, scheduleDays }: HabitMenuProps) {
   const t = useTranslations("Dashboard.habitMenu");
   const ref = useRef<HTMLDetailsElement>(null);
   // .sidebar a un position:sticky (pour rester visible au scroll), qui crée
@@ -51,6 +54,7 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
   const isQuantified = isBuild && !!unit && unit !== "TIMES";
   const unitConfig = unit ? habitUnitConfig(unit) : null;
 
+  const [days, setDays] = useState<number[]>(scheduleDays ?? []);
   const [note, setNote] = useState<string | null>(null);
   const [noteLoaded, setNoteLoaded] = useState(false);
   const [noteError, setNoteError] = useState<string | null>(null);
@@ -113,6 +117,7 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
                   emoji: newEmoji,
                   goal: newGoal,
                   ...(newTags !== undefined && { tags: newTags }),
+                  ...(isBuild && { scheduleDays: days }),
                   ...(isQuantified && { targetValue: targetRaw === "" ? null : Number(targetRaw) }),
                   ...(isQuantified && unit === "COUNT" && { unitLabel: newUnitLabel }),
                 });
@@ -134,6 +139,7 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
                 <input name="goal" type="number" min={1} max={31} defaultValue={goal ?? ""} />
               </label>
             )}
+            {isBuild && <WeekdayPicker value={days} onChange={setDays} disabled={isPending} />}
             {isQuantified && (
               <label>
                 {t("targetPerDay")} {unitConfig?.suffix && <span className="habitmenu__hint">({unitConfig.suffix})</span>}

@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import type { HabitUnit } from "@/lib/stats";
-import type { ISODate } from "@/lib/dates";
+import { isDueOn, type ISODate } from "@/lib/dates";
 import { habitUnitConfig } from "@/lib/config";
 import { DayCheckbox } from "./DayCheckbox";
 import { DayValueCell } from "./DayValueCell";
@@ -15,6 +15,7 @@ interface TodayHabit {
   targetValue?: number | null;
   unitLabel?: string | null;
   logValues?: Map<ISODate, number>;
+  scheduleDays?: number[];
 }
 
 interface TodayPanelProps {
@@ -36,6 +37,9 @@ interface TodayPanelProps {
 export async function TodayPanel({ habits, today, todayMood, todayMotivation }: TodayPanelProps) {
   const t = await getTranslations("Dashboard");
   const tGrid = await getTranslations("Dashboard.grid");
+  const tSchedule = await getTranslations("Dashboard.schedule");
+  // Habitudes prévues aujourd'hui d'abord ; les jours de repos restent cochables mais grisés en bas.
+  const ordered = [...habits.filter((h) => isDueOn(h.scheduleDays, today)), ...habits.filter((h) => !isDueOn(h.scheduleDays, today))];
   return (
     <div className="panel todaypanel">
       <h2 className="panel__title">{t("today")}</h2>
@@ -48,15 +52,17 @@ export async function TodayPanel({ habits, today, todayMood, todayMotivation }: 
           <span className="todaypanel__name">{tGrid("motivation")}</span>
           <MoodCell date={today} value={todayMotivation} disabled={false} field="motivation" />
         </li>
-        {habits.map((h) => {
+        {ordered.map((h) => {
+          const off = !isDueOn(h.scheduleDays, today);
           const isQuantified = h.unit && h.unit !== "TIMES";
           const unit = isQuantified ? habitUnitConfig(h.unit!) : null;
           const value = h.logValues?.get(today) ?? 0;
           const target = h.targetValue ?? 1;
           return (
-            <li key={h.id} className="todaypanel__row">
+            <li key={h.id} className={off ? "todaypanel__row todaypanel__row--off" : "todaypanel__row"}>
               <span className="todaypanel__name">
                 {h.emoji} {h.name}
+                {off && <span className="todaypanel__target">{tSchedule("restDay")}</span>}
                 {isQuantified && (
                   <span className="todaypanel__target">
                     {value}/{target}

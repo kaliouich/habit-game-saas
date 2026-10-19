@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import type { HabitUnit, MonthStats, QuitStreak } from "@/lib/stats";
-import type { ISODate, MonthKey } from "@/lib/dates";
+import { isDueOn, type ISODate, type MonthKey } from "@/lib/dates";
 import type { BoardSkinKey } from "@/lib/config";
 import type { TaskRow } from "@/lib/data";
 import { BarChart } from "@/components/charts/BarChart";
@@ -20,6 +20,8 @@ export interface DashboardHabit {
   emoji: string | null;
   type: "BUILD" | "QUIT";
   goal: number | null;
+  /** Jours prévus (0=dim..6=sam) — vide/absent = tous les jours. */
+  scheduleDays?: number[];
   loggedDates: Set<ISODate>;
   /** Pauses + boucliers déjà consommés (voir lib/data.ts) — optionnel comme
    *  dans HabitWithLogs, dont ce type est alimenté. */
@@ -91,6 +93,8 @@ export async function Dashboard({
       ? []
       : stats.days
           .filter((d) => d.date < today)
+          // Un jour où aucune habitude n'était prévue n'est pas un trou.
+          .filter((d) => buildHabits.some((h) => isDueOn(h.scheduleDays, d.date)))
           .filter((d) => !buildHabits.some((h) => h.loggedDates.has(d.date) || h.pausedDates?.has(d.date)))
           .map((d) => d.date);
 

@@ -6,7 +6,7 @@
  * une plage saisie à la main — d'où ce module séparé plutôt qu'un mois élargi
  * de force. Fonctions pures, unit-testées, aucune I/O.
  */
-import { expandDateRange, prevDay, type ISODate } from "./dates";
+import { countDueDays, expandDateRange, isDueOn, prevDay, type ISODate } from "./dates";
 
 export interface ReportHabit {
   id: string;
@@ -14,6 +14,8 @@ export interface ReportHabit {
   emoji: string | null;
   loggedDates: Set<ISODate>;
   pausedDates?: Set<ISODate>;
+  /** Jours prévus (0=dim..6=sam) — vide/absent = tous les jours. */
+  scheduleDays?: number[];
 }
 
 export interface ReportHabitRow {
@@ -67,10 +69,10 @@ function weekdayOf(date: ISODate): number {
  * Série en cours à la fin de la période — pas « à aujourd'hui » : un rapport
  * sur un mois passé doit décrire ce mois, pas l'état actuel de l'habitude.
  */
-function streakEndingAt(logged: Set<ISODate>, end: ISODate, paused: Set<ISODate>): number {
+function streakEndingAt(logged: Set<ISODate>, end: ISODate, skip: (d: ISODate) => boolean): number {
   let cursor = logged.has(end) ? end : prevDay(end);
   let count = 0;
-  while (logged.has(cursor) || paused.has(cursor)) {
+  while (logged.has(cursor) || skip(cursor)) {
     if (logged.has(cursor)) count++;
     cursor = prevDay(cursor);
   }
@@ -78,15 +80,15 @@ function streakEndingAt(logged: Set<ISODate>, end: ISODate, paused: Set<ISODate>
 }
 
 /** Plus longue série strictement contenue dans [from, to]. */
-function bestStreakInRange(logged: Set<ISODate>, dates: ISODate[], paused: Set<ISODate>): number {
+function bestStreakInRange(logged: Set<ISODate>, dates: ISODate[], skip: (d: ISODate) => boolean): number {
   let best = 0;
   let run = 0;
   for (const d of dates) {
     if (logged.has(d)) {
       run++;
       if (run > best) best = run;
-    } else if (paused.has(d)) {
-      // un jour protégé/en pause ne compte pas mais n'interrompt pas
+    } else if (skip(d)) {
+      // un jour protégé/en pause (ou non prévu) ne compte pas mais n'interrompt pas
       continue;
     } else {
       run = 0;
@@ -106,14 +108,17 @@ export function computeReport(params: {
   const nHabits = habits.length;
 
   const days: ReportDay[] = dates.map((date) => {
-    const done = habits.reduce((n, h) => n + (h.loggedDates.has(date) ? 1 : 0), 0);
-    return { date, done, total: nHabits, pct: nHabits === 0 ? 0 : done / nHabits };
+    // Dénominateur = habitudes prévues ce jour-là (un jour de repos n'est pas un raté).
+    const dueHabits = habits.filter((h) => isDueOn(h.scheduleDays, date));
+    const done = dueHabits.reduce((n, h) => n + (h.loggedDates.has(date) ? 1 : 0), 0);
+    return { date, done, total: dueHabits.length, pct: dueHabits.length === 0 ? 0 : done / dueHabits.length };
   });
 
   const byHabit: ReportHabitRow[] = habits.map((h) => {
     const paused = h.pausedDates ?? new Set<ISODate>();
-    const done = dates.reduce((n, d) => n + (h.loggedDates.has(d) ? 1 : 0), 0);
-    const goal = dates.length;
+    const skip = (d: ISODate) => paused.has(d) || !isDueOn(h.scheduleDays, d);
+    const goal = countDueDays(h.scheduleDays, dates);
+    const done = dates.reduce((n, d) => n + (h.loggedDates.has(d) && isDueOn(h.scheduleDays, d) ? 1 : 0), 0);
     return {
       habitId: h.id,
       name: h.name,
@@ -121,8 +126,8 @@ export function computeReport(params: {
       done,
       goal,
       pct: goal === 0 ? 0 : done / goal,
-      currentStreak: streakEndingAt(h.loggedDates, to, paused),
-      bestStreak: bestStreakInRange(h.loggedDates, dates, paused),
+      currentStreak: streakEndingAt(h.loggedDates, to, skip),
+      bestStreak: bestStreakInRange(h.loggedDates, dates, skip),
     };
   });
 

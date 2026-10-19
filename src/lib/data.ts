@@ -87,6 +87,7 @@ export async function getDashboardData(
     emoji: h.emoji,
     type: h.type,
     goal: h.goal,
+    scheduleDays: h.scheduleDays,
     position: h.position,
     loggedDates: deriveLoggedDates(h.logs, h.targetValue),
     // Un bouclier vaut pour TOUTES les habitudes : même effet qu'une pause,
@@ -164,6 +165,7 @@ export async function getReportData(userId: string, from: string, to: string) {
       id: h.id,
       name: h.name,
       emoji: h.emoji,
+      scheduleDays: h.scheduleDays,
       loggedDates: deriveLoggedDates(h.logs, h.targetValue),
       pausedDates: new Set([
         ...h.pauses.flatMap((p) => expandDateRange(p.from, p.to)),

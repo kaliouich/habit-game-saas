@@ -48,6 +48,7 @@ interface DashboardProps {
   quitStreaks: Map<string, QuitStreak>;
   tasks: TaskRow[];
   referralCode: string;
+  dayStartHour: number;
 }
 
 /** Assemblage 3 zones : sidebar noire / centre (daily + grille) / stats à droite. */
@@ -65,6 +66,7 @@ export async function Dashboard({
   quitStreaks,
   tasks,
   referralCode,
+  dayStartHour,
 }: DashboardProps) {
   const t = await getTranslations("Dashboard");
   const todayIndex = stats.days.findIndex((d) => d.date === today);
@@ -111,6 +113,7 @@ export async function Dashboard({
         shieldsUsed={shieldsUsed}
         missedDates={missedDates}
         referralCode={referralCode}
+        dayStartHour={dayStartHour}
       />
 
       <main className="dashboard__main">

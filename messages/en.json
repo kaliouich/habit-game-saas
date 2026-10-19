@@ -235,6 +235,7 @@
       "targetPlaceholder": "Target/day ({suffix})",
       "unitLabelPlaceholder": "unit label…"
     },
+    "dayStart": { "label": "Day starts at", "hint": "Check-ins before this hour still count for the previous day." },
     "habitMenu": {
       "editAria": "Edit {name}",
       "name": "Name",

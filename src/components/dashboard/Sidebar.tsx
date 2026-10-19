@@ -8,6 +8,7 @@ import { AddHabitForm } from "./AddHabitForm";
 import { HabitMenu } from "./HabitMenu";
 import { SignOutButton } from "./SignOutButton";
 import { BoardSkinPicker } from "./BoardSkinPicker";
+import { DayStartPicker } from "./DayStartPicker";
 import { ShieldPanel } from "./ShieldPanel";
 import { ReminderSettings } from "./ReminderSettings";
 import { CopyReferralLink } from "@/components/CopyReferralLink";
@@ -40,10 +41,11 @@ interface SidebarProps {
   shieldsUsed: number;
   missedDates: ISODate[];
   referralCode: string;
+  dayStartHour: number;
 }
 
 /** V1 + V2 : colonne noire — titre, mois, My Habits, mood chart, logo. */
-export async function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan, boardSkin, today, shieldsUsed, missedDates, referralCode }: SidebarProps) {
+export async function Sidebar({ month, habits, stats, canAdd, limit, userEmail, plan, boardSkin, today, shieldsUsed, missedDates, referralCode, dayStartHour }: SidebarProps) {
   const moodValues = stats.days.map((d) => stats.moodByDate.get(d.date) ?? null);
   const motivationValues = stats.days.map((d) => stats.motivationByDate.get(d.date) ?? null);
   const t = await getTranslations("Dashboard.sidebar");
@@ -135,6 +137,7 @@ export async function Sidebar({ month, habits, stats, canAdd, limit, userEmail, 
           <CopyReferralLink link={`${APP_URL}/login?ref=${referralCode}`} />
         </div>
         <BoardSkinPicker current={boardSkin} plan={plan} />
+        <DayStartPicker current={dayStartHour} />
         <p className="sidebar__logo">
           {APP_NAME.split(" ").map((w) => (
             <span key={w}>{w.toUpperCase()}</span>

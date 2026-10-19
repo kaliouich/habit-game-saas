@@ -24,7 +24,7 @@ export async function createJournalEntry(input: unknown): Promise<{ ok: boolean;
   const data = CreateEntrySchema.parse(input);
   const user = await getCurrentUser();
   if (user.plan !== "PRO") return { ok: false, error: "PRO_REQUIRED" };
-  if (isFuture(data.date, user.timezone)) throw new Error("FUTURE_DATE");
+  if (isFuture(data.date, user.timezone, user.dayStartHour)) throw new Error("FUTURE_DATE");
 
   if (data.habitId) {
     const habit = await prisma.habit.findFirst({ where: { id: data.habitId, userId: user.id }, select: { id: true } });

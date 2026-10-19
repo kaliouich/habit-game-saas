@@ -23,7 +23,7 @@ interface Props {
 export default async function ReportPage({ searchParams }: Props) {
   const sp = await searchParams;
   const user = await getCurrentUser();
-  const today = todayInTz(user.timezone);
+  const today = todayInTz(user.timezone, user.dayStartHour);
 
   const { from, to, key, label, clamped } = resolvePeriod(
     { period: sp.period, from: sp.from, to: sp.to },

@@ -31,6 +31,9 @@ model User {
   theme                String         @default("light")
   weekStartsOn         Int            @default(1)
   timezone             String         @default("Africa/Tunis")
+  // Heure (0..6) à laquelle "aujourd'hui" bascule — un couche-tard qui coche à
+  // 1h du matin coche encore sa journée d'hier. 0 = minuit (comportement historique).
+  dayStartHour         Int            @default(0)
   boardSkin            String         @default("classic") // cosmétique — voir BOARD_SKINS (config.ts), tiers pro appliqués côté serveur
   // Parrainage (B-referral) — code généré paresseusement dans lib/user.ts
   // (l'adapter Auth.js crée les users sans ce champ, donc pas de défaut requis en base)

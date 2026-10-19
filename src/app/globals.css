@@ -4991,3 +4991,31 @@ select {
   background: var(--accent) !important;
   color: #111 !important;
 }
+
+/* ─── Début de journée (DayStartPicker) ──────────────────────────────────── */
+.daystart {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.daystart__label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.daystart__select {
+  align-self: flex-start;
+  background: transparent;
+  color: inherit;
+  border: 1px solid var(--grid-line);
+  border-radius: 5px;
+  padding: 3px 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.daystart__hint {
+  font-size: 11px;
+  color: var(--panel-muted);
+}

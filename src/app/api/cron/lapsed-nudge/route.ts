@@ -41,6 +41,7 @@ export async function POST(req: Request) {
       id: true,
       email: true,
       timezone: true,
+      dayStartHour: true,
       habits: {
         where: { archivedAt: null, type: "BUILD" },
         select: {
@@ -61,7 +62,7 @@ export async function POST(req: Request) {
     }
     const lastLogDate = lastLogDates.sort().at(-1)!;
 
-    let target = todayInTz(user.timezone);
+    let target = todayInTz(user.timezone, user.dayStartHour);
     for (let i = 0; i < LAPSE_DAYS; i++) target = prevDay(target);
 
     if (lastLogDate !== target) {

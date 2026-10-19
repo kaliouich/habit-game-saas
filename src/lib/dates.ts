@@ -88,27 +88,35 @@ export function weeksOf(month: MonthKey, weekStartsOn: 0 | 1 = 1, locale: string
   return groups;
 }
 
-/** "YYYY-MM-DD" du moment présent dans un fuseau IANA donné. */
-export function todayInTz(timezone: string): ISODate {
+/**
+ * "YYYY-MM-DD" du moment présent dans un fuseau IANA donné.
+ *
+ * `dayStartHour` (0..23, en pratique 0..6) décale la bascule de journée : avec
+ * 4, à 02h00 locale on est encore "hier". Reculer l'instant de N heures avant
+ * de formater donne exactement ça, sans toucher au fuseau ni au changement
+ * d'heure — la frontière suit l'heure murale de l'utilisateur.
+ */
+export function todayInTz(timezone: string, dayStartHour = 0, now: Date = new Date()): ISODate {
+  const shifted = new Date(now.getTime() - dayStartHour * 3_600_000);
   // en-CA formate en YYYY-MM-DD
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: timezone,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).format(new Date());
+  }).format(shifted);
 }
 
-export function isFuture(date: ISODate, timezone: string): boolean {
-  return date > todayInTz(timezone);
+export function isFuture(date: ISODate, timezone: string, dayStartHour = 0): boolean {
+  return date > todayInTz(timezone, dayStartHour);
 }
 
 export function monthOf(date: ISODate): MonthKey {
   return date.slice(0, 7);
 }
 
-export function currentMonth(timezone: string): MonthKey {
-  return monthOf(todayInTz(timezone));
+export function currentMonth(timezone: string, dayStartHour = 0): MonthKey {
+  return monthOf(todayInTz(timezone, dayStartHour));
 }
 
 export function addMonths(month: MonthKey, delta: number): MonthKey {

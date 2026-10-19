@@ -59,7 +59,7 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const rawMonth = searchParams.get("month");
-  const current = currentMonth(user.timezone);
+  const current = currentMonth(user.timezone, user.dayStartHour);
 
   // Determine range: single month param OR all months from first log to current
   let months: MonthKey[];

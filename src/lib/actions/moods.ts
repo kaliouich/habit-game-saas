@@ -20,7 +20,7 @@ export async function setMood(input: unknown): Promise<{ ok: boolean }> {
   const { date, field, value } = SetMoodSchema.parse(input);
   const user = await getCurrentUser();
 
-  if (isFuture(date, user.timezone)) throw new Error("FUTURE_DATE");
+  if (isFuture(date, user.timezone, user.dayStartHour)) throw new Error("FUTURE_DATE");
 
   await prisma.moodLog.upsert({
     where: { userId_date: { userId: user.id, date } },

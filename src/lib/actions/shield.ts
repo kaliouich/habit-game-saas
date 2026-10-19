@@ -26,7 +26,7 @@ const UseShieldSchema = z.object({
 export async function consumeStreakShield(input: unknown): Promise<{ ok: boolean; error?: string }> {
   const { date } = UseShieldSchema.parse(input);
   const user = await getCurrentUser();
-  const today = todayInTz(user.timezone);
+  const today = todayInTz(user.timezone, user.dayStartHour);
 
   if (date >= today) return { ok: false, error: "NOT_PAST" };
 

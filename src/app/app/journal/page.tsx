@@ -41,7 +41,7 @@ export default async function JournalPage({ searchParams }: Props) {
     );
   }
 
-  const today = todayInTz(user.timezone);
+  const today = todayInTz(user.timezone, user.dayStartHour);
   const habitId = sp.habitId || undefined;
   const query = sp.q || undefined;
 

@@ -235,6 +235,7 @@
       "targetPlaceholder": "Objectif/jour ({suffix})",
       "unitLabelPlaceholder": "libellé de l'unité…"
     },
+    "dayStart": { "label": "La journée commence à", "hint": "Les coches avant cette heure comptent encore pour la veille." },
     "habitMenu": {
       "editAria": "Modifier {name}",
       "name": "Nom",

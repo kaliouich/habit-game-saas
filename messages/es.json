@@ -235,6 +235,7 @@
       "targetPlaceholder": "Objetivo/día ({suffix})",
       "unitLabelPlaceholder": "etiqueta de la unidad…"
     },
+    "dayStart": { "label": "El día empieza a las", "hint": "Los registros antes de esta hora cuentan para el día anterior." },
     "habitMenu": {
       "editAria": "Editar {name}",
       "name": "Nombre",

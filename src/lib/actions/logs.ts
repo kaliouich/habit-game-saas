@@ -28,7 +28,7 @@ export async function toggleLog(input: unknown): Promise<{ ok: boolean }> {
   // Phase 1 roadmap : les unités quantifiées passent par setLogValue, qui sait
   // gérer une valeur partielle — un simple booléen n'aurait pas de sens.
   if (habit.unit !== "TIMES") throw new Error("USE_SET_LOG_VALUE");
-  if (isFuture(date, user.timezone)) throw new Error("FUTURE_DATE");
+  if (isFuture(date, user.timezone, user.dayStartHour)) throw new Error("FUTURE_DATE");
 
   const existing = await prisma.habitLog.findUnique({
     where: { habitId_date: { habitId, date } },
@@ -69,7 +69,7 @@ export async function setLogValue(input: unknown): Promise<{ ok: boolean }> {
   });
   if (!habit) throw new Error("NOT_FOUND");
   if (habit.unit === "TIMES") throw new Error("USE_TOGGLE_LOG");
-  if (isFuture(date, user.timezone)) throw new Error("FUTURE_DATE");
+  if (isFuture(date, user.timezone, user.dayStartHour)) throw new Error("FUTURE_DATE");
 
   if (value <= 0) {
     await prisma.habitLog.deleteMany({ where: { habitId, date } });
@@ -105,7 +105,7 @@ export async function incrementLogValue(input: unknown): Promise<{ ok: boolean }
   });
   if (!habit) throw new Error("NOT_FOUND");
   if (habit.unit === "TIMES") throw new Error("USE_TOGGLE_LOG");
-  if (isFuture(date, user.timezone)) throw new Error("FUTURE_DATE");
+  if (isFuture(date, user.timezone, user.dayStartHour)) throw new Error("FUTURE_DATE");
 
   const existing = await prisma.habitLog.findUnique({
     where: { habitId_date: { habitId, date } },

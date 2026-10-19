@@ -24,7 +24,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
   const stripeReady = isStripeConfigured();
   const checkoutEnabled = isCheckoutEnabled();
   const trialDays = 14 + user.referralCreditMonths * 30;
-  const month = currentMonth(user.timezone);
+  const month = currentMonth(user.timezone, user.dayStartHour);
   const recapUrl = `${APP_URL}/recap/${user.id}/${month}`;
   const habitCount = await prisma.habit.count({ where: { userId: user.id } });
   const t = await getTranslations("Billing");

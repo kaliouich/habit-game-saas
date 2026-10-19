@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   addMonths,
   currentMonth,
@@ -134,5 +134,40 @@ describe("expandDateRange (pause / vacation mode, Sprint 6)", () => {
       "2026-06-30",
       "2026-07-01",
     ]);
+  });
+});
+
+describe("début de journée personnalisable (dayStartHour)", () => {
+  // 02:00 à Paris le 15 juillet (UTC+2) = 00:00 UTC le 15 juillet.
+  const at0200Paris = new Date("2026-07-15T00:00:00Z");
+
+  it("par défaut (0), 02h00 appartient déjà à la nouvelle journée", () => {
+    expect(todayInTz("Europe/Paris", 0, at0200Paris)).toBe("2026-07-15");
+  });
+
+  it("avec 4h, 02h00 compte encore pour la veille", () => {
+    expect(todayInTz("Europe/Paris", 4, at0200Paris)).toBe("2026-07-14");
+  });
+
+  it("avec 4h, 04h00 pile bascule sur la nouvelle journée", () => {
+    const at0400Paris = new Date("2026-07-15T02:00:00Z");
+    expect(todayInTz("Europe/Paris", 4, at0400Paris)).toBe("2026-07-15");
+    const at0359Paris = new Date("2026-07-15T01:59:00Z");
+    expect(todayInTz("Europe/Paris", 4, at0359Paris)).toBe("2026-07-14");
+  });
+
+  it("traverse correctement un début de mois (1er à 02h → toujours le mois précédent)", () => {
+    const at0200ParisFirst = new Date("2026-08-01T00:00:00Z");
+    expect(todayInTz("Europe/Paris", 4, at0200ParisFirst)).toBe("2026-07-31");
+  });
+
+  it("isFuture suit la même frontière que todayInTz", () => {
+    // 02h00 Paris, dayStart 4 → aujourd'hui = le 14 ; le 15 est donc "futur".
+    const now = new Date("2026-07-15T00:00:00Z");
+    vi.useFakeTimers();
+    vi.setSystemTime(now);
+    expect(isFuture("2026-07-15", "Europe/Paris", 4)).toBe(true);
+    expect(isFuture("2026-07-15", "Europe/Paris", 0)).toBe(false);
+    vi.useRealTimers();
   });
 });

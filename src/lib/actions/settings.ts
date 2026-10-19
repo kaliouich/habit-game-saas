@@ -23,3 +23,15 @@ export async function setBoardSkin(input: unknown): Promise<{ ok: boolean; error
   revalidatePath("/app");
   return { ok: true };
 }
+
+const SetDayStartSchema = z.object({ hour: z.number().int().min(0).max(6) });
+
+/** Heure de bascule de la journée (0 = minuit). Borné à 0..6 : au-delà, "aujourd'hui"
+ *  deviendrait confus (on est encore "hier" jusqu'au milieu de la matinée). */
+export async function setDayStartHour(input: unknown): Promise<{ ok: boolean }> {
+  const { hour } = SetDayStartSchema.parse(input);
+  const user = await getCurrentUser();
+  await prisma.user.update({ where: { id: user.id }, data: { dayStartHour: hour } });
+  revalidatePath("/app");
+  return { ok: true };
+}

@@ -44,6 +44,7 @@ export async function getDashboardData(
   timezone: string,
   weekStartsOn: 0 | 1,
   locale: string = "en",
+  dayStartHour = 0,
 ): Promise<DashboardData> {
   const monthEnd = `${month}-${pad2(daysInMonth(month))}`;
   const monthEndDate = new Date(`${monthEnd}T23:59:59Z`);
@@ -51,7 +52,7 @@ export async function getDashboardData(
   // La borne basse doit couvrir DEUX besoins : le mois affiché (qui peut être
   // passé, un Pro navigue dans son historique) et la série en cours, qui elle
   // se calcule toujours à partir d'aujourd'hui. D'où le min des deux.
-  const lookbackFloor = shiftIso(todayInTz(timezone), -LOG_LOOKBACK_DAYS);
+  const lookbackFloor = shiftIso(todayInTz(timezone, dayStartHour), -LOG_LOOKBACK_DAYS);
   const monthStart = `${month}-01`;
   const logsFrom = monthStart < lookbackFloor ? monthStart : lookbackFloor;
 
@@ -102,7 +103,7 @@ export async function getDashboardData(
     logValues: new Map(h.logs.map((l) => [l.date, l.value])),
   }));
 
-  const today = todayInTz(timezone);
+  const today = todayInTz(timezone, dayStartHour);
   // QUIT ne produit plus de HabitLog (Phase 2 roadmap) : mélangée aux formules
   // BUILD, elle y compterait comme un 0 permanent (progrès quotidien, badges,
   // "perfect day"…). Ces formules ne concernent donc que BUILD.

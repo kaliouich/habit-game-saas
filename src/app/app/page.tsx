@@ -17,7 +17,7 @@ export default async function DashboardPage({
 }) {
   const { month: rawMonth } = await searchParams; // Next 16 : searchParams est une Promise
   const user = await getCurrentUser();
-  const current = currentMonth(user.timezone);
+  const current = currentMonth(user.timezone, user.dayStartHour);
   const month = isValidMonthKey(rawMonth) ? rawMonth : current;
   if (!canViewMonth(user.plan, month, current)) {
     redirect(`/app?month=${current}`);
@@ -31,6 +31,7 @@ export default async function DashboardPage({
     user.timezone,
     weekStartsOn,
     locale,
+    user.dayStartHour,
   );
   const tasks = await getTasksForDashboard(user.id, today);
 
@@ -51,6 +52,7 @@ export default async function DashboardPage({
         quitStreaks={quitStreaks}
         tasks={tasks}
         referralCode={user.referralCode ?? ""}
+        dayStartHour={user.dayStartHour}
       />
     </>
   );

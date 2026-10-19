@@ -49,7 +49,7 @@ export async function POST(req: Request) {
       continue;
     }
 
-    const today = todayInTz(user.timezone);
+    const today = todayInTz(user.timezone, user.dayStartHour);
     const habits: HabitWithLogs[] = user.habits.map((h) => ({
       id: h.id,
       name: h.name,

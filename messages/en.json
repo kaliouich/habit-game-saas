@@ -247,6 +247,7 @@
       "reminder": "Reminder",
       "reminderHint": "(mobile app)",
       "reminderBody": "Time to do it — keep your streak going.",
+      "insights": "Insights",
       "targetPerDay": "Target/day",
       "unitLabel": "Unit label",
       "unitLabelHint": "(e.g. glasses, pages)",
@@ -472,5 +473,20 @@
       "home": "{appName} home",
       "dashboard": "My dashboard"
     }
+  },
+  "Insights": {
+    "back": "Back to dashboard",
+    "strength": "Strength",
+    "currentStreak": "Current streak",
+    "bestStreak": "Best streak",
+    "totalDone": "Total check-ins",
+    "rate30": "Last 30 days",
+    "rate90": "Last 90 days",
+    "lastYear": "Last 12 months",
+    "legendDone": "Done",
+    "legendMissed": "Missed",
+    "legendOff": "Rest / paused",
+    "byWeekday": "Success by weekday",
+    "tip": "You’re strongest on {best} and weakest on {worst}."
   }
 }

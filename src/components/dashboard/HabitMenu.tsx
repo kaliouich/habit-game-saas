@@ -142,6 +142,11 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
                 <input name="goal" type="number" min={1} max={31} defaultValue={goal ?? ""} />
               </label>
             )}
+            {isBuild && (
+              <Link href={`/app/habit/${habitId}`} className="habitmenu__insights">
+                📊 {t("insights")}
+              </Link>
+            )}
             {isBuild && <WeekdayPicker value={days} onChange={setDays} disabled={isPending} />}
             {isBuild && (
               <label>

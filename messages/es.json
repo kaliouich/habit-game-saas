@@ -247,6 +247,7 @@
       "reminder": "Recordatorio",
       "reminderHint": "(app móvil)",
       "reminderBody": "Es la hora — mantén tu racha.",
+      "insights": "Estadísticas",
       "targetPerDay": "Objetivo/día",
       "unitLabel": "Etiqueta de la unidad",
       "unitLabelHint": "(ej. vasos, páginas)",
@@ -472,5 +473,20 @@
       "home": "Inicio de {appName}",
       "dashboard": "Mi panel"
     }
+  },
+  "Insights": {
+    "back": "Volver al panel",
+    "strength": "Fuerza",
+    "currentStreak": "Racha actual",
+    "bestStreak": "Mejor racha",
+    "totalDone": "Total de registros",
+    "rate30": "Últimos 30 días",
+    "rate90": "Últimos 90 días",
+    "lastYear": "Últimos 12 meses",
+    "legendDone": "Hecho",
+    "legendMissed": "Fallado",
+    "legendOff": "Descanso / pausa",
+    "byWeekday": "Éxito por día de la semana",
+    "tip": "Eres más fuerte el {best} y más débil el {worst}."
   }
 }

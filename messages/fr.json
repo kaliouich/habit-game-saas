@@ -247,6 +247,7 @@
       "reminder": "Rappel",
       "reminderHint": "(app mobile)",
       "reminderBody": "C'est l'heure — garde ta série en vie.",
+      "insights": "Statistiques",
       "targetPerDay": "Objectif/jour",
       "unitLabel": "Libellé de l'unité",
       "unitLabelHint": "(ex. verres, pages)",
@@ -472,5 +473,20 @@
       "home": "Accueil {appName}",
       "dashboard": "Mon tableau de bord"
     }
+  },
+  "Insights": {
+    "back": "Retour au tableau de bord",
+    "strength": "Force",
+    "currentStreak": "Série en cours",
+    "bestStreak": "Meilleure série",
+    "totalDone": "Total de validations",
+    "rate30": "30 derniers jours",
+    "rate90": "90 derniers jours",
+    "lastYear": "12 derniers mois",
+    "legendDone": "Fait",
+    "legendMissed": "Raté",
+    "legendOff": "Repos / pause",
+    "byWeekday": "Réussite par jour de la semaine",
+    "tip": "Tu es au top le {best} et plus fragile le {worst}."
   }
 }

@@ -34,6 +34,8 @@ export interface HabitWithLogs {
    *  se comportent comme une pause pour les séries, sortent du dénominateur de
    *  la progression quotidienne et du but mensuel par défaut. */
   scheduleDays?: number[];
+  /** Rappel "HH:MM" (notification locale de l'app native) — non utilisé par les formules. */
+  reminderTime?: string | null;
   /** Tags libres (Pro) — non utilisés par les formules ci-dessous, portés pour l'UI. */
   tags?: string[];
   /** QUIT uniquement (Phase 2 roadmap) — début de l'abstinence en cours. */

@@ -88,6 +88,7 @@ export async function getDashboardData(
     type: h.type,
     goal: h.goal,
     scheduleDays: h.scheduleDays,
+    reminderTime: h.reminderTime,
     position: h.position,
     loggedDates: deriveLoggedDates(h.logs, h.targetValue),
     // Un bouclier vaut pour TOUTES les habitudes : même effet qu'une pause,

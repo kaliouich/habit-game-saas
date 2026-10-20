@@ -6,7 +6,7 @@ vi.mock("next/cache", () => ({
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    habit: { count: vi.fn(), findFirst: vi.fn(), create: vi.fn() },
+    habit: { count: vi.fn(), findFirst: vi.fn(), create: vi.fn(), update: vi.fn() },
   },
 }));
 
@@ -14,7 +14,7 @@ vi.mock("@/lib/user", () => ({
   getCurrentUser: vi.fn(),
 }));
 
-import { createHabit } from "./habits";
+import { createHabit, updateHabit } from "./habits";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/user";
 
@@ -107,5 +107,39 @@ describe("createHabit", () => {
     expect(mockedPrisma.habit.create).toHaveBeenLastCalledWith(
       expect.objectContaining({ data: expect.objectContaining({ unitLabel: null, targetValue: 10000 }) }),
     );
+  });
+});
+
+describe("updateHabit — reminderTime", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockedGetCurrentUser.mockResolvedValue({ id: "user_1", plan: "FREE" } as never);
+    mockedPrisma.habit.findFirst.mockResolvedValue({ id: "h1" } as never);
+  });
+
+  it("enregistre une heure valide", async () => {
+    await updateHabit({ habitId: "h1", reminderTime: "07:30" });
+    expect(mockedPrisma.habit.update).toHaveBeenCalledWith({
+      where: { id: "h1" },
+      data: expect.objectContaining({ reminderTime: "07:30" }),
+    });
+  });
+
+  it("null efface le rappel", async () => {
+    await updateHabit({ habitId: "h1", reminderTime: null });
+    expect(mockedPrisma.habit.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ reminderTime: null }) }),
+    );
+  });
+
+  it("laisse le rappel intact s'il n'est pas fourni", async () => {
+    await updateHabit({ habitId: "h1", name: "Gym 2" });
+    const data = mockedPrisma.habit.update.mock.calls[0][0].data as Record<string, unknown>;
+    expect("reminderTime" in data).toBe(false);
+  });
+
+  it("rejette une heure invalide avant toute écriture", async () => {
+    await expect(updateHabit({ habitId: "h1", reminderTime: "25:00" })).rejects.toThrow();
+    expect(mockedPrisma.habit.update).not.toHaveBeenCalled();
   });
 });

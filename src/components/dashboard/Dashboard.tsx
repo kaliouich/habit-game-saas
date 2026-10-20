@@ -12,6 +12,7 @@ import { TaskPanel } from "./TaskPanel";
 import { TimerPanel } from "./TimerPanel";
 import { StatsPanel } from "./StatsPanel";
 import { AdBanner } from "@/components/AdBanner";
+import { HabitReminderSync } from "./HabitReminderSync";
 import { AdSidebar } from "@/components/AdSidebar";
 
 export interface DashboardHabit {
@@ -22,6 +23,7 @@ export interface DashboardHabit {
   goal: number | null;
   /** Jours prévus (0=dim..6=sam) — vide/absent = tous les jours. */
   scheduleDays?: number[];
+  reminderTime?: string | null;
   loggedDates: Set<ISODate>;
   /** Pauses + boucliers déjà consommés (voir lib/data.ts) — optionnel comme
    *  dans HabitWithLogs, dont ce type est alimenté. */
@@ -104,6 +106,7 @@ export async function Dashboard({
     <div className={buildHabits.length > 0 ? "dashboard" : "dashboard dashboard--lean"} data-skin={boardSkin}>
       <AdBanner showAds={showAds} slot="0000000000" />
 
+      <HabitReminderSync habits={habits} />
       <Sidebar
         month={month}
         habits={habits}

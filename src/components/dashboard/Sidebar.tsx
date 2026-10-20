@@ -27,6 +27,7 @@ interface SidebarHabit {
   targetValue?: number | null;
   unitLabel?: string | null;
   scheduleDays?: number[];
+  reminderTime?: string | null;
 }
 
 interface SidebarProps {
@@ -112,6 +113,7 @@ export async function Sidebar({ month, habits, stats, canAdd, limit, userEmail, 
                   targetValue={h.targetValue}
                   unitLabel={h.unitLabel}
                   scheduleDays={h.scheduleDays}
+                  reminderTime={h.reminderTime}
                 />
               </li>
             );

@@ -26,6 +26,8 @@ interface HabitMenuProps {
   unitLabel?: string | null;
   /** Jours prévus (0=dim..6=sam) — vide = tous les jours. */
   scheduleDays?: number[];
+  /** Rappel "HH:MM" — notification locale de l'app mobile. */
+  reminderTime?: string | null;
 }
 
 /** V2 : édition d'une habitude (nom, emoji, goal) + archivage, dans un popover.
@@ -35,7 +37,7 @@ interface HabitMenuProps {
  *  Phase 1 roadmap : l'unité n'est pas éditable après création (des logs
  *  existants perdraient leur sens — ex. "1" en TIMES vs "1" en STEPS) ; seule
  *  la cible/jour et le libellé libre (COUNT) le sont. */
-export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today, unit, targetValue, unitLabel, scheduleDays }: HabitMenuProps) {
+export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today, unit, targetValue, unitLabel, scheduleDays, reminderTime }: HabitMenuProps) {
   const t = useTranslations("Dashboard.habitMenu");
   const ref = useRef<HTMLDetailsElement>(null);
   // .sidebar a un position:sticky (pour rester visible au scroll), qui crée
@@ -55,6 +57,7 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
   const unitConfig = unit ? habitUnitConfig(unit) : null;
 
   const [days, setDays] = useState<number[]>(scheduleDays ?? []);
+  const [remind, setRemind] = useState(reminderTime ?? "");
   const [note, setNote] = useState<string | null>(null);
   const [noteLoaded, setNoteLoaded] = useState(false);
   const [noteError, setNoteError] = useState<string | null>(null);
@@ -117,7 +120,7 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
                   emoji: newEmoji,
                   goal: newGoal,
                   ...(newTags !== undefined && { tags: newTags }),
-                  ...(isBuild && { scheduleDays: days }),
+                  ...(isBuild && { scheduleDays: days, reminderTime: remind || null }),
                   ...(isQuantified && { targetValue: targetRaw === "" ? null : Number(targetRaw) }),
                   ...(isQuantified && unit === "COUNT" && { unitLabel: newUnitLabel }),
                 });
@@ -140,6 +143,12 @@ export function HabitMenu({ habitId, name, emoji, type, goal, tags, plan, today,
               </label>
             )}
             {isBuild && <WeekdayPicker value={days} onChange={setDays} disabled={isPending} />}
+            {isBuild && (
+              <label>
+                {t("reminder")} <span className="habitmenu__hint">{t("reminderHint")}</span>
+                <input type="time" value={remind} onChange={(e) => setRemind(e.target.value)} disabled={isPending} />
+              </label>
+            )}
             {isQuantified && (
               <label>
                 {t("targetPerDay")} {unitConfig?.suffix && <span className="habitmenu__hint">({unitConfig.suffix})</span>}

@@ -14,6 +14,13 @@ const UnitLabelSchema = z.string().trim().max(20).optional();
 // Jours prévus 0=dim..6=sam ; vide/absent = tous les jours. Normalisé côté serveur (normalizeScheduleDays).
 const ScheduleDaysSchema = z.array(z.number().int().min(0).max(6)).max(7).optional();
 
+// "HH:MM" 24h ; null efface le rappel.
+const ReminderTimeSchema = z
+  .string()
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+  .nullable()
+  .optional();
+
 const CreateHabitSchema = z.object({
   name: NameSchema,
   emoji: EmojiSchema,
@@ -74,6 +81,7 @@ const UpdateHabitSchema = z.object({
   targetValue: z.number().positive().max(1_000_000).nullable().optional(),
   unitLabel: UnitLabelSchema,
   scheduleDays: ScheduleDaysSchema,
+  reminderTime: ReminderTimeSchema,
 });
 
 export async function updateHabit(input: unknown): Promise<{ ok: boolean; error?: string }> {
@@ -101,6 +109,7 @@ export async function updateHabit(input: unknown): Promise<{ ok: boolean; error?
       ...(data.targetValue !== undefined && { targetValue: data.targetValue }),
       ...(data.unitLabel !== undefined && { unitLabel: data.unitLabel || null }),
       ...(data.scheduleDays !== undefined && { scheduleDays: normalizeScheduleDays(data.scheduleDays) }),
+      ...(data.reminderTime !== undefined && { reminderTime: data.reminderTime }),
     },
   });
 

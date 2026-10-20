@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/user";
 import { getJournalEntries } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
@@ -23,18 +24,20 @@ interface Props {
 export default async function JournalPage({ searchParams }: Props) {
   const sp = await searchParams;
   const user = await getCurrentUser();
+  const t = await getTranslations("Journal");
+  const locale = await getLocale();
 
   if (user.plan !== "PRO") {
     return (
       <div className="journalpage">
         <Link href="/app" className="journalpage__back">
-          ← Back to dashboard
+          ← {t("back")}
         </Link>
         <div className="journalpage__locked">
-          <h1>Journal</h1>
-          <p>Rich journal entries linked to your habits — Pro feature.</p>
+          <h1>{t("title")}</h1>
+          <p>{t("lockedText")}</p>
           <Link href="/pricing" className="journalpage__upsell">
-            Unlock with Pro →
+            {t("unlock")}
           </Link>
         </div>
       </div>
@@ -54,34 +57,34 @@ export default async function JournalPage({ searchParams }: Props) {
     getJournalEntries(user.id, { habitId, query }),
   ]);
 
-  const timeFormatter = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: user.timezone });
+  const timeFormatter = new Intl.DateTimeFormat(locale, { hour: "numeric", minute: "2-digit", timeZone: user.timezone });
 
   return (
     <div className="journalpage">
       <Link href="/app" className="journalpage__back">
-        ← Back to dashboard
+        ← {t("back")}
       </Link>
 
-      <h1 className="journalpage__title">Journal</h1>
+      <h1 className="journalpage__title">{t("title")}</h1>
 
       <JournalForm today={today} habits={habits} />
 
       <form className="journalpage__filters" method="get">
         <select name="habitId" defaultValue={habitId ?? ""}>
-          <option value="">All habits</option>
+          <option value="">{t("allHabits")}</option>
           {habits.map((h) => (
             <option key={h.id} value={h.id}>
               {h.emoji} {h.name}
             </option>
           ))}
         </select>
-        <input type="search" name="q" defaultValue={query ?? ""} placeholder="Search…" />
-        <button type="submit">Filter</button>
-        {(habitId || query) && <Link href="/app/journal">Clear</Link>}
+        <input type="search" name="q" defaultValue={query ?? ""} placeholder={t("search")} />
+        <button type="submit">{t("filter")}</button>
+        {(habitId || query) && <Link href="/app/journal">{t("clear")}</Link>}
       </form>
 
       <div className="journalpage__list">
-        {entries.length === 0 && <p className="journalpage__empty">No entries yet.</p>}
+        {entries.length === 0 && <p className="journalpage__empty">{t("empty")}</p>}
         {entries.map((e) => (
           <JournalEntryCard
             key={e.id}

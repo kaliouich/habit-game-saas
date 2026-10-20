@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { createJournalEntry } from "@/lib/actions/journal";
 
 interface JournalFormProps {
@@ -10,6 +11,7 @@ interface JournalFormProps {
 
 /** Phase 3 roadmap — formulaire d'ajout, syntaxe markdown minimale (voir lib/journal.ts). */
 export function JournalForm({ today, habits }: JournalFormProps) {
+  const t = useTranslations("Journal");
   const formRef = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +37,7 @@ export function JournalForm({ today, habits }: JournalFormProps) {
           if (res.ok) {
             formRef.current?.reset();
           } else {
-            setError(res.error === "PRO_REQUIRED" ? "Pro required" : "Error");
+            setError(res.error === "PRO_REQUIRED" ? t("proRequired") : t("error"));
           }
         });
       }}
@@ -43,7 +45,7 @@ export function JournalForm({ today, habits }: JournalFormProps) {
       <div className="journalform__row">
         <input type="date" name="date" defaultValue={today} max={today} required />
         <select name="habitId" defaultValue="">
-          <option value="">No habit</option>
+          <option value="">{t("noHabit")}</option>
           {habits.map((h) => (
             <option key={h.id} value={h.id}>
               {h.emoji} {h.name}
@@ -51,16 +53,16 @@ export function JournalForm({ today, habits }: JournalFormProps) {
           ))}
         </select>
       </div>
-      <input name="title" placeholder="Title (optional)" maxLength={80} />
+      <input name="title" placeholder={t("titlePlaceholder")} maxLength={80} />
       <textarea
         name="markdown"
-        placeholder="What's on your mind? **bold**, *italic*, ~~strike~~, - bullet, - [ ] checklist"
+        placeholder={t("bodyPlaceholder")}
         rows={4}
         maxLength={4000}
         required
       />
       <button type="submit" disabled={isPending}>
-        Add entry
+        {t("add")}
       </button>
       {error && <p className="journalform__error">{error}</p>}
     </form>

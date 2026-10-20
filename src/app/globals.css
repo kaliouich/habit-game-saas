@@ -432,6 +432,23 @@ select {
   animation: flame-flicker 2.4s ease-in-out infinite;
 }
 
+/* Jauge de force : fine barre à côté de la série, détail au survol. */
+.habitlist__strength {
+  flex: none;
+  width: 34px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.habitlist__strengthbar {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--check);
+}
+
 /* Vacillement discret : lisible en périphérie sans devenir distrayant. */
 @keyframes flame-flicker {
   0%,

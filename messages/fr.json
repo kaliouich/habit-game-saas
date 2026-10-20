@@ -205,6 +205,7 @@
       "nextMonth": "Mois suivant",
       "myHabits": "Mes habitudes",
       "streakTitle": "{current} jours de suite (record {best})",
+      "strengthTitle": "Force de l'habitude {pct} % — se construit avec la régularité, pardonne un jour raté",
       "mood": "Humeur",
       "motivation": "Motivation",
       "referral": "Invitez un ami, gagnez un mois gratuit",

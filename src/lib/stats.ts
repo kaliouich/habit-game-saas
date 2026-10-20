@@ -61,6 +61,8 @@ export interface HabitStreak {
   habitId: string;
   current: number;
   best: number;
+  /** Force de l'habitude, 0..1 (voir `habitStrength`). */
+  strength: number;
 }
 
 export interface MonthStats {
@@ -116,6 +118,49 @@ export function currentStreak(
     cursor = prevDay(cursor);
   }
   return count;
+}
+
+/**
+ * Force d'une habitude (0..1) : moyenne mobile exponentielle sur les jours
+ * prévus. Contrairement à la série, un jour raté après des semaines de
+ * régularité ne remet pas tout à zéro — le score baisse un peu puis remonte.
+ * Les jours en pause ou hors planning sont ignorés (ni points, ni pénalité) ;
+ * aujourd'hui ne pénalise pas tant qu'il n'est pas coché. La demi-vie vaut
+ * ~14 occurrences pour une habitude quotidienne, moins si elle est hebdomadaire
+ * (chaque occurrence pèse alors plus lourd).
+ */
+export function habitStrength(
+  logged: Set<ISODate>,
+  today: ISODate,
+  paused: Set<ISODate> = new Set(),
+  scheduleDays?: readonly number[],
+): number {
+  if (logged.size === 0) return 0;
+  let first: ISODate | null = null;
+  for (const d of logged) if (d <= today && (first === null || d < first)) first = d;
+  if (first === null) return 0;
+
+  const dueDaysPerWeek = !scheduleDays || scheduleDays.length === 0 ? 7 : new Set(scheduleDays).size;
+  const halfLife = Math.max(4, 14 * (dueDaysPerWeek / 7));
+  const keep = Math.pow(0.5, 1 / halfLife);
+
+  // Remonte de today vers la première coche (bornée à ~2 ans), puis rejoue dans l'ordre.
+  const days: ISODate[] = [];
+  let cursor = today;
+  for (let i = 0; i < 730; i++) {
+    days.push(cursor);
+    if (cursor <= first) break;
+    cursor = prevDay(cursor);
+  }
+  let score = 0;
+  for (let i = days.length - 1; i >= 0; i--) {
+    const d = days[i];
+    if (paused.has(d) || !isDueOn(scheduleDays, d)) continue;
+    const done = logged.has(d);
+    if (d === today && !done) continue;
+    score = score * keep + (done ? 1 - keep : 0);
+  }
+  return Math.min(1, Math.max(0, score));
 }
 
 /** Vrai si `date` ouvre une série : en remontant à travers les jours ignorés
@@ -224,6 +269,7 @@ export function computeMonthStats(params: {
       habitId: h.id,
       current: currentStreak(h.loggedDates, today, h.pausedDates, h.scheduleDays),
       best: bestStreak(h.loggedDates, h.pausedDates, h.scheduleDays),
+      strength: habitStrength(h.loggedDates, today, h.pausedDates, h.scheduleDays),
     });
   }
 

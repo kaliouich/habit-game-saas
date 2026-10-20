@@ -94,6 +94,11 @@ export async function Sidebar({ month, habits, stats, canAdd, limit, userEmail, 
                     {streak.current}🔥
                   </span>
                 )}
+                {h.type === "BUILD" && streak && streak.strength > 0 && (
+                  <span className="habitlist__strength" title={t("strengthTitle", { pct: Math.round(streak.strength * 100) })}>
+                    <span className="habitlist__strengthbar" style={{ width: `${Math.round(streak.strength * 100)}%` }} />
+                  </span>
+                )}
                 <HabitMenu
                   habitId={h.id}
                   name={h.name}

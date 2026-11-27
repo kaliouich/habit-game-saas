@@ -30,6 +30,12 @@ postgres:
   enabled: true
   storage: 5Gi
 
+# Base CloudNativePG. L'ancien PostgreSQL reste en place le temps de vérifier la bascule.
+database:
+  enabled: true
+  useForApp: true
+  importFromLegacy: true
+
 # Les secrets ne transitent jamais par git : le chart se contente de référencer
 # un Secret déjà présent dans le cluster (créé hors GitOps). C'est ce qui rend
 # ce dépôt publiable sans risque.

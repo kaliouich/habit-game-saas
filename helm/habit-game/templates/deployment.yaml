@@ -25,8 +25,14 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.database.useForApp }}
+                  # Secret créé par l'opérateur CloudNativePG.
+                  name: {{ .Values.database.name }}-app
+                  key: uri
+                  {{- else }}
                   name: {{ include "habit-game.secretName" . }}
                   key: DATABASE_URL
+                  {{- end }}
             - name: AUTH_SECRET
               valueFrom:
                 secretKeyRef:

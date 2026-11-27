@@ -1,0 +1,161 @@
+{{- if .Values.database.enabled }}
+# PostgreSQL géré par l'opérateur CloudNativePG : un primaire et des réplicas, bascule
+# automatique. L'opérateur crée les Services (-rw, -ro, -r), les volumes, et le Secret
+# {{ .Values.database.name }}-app dont l'application lit la clé `uri`. Aucun mot de passe dans git.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Values.database.name }}
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    {{- include "habit-game.labels" . | nindent 4 }}
+  annotations:
+    # La base ne doit jamais disparaître par effet de bord : ni `prune` d'ArgoCD, ni
+    # suppression de l'Application, ni `helm uninstall`.
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
+    helm.sh/resource-policy: keep
+spec:
+  instances: {{ .Values.database.instances }}
+  imageName: {{ .Values.database.image }}
+
+  # Le proxy Linkerd a déjà réinitialisé des connexions vers le 5432 sur ce cluster.
+  inheritedMetadata:
+    annotations:
+      linkerd.io/inject: disabled
+
+  bootstrap:
+    initdb:
+      database: {{ .Values.database.database }}
+      owner: {{ .Values.database.owner }}
+      # Même classement que l'ancienne base (le défaut de CloudNativePG est "C").
+      localeCollate: en_US.UTF-8
+      localeCType: en_US.UTF-8
+      {{- if .Values.database.importFromLegacy }}
+      # Import logique, joué une seule fois à la création du cluster.
+      import:
+        type: microservice
+        databases:
+          - {{ .Values.database.database }}
+        source:
+          externalCluster: legacy
+      {{- end }}
+  {{- if .Values.database.importFromLegacy }}
+  externalClusters:
+    - name: legacy
+      connectionParameters:
+        host: {{ include "habit-game.postgresName" . }}
+        user: {{ .Values.database.owner }}
+        dbname: {{ .Values.database.database }}
+        sslmode: disable
+      password:
+        name: {{ include "habit-game.secretName" . }}
+        key: POSTGRES_PASSWORD
+  {{- end }}
+
+  postgresql:
+    # local-path ne borne pas la taille des volumes : sans plafond, un réplica à l'arrêt
+    # ferait grossir le WAL du primaire jusqu'à remplir le disque du nœud.
+    parameters:
+      max_slot_wal_keep_size: "1GB"
+    # Une écriture validée existe sur au moins deux pods.
+    synchronous:
+      method: any
+      number: 1
+      dataDurability: required
+
+  storage:
+    storageClass: local-path
+    size: {{ .Values.database.storage }}
+  walStorage:
+    storageClass: local-path
+    size: {{ .Values.database.walStorage }}
+
+  resources:
+    {{- toYaml .Values.database.resources | nindent 4 }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ .Values.database.name }}
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    release: {{ .Values.database.monitoringRelease }}
+    {{- include "habit-game.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      cnpg.io/cluster: {{ .Values.database.name }}
+      cnpg.io/podRole: instance
+  podMetricsEndpoints:
+    - port: metrics
+---
+{{- $ns := .Values.app.namespace }}
+{{- $sel := printf "namespace=%q,pod=~%q" $ns (printf "%s-[0-9]+" .Values.database.name) }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Values.database.name }}
+  namespace: {{ $ns }}
+  labels:
+    release: {{ .Values.database.monitoringRelease }}
+    {{- include "habit-game.labels" . | nindent 4 }}
+spec:
+  groups:
+    - name: cnpg.{{ .Values.database.name }}
+      interval: 30s
+      rules:
+        - alert: HabitDBNoPrimary
+          expr: 'absent(cnpg_pg_replication_in_recovery{ {{- $sel -}} } == 0)'
+          for: 1m
+          labels:
+            severity: critical
+            product: habitcade
+          annotations:
+            summary: "La base de Habitcade n'a plus de primaire"
+            description: "Aucune instance ne répond hors mode recovery depuis plus d'une minute : l'application ne peut plus écrire."
+        - alert: HabitDBInstancesMissing
+          expr: 'count(cnpg_collector_up{ {{- $sel -}} } == 1) < {{ .Values.database.instances }}'
+          for: 3m
+          labels:
+            severity: warning
+            product: habitcade
+          annotations:
+            summary: "{{ "{{ $value }}" }} instance(s) PostgreSQL de Habitcade répondent"
+            description: "La haute disponibilité est réduite : vérifier les pods du cluster."
+        - alert: HabitDBReplicasNotStreaming
+          expr: 'max(cnpg_pg_replication_streaming_replicas{ {{- $sel -}} }) < {{ sub (int .Values.database.instances) 1 }}'
+          for: 5m
+          labels:
+            severity: warning
+            product: habitcade
+          annotations:
+            summary: "Réplication incomplète sur la base de Habitcade"
+            description: "Sans réplica synchrone, le primaire bloque les écritures (dataDurability: required)."
+        - alert: HabitDBReplicationLag
+          expr: 'max(cnpg_pg_replication_lag{ {{- $sel -}} }) > 30'
+          for: 5m
+          labels:
+            severity: warning
+            product: habitcade
+          annotations:
+            summary: "Retard de réplication de {{ "{{ $value | humanizeDuration }}" }}"
+            description: "Un réplica en retard ne pourrait pas prendre la main sans risque."
+        - alert: HabitDBConnectionsHigh
+          expr: 'sum(cnpg_backends_total{ {{- $sel -}} }) / max(cnpg_pg_settings_setting{name="max_connections",{{ $sel }}}) > 0.8'
+          for: 5m
+          labels:
+            severity: warning
+            product: habitcade
+          annotations:
+            summary: "{{ "{{ $value | humanizePercentage }}" }} des connexions PostgreSQL utilisées"
+            description: "Chercher une fuite de connexions ou un client inattendu."
+        - alert: HabitDBWALLarge
+          expr: 'max(cnpg_collector_pg_wal{value="size",{{ $sel }}}) > 1.5e9'
+          for: 10m
+          labels:
+            severity: warning
+            product: habitcade
+          annotations:
+            summary: "Le WAL de la base de Habitcade pèse {{ "{{ $value | humanize1024 }}" }}o"
+            description: "Un réplica en retard retient du WAL sur le disque du nœud."
+{{- end }}

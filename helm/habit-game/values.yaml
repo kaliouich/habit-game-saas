@@ -71,6 +71,31 @@ postgres:
     limits:
       memory: 512Mi
 
+# ── PostgreSQL géré par l'opérateur CloudNativePG (voir templates/database.yaml) ──
+# Prérequis : l'opérateur CloudNativePG installé dans le cluster.
+database:
+  enabled: false
+  # Quand useForApp passe à true, l'application lit DATABASE_URL dans le Secret <name>-app.
+  useForApp: false
+  # Import unique depuis l'ancien PostgreSQL (postgres.enabled) à la création du cluster.
+  importFromLegacy: false
+  name: habit-db
+  instances: 3
+  image: ghcr.io/cloudnative-pg/postgresql:16.16-standard-trixie
+  owner: habit
+  database: habitgame
+  storage: 5Gi
+  walStorage: 2Gi
+  monitoringRelease: kube-prometheus
+  # Mémoire limitée = demandée : pas évincée en premier si le nœud manque de mémoire.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 384Mi
+    limits:
+      cpu: "1"
+      memory: 384Mi
+
 # ── Valkey (rate limiter partagé — voir src/lib/rateLimit.ts) ────────────────
 # Sans ça, le rate limiter vit en mémoire du process : correct à replicas:1
 # (aujourd'hui), mais diviserait la limite par le nombre de replicas dès qu'on

@@ -1,6 +1,6 @@
 # ⚠️ Legacy — remplacé par `helm/habit-game/`
 
-Ces manifests (`app.yaml`, `postgres.yaml`, `weekly-recap-cronjob.yaml`,
+Ces manifests (`app.yaml`, `weekly-recap-cronjob.yaml`,
 `secrets.example.yaml`) ont servi au déploiement initial via `kubectl apply -f`.
 
 **Depuis le 2026-08-07, le cluster est géré par Helm** (`helm/habit-game/`) —
@@ -16,7 +16,8 @@ helm upgrade --install habit-game ./helm/habit-game \
   -f helm/habit-game/values-production.yaml
 ```
 
-Voir [`helm/habit-game/README.md`](../helm/habit-game/README.md).
+La base de données est désormais gérée par CloudNativePG : voir
+[`helm/habit-game/README.md`](../helm/habit-game/README.md).
 
 Ce dossier est conservé pour référence historique / rollback d'urgence
 uniquement (`kubectl apply` direct si Helm est indisponible).

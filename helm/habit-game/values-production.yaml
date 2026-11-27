@@ -26,15 +26,9 @@ route:
     hostname: habits.khalilaliouich.com
     target: habitcade.com
 
-postgres:
-  enabled: true
-  storage: 5Gi
-
-# Base CloudNativePG. L'ancien PostgreSQL reste en place le temps de vérifier la bascule.
+# Base PostgreSQL gérée par CloudNativePG (3 instances).
 database:
   enabled: true
-  useForApp: true
-  importFromLegacy: true
 
 # Les secrets ne transitent jamais par git : le chart se contente de référencer
 # un Secret déjà présent dans le cluster (créé hors GitOps). C'est ce qui rend

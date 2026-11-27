@@ -30,28 +30,6 @@ spec:
       # Même classement que l'ancienne base (le défaut de CloudNativePG est "C").
       localeCollate: en_US.UTF-8
       localeCType: en_US.UTF-8
-      {{- if .Values.database.importFromLegacy }}
-      # Import logique, joué une seule fois à la création du cluster.
-      import:
-        type: microservice
-        databases:
-          - {{ .Values.database.database }}
-        source:
-          externalCluster: legacy
-      {{- end }}
-  {{- if .Values.database.importFromLegacy }}
-  externalClusters:
-    - name: legacy
-      connectionParameters:
-        host: {{ include "habit-game.postgresName" . }}
-        user: {{ .Values.database.owner }}
-        dbname: {{ .Values.database.database }}
-        sslmode: disable
-      password:
-        name: {{ include "habit-game.secretName" . }}
-        key: POSTGRES_PASSWORD
-  {{- end }}
-
   postgresql:
     # local-path ne borne pas la taille des volumes : sans plafond, un réplica à l'arrêt
     # ferait grossir le WAL du primaire jusqu'à remplir le disque du nœud.

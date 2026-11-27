@@ -4,7 +4,7 @@
 # minutes), perdre l'état à un redémarrage ne fait que réinitialiser les
 # compteurs, jamais une perte de données réelle. Pas de mot de passe non plus :
 # ClusterIP interne uniquement, jamais exposé — même modèle de confiance que
-# la communication pod-à-pod vers habit-postgres avant l'ajout de secrets.
+# les autres communications internes au cluster.
 apiVersion: apps/v1
 kind: Deployment
 metadata:

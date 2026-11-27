@@ -8,19 +8,8 @@ plutôt que Chart.Name, pour rester compatible avec les manifests kubectl exista
 {{- end -}}
 
 {{/*
-Nom fixe "habit-postgres" (pas "<app.name>-postgres") pour matcher le Service/
-Deployment déjà en place dans le cluster (créés par k8s/postgres.yaml) — la
-DATABASE_URL existante dans le Secret pointe sur "habit-postgres:5432", une
-adoption Helm (helm install sur des ressources kubectl-applied) doit produire
-des noms identiques.
-*/}}
-{{- define "habit-game.postgresName" -}}
-habit-postgres
-{{- end -}}
-
-{{/*
 Nom du service Valkey dédié au rate limiter (voir templates/valkey.yaml) —
-"habit-valkey", même convention que "habit-postgres" ci-dessus.
+nom fixe "habit-valkey".
 */}}
 {{- define "habit-game.valkeyName" -}}
 habit-valkey

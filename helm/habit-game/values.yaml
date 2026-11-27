@@ -57,28 +57,12 @@ route:
     hostname: ""
     target: ""
 
-# ── PostgreSQL (Deployment simple, pas de chart tiers — 1 replica, PVC Longhorn) ──
-postgres:
-  enabled: true
-  image: postgres:16-alpine
-  user: habit
-  database: habitgame
-  storage: 5Gi
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      memory: 512Mi
-
 # ── PostgreSQL géré par l'opérateur CloudNativePG (voir templates/database.yaml) ──
 # Prérequis : l'opérateur CloudNativePG installé dans le cluster.
 database:
-  enabled: false
-  # Quand useForApp passe à true, l'application lit DATABASE_URL dans le Secret <name>-app.
-  useForApp: false
-  # Import unique depuis l'ancien PostgreSQL (postgres.enabled) à la création du cluster.
-  importFromLegacy: false
+  # true : le chart crée le cluster et l'application lit DATABASE_URL dans le Secret <name>-app.
+  # false : base externe, DATABASE_URL vient du Secret de l'application.
+  enabled: true
   name: habit-db
   instances: 3
   image: ghcr.io/cloudnative-pg/postgresql:16.16-standard-trixie
@@ -135,7 +119,6 @@ secrets:
 
   # Utilisés seulement si create=true — laisser vide dans values.yaml commité,
   # fournir via -f secrets.local.yaml (voir secrets.local.yaml.example)
-  postgresPassword: ""
   databaseUrl: ""
   cronSecret: ""
   authSecret: ""
